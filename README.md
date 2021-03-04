@@ -19,7 +19,7 @@ You can download the resource by cloning it, or if that's too much work, click <
 <h2>How To Install</h2>
 - Download the resource, remove -master from the folder name, place it in your resources folder and start it in your server.cfg<br>
 - Import the .sql file into your database<br>
-- Download <a href='https://github.com/warxander/warmenu/archive/master.zip'>WarMenu</a> if you don't have it, remove -master from the folder name, place it directly into your resources folder and start it in your server.cfg just make sure you start it before you start my resource<br>
+- Download <a href='https://github.com/warxander/warmenu/archive/master.zip'>WarMenu</a> if you don't have it, remove -master from the folder name, place it directly into your resources folder and start it in your server.cfg just make sure you start it before you start my resource<br><br>
 
 If you run into any issues or have any suggestions please let me know.<br>
 Also please leave your thoughts and feedback.
