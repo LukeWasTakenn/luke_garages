@@ -1,13 +1,16 @@
 # luke_vehiclegarage
 FiveM mod that adds garages and impounds for the ESX framework
 
-This resource adds vehicle garages for cars (including trucks and stuff), boats and aircrafts.<br>
+This resource adds vehicle garages and impounds for cars (including trucks and stuff), boats and aircrafts.<br>
 You can configure the location of each garage, return circle and spawn coordinates in the config file.<br>
 The resource is using WarMenu made by Warxander.<br>
 In the config you can choose whether you want the damage on the vehicles to be saved, fuel will always save not depending on what you choose.<br>
 Depending on the damage on the car when you it's stored, when you take it out the script will do damage to it to make it look visually damaged.<br>
 The impound checks whether the vehicle is already in the world to prevent vehicle duping.<br>
 If you want you can have all the vehicles be stored in the garage automatically on resource (or server) restart (check server.lua for this).<br>
+
+The coordinates in the config file are semi-placeholder so please make sure to change them to your own liking.<br>
+You can also feel free to edit my script in any kind of way you want, just please do not claim ait as your own.<br>
 
 <a href='https://www.youtube.com/watch?v=8D-Zbb-S47c'>Video Preivew</a><br>
 
