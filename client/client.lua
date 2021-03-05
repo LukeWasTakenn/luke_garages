@@ -128,7 +128,7 @@ AddEventHandler('luke_vehiclegarage:GarageMenu', function()
                 if WarMenu.Begin('garageMenu') then
                     for k, v in pairs(ownedCars) do
                         local vehicle = v.vehicle
-                        if v.stored == true then
+                        if v.stored == 1 then
                             stored = ' - ~g~In Garage'
                             isStored = true
                         else
@@ -348,7 +348,7 @@ function ImpoundCheck(vehicleType)
     if vehicleType == 'car' then
         ESX.TriggerServerCallback('luke_vehiclegarage:FetchOwnedCars', function(ownedCars)
             for k, v in pairs(ownedCars) do
-                if v.stored == false then
+                if v.stored == 0 then
                     if DoesVehicleExist(v.vehicle) ~= true and not ValueExistsInTable(impoundedVehicles, v.vehicle) then
                         table.insert(impoundedVehicles, v.vehicle)
                     end
@@ -358,7 +358,7 @@ function ImpoundCheck(vehicleType)
     elseif vehicleType == 'boat' then
         ESX.TriggerServerCallback('luke_vehiclegarage:FetchOwnedBoats', function(ownedBoats)
             for k, v in pairs(ownedBoats) do
-                if v.stored == false then
+                if v.stored == 0 then
                     if DoesVehicleExist(v.vehicle) ~= true and not ValueExistsInTable(impoundedVehicles, v.vehicle) then
                         table.insert(impoundedVehicles, v.vehicle)
                     end
@@ -368,7 +368,7 @@ function ImpoundCheck(vehicleType)
     elseif vehicleType == 'aircraft' then
         ESX.TriggerServerCallback('luke_vehiclegarage:FetchOwnedAircrafts', function(ownedAircrafts)
             for k, v in pairs(ownedAircrafts) do
-                if v.stored == false then
+                if v.stored == 0 then
                     if DoesVehicleExist(v.vehicle) ~= true and not ValueExistsInTable(impoundedVehicles, v.vehicle) then
                         table.insert(impoundedVehicles, v.vehicle)
                     end

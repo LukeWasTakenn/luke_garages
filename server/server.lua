@@ -2,7 +2,7 @@ ESX = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-StoreVehiclesOnResourceStart = false -- Set this to false if you don't want it
+StoreVehiclesOnResourceStart = true -- Set this to false if you don't want it
 
 -- On script restart (or server start) all vehicles are going to be stored into the garage by default
 if StoreVehiclesOnResourceStart == true then
@@ -21,7 +21,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:FetchOwnedCars', function(source,
     local ownedCars = {}
 
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE `owner` = @owner AND `type` = @type', {
-        ['@owner'] = xPlayer.identifier,
+        ['@owner'] = xPlayer.getIdentifier(),
         ['@type'] = 'car'
     }, function(data)
         for k, v in pairs(data) do
@@ -39,7 +39,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:FetchOwnedBoats', function(source
     local ownedBoats = {}
 
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE `owner` = @owner AND `type` = @type', {
-        ['@owner'] = xPlayer.identifier,
+        ['@owner'] = xPlayer.getIdentifier(),
         ['@type'] = 'boat',
     }, function(data)
         for k, v in pairs(data) do
@@ -57,7 +57,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:FetchOwnedAircrafts', function(so
     local ownedAircrafts = {}
 
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE `owner` = @owner AND `type` = @type', {
-        ['@owner'] = xPlayer.identifier,
+        ['@owner'] = xPlayer.getIdentifier(),
         ['@type'] = 'aircraft',
     }, function(data)
         for k, v in pairs(data) do
@@ -74,7 +74,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:CheckOwnership', function(source,
     local xPlayer = ESX.GetPlayerFromId(src)
 
     MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE `owner` = @owner AND `plate` = @plate', {
-        ['@owner'] = xPlayer.identifier,
+        ['@owner'] = xPlayer.getIdentifier(),
         ['@plate'] = vehiclePlate,
     }, function(data)
         if data[1] ~= nil then
