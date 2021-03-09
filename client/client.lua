@@ -593,7 +593,7 @@ function GarageBlips()
         garageBlip = AddBlipForCoord(v.menuCoords.x, v.menuCoords.y, v.menuCoords.z)
 
         SetBlipSprite(garageBlip, 357)
-        SetBlipScale(garateBlip, 0.4)
+        SetBlipScale(garageBlip, 0.4)
         SetBlipColour(garageBlip, 3)
         SetBlipAsShortRange(garageBlip, true)
         BeginTextCommandSetBlipName("STRING")
