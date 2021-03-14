@@ -163,7 +163,7 @@ AddEventHandler('luke_vehiclegarage:GarageMenu', function()
                 if WarMenu.Begin('garageMenu') then
                     for k, v in pairs(ownedBoats) do
                         local vehicle = v.vehicle
-                        if v.stored == true then
+                        if v.stored == 1 then
                             stored = ' - ~g~In Garage'
                             isStored = true
                         else
@@ -198,7 +198,7 @@ AddEventHandler('luke_vehiclegarage:GarageMenu', function()
                 if WarMenu.Begin('garageMenu') then
                     for k, v in pairs(ownedAircrafts) do
                         local vehicle = v.vehicle
-                        if v.stored == true then
+                        if v.stored == 1 then
                             stored = ' - ~g~In Garage'
                             isStored = true
                         else
