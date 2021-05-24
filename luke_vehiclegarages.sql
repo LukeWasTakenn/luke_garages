@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `owned_vehicles` (
-	`owner` varchar(40) NOT NULL,
+	`owner` varchar(50) NOT NULL,
 	`plate` varchar(12) NOT NULL,
 	`vehicle` longtext,
 	`type` VARCHAR(20) NOT NULL DEFAULT 'car',
