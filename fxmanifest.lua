@@ -4,7 +4,7 @@ game 'gta5'
 
 author 'Luke'
 description 'Vehicle garages and impounds for the ESX framework'
-version '1.0.0'
+version '1.1.1'
 
 client_scripts{
     "@warmenu/warmenu.lua",
