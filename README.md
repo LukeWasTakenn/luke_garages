@@ -1,3 +1,5 @@
+# This resource is in the process of being rewritten for ESX Legacy.
+
 # luke_vehiclegarage
 FiveM mod that adds garages and impounds for the ESX framework
 
