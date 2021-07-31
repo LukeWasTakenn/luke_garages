@@ -1,31 +1,30 @@
-# This resource is in the process of being rewritten for ESX Legacy.
-
 # luke_vehiclegarage
-FiveM mod that adds garages and impounds for the ESX framework
 
-This resource adds vehicle garages for cars (including trucks and stuff), boats and aircrafts.
+This resource now only supports ESX Legacy, other versions of the framework **will not** work without modifying the resource.
 
-You can configure the location of each garage, return circle and spawn coordinates in the config file.
+Alongside cars, aircrafts and boats are also fully supported with them having their own separate garages and impounds.
 
-The resource is using WarMenu made by Warxander.
+The impound has checks in place to prevent vehicle duping.
 
-In the config you can choose whether you want the damage on the vehicles to be saved.
+[Updated Video Showcase](https://www.youtube.com/watch?v=GT2u5uoz7Tc)
 
-Depending on the damage on the car when you it's stored, when you take it out the script will do damage to it to make it look visually damaged.
+### Dependencies
+* [PolyZone](https://github.com/mkafrin/PolyZone)
+* [qtarget](https://github.com/QuantusRP/qtarget)
+* [nh-context](https://github.com/nerohiro/nh-context)
 
-The impound checks whether the vehicle is already in the world to prevent vehicle duping.
+Make sure to follow the well detailed installation instructions on qtarget.
 
-If you want you can have all the vehicles be stored in the garage automatically on resource (or server) restart (check server.lua for this).
+### Installation
+* Download the resource from releases
+* Drop the luke_vehiclegarage folder into your resources folder
+* Import the .sql file into your database
+* Start the resource in your server.cfg
 
-<a href='https://www.youtube.com/watch?v=8D-Zbb-S47c'>Video Preivew</a>
+If you wish to add more garages or impounds make sure to follow the provided template and examples in the config.lua file.
 
-<h2>How To Install</h2>
+Custom vehicles are now fully supported, for each custom vehicle you have to add a text entry of it's model and make name (if there isn't one already) into the vehicle_names.lua file which is located in the client folder. I provided an example of this that I used on the GTR in the video.
 
-- Download the resource, remove -master from the folder name, place it in your resources folder and start it in your server.cfg
+For any issues or bugs that may occur please open an Issue in the repository. Make sure to describe the issue in detail and how to reproduce it.
 
-- Import the .sql file into your database
-
-- Download <a href='https://github.com/warxander/warmenu/archive/master.zip'>WarMenu</a> if you don't have it, remove -master from the folder name, place it directly into your resources folder and start it in your server.cfg just make sure you start it before you start my resource
-
-If you run into any issues or have any suggestions please let me know.
-Also please leave your thoughts and feedback.
+PRs are always welcome.

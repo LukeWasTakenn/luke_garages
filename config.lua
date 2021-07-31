@@ -1,184 +1,184 @@
 Config = {}
 
-Config.MarkerDrawDistance = 20.0
+Config.EnableVersionCheck = true -- If set to true you'll get a print in server console when your resource is out of date
+Config.VersionCheckInterval = 60 -- in minutes
 
---Config.StoreVehiclesOnResourceStart - Check server.lua for this
+Config.GaragePed = `s_m_y_airworker`
+Config.ImpoundPed = `s_m_y_construct_01`
 
-Config.SaveDamageOnStore = true -- Whether or not you want the damage on the vehicle to stay when you store it into a garage (Fuel will always save)
-Config.ImpoundPrice = 750 -- Price to get the impounded vehicle out
-Config.UseCash = true
+Config.BlipColors = {
+    Car = 3,
+    Boat = 51,
+    Aircraft = 81
+}
 
+Config.ImpoundPrices = {
+    -- These are vehicle classes
+    ['0'] = 300, -- Compacts
+    ['1'] = 500, -- Sedans
+    ['2'] = 500, -- SUVs
+    ['3'] = 800, -- Coupes
+    ['4'] = 1200, -- Muscle
+    ['5'] = 800, -- Sports Classics
+    ['6'] = 1500, -- Sports
+    ['7'] = 2500, -- Super
+    ['8'] = 300, -- Motorcycles
+    ['9'] = 500, -- Off-road
+    ['10'] = 1000, -- Industrial
+    ['11'] = 500, -- Utility
+    ['12'] = 600, -- Vans
+    ['13'] = 100, -- Cylces
+    ['14'] = 2800, -- Boats
+    ['15'] = 3500, -- Helicopters
+    ['16'] = 3800, -- Planes
+    ['17'] = 500, -- Service
+    ['18'] = 0, -- Emergency
+    ['19'] = 100, -- Military
+    ['20'] = 1500, -- Commercial
+    ['21'] = 0 -- Trains (lol)
+}
+
+Config.PayInCash = true -- whether you want to pay impound price in cash, otherwise uses bank
 
 Config.Impounds = {
-    InnocenceImpound = {
-        impoundName = 'Innocence Blv Impound',
-        impoundType = 'car', -- aircraft, boat or car
-        menuCoords = {x = 402.39, y = -1628.04, z = 29.29},
-        spawnCoords = {
-            {x = 416.07, y = -1629.16, z = 29.29, h = 319.06},
-            {x = 406.98, y = -1651.0, z = 29.29, h = 141.1},
-            {x = 397.89, y = -1642.67, z = 29.29, h = 146.7},
-        },
+    InnocenceBlvd = {
+        ImpoundType = 'car', -- car, boat or aircraft
+        PedCoords = {x = 409.25, y = -1623.08, z = 28.29, h = 228.84},
+        Zone = {name = 'innocence', x = 410.32, y = -1623.43, z = 29.29, l = 4.0, w = 6.4, h = 50, minZ = 28.29, maxZ = 32.29}, -- The zone is only here for the ped to not have the impound option everywhere in the world
+        Spawns = {
+            {x = 416.83, y = -1628.29, z = 29.11, h = 140.43}, 
+            {x = 419.58, y = -1629.71, z = 29.11, h = 141.98},
+            {x = 421.17, y = -1636.00, z = 29.11, h = 88.21},
+            {x = 420.05, y = -1638.93, z = 29.11, h = 88.95},
+        }
     },
-
-    SandyImpound = {
-        impoundName = 'Sandy Shores Impound',
-        impoundType = 'car', -- aircraft, boat or car
-        menuCoords = {x = 917.99, y = 3577.14, z = 33.55},
-        spawnCoords = {
-            {x = 920.22, y = 3568.7, z = 33.64, h = 275.12},
-            {x = 920.12, y = 3561.3, z = 33.75, h = 271.76},
-        },
+    LSBoatImpound = {
+        ImpoundType = 'boat',
+        PedCoords = {x = -462.92, y = -2443.44, z = 5.00, h = 322.40},
+        Zone = {name = 'lsboat impound', x = -463.04, y = -2443.69, z = 6.0, l = 5, w = 5, h = 320, minZ = 5.0, maxZ = 9.0},
+        Spawns = {
+            {x = -493.48, y = -2466.38, z = -0.06, h = 142.26}, 
+            {x = -471.09, y = -2483.94, z = 0.28, h = 152.74},
+        }
     },
-
-    PaletoImpound = {
-        impoundName = 'Paleto Bay Impound',
-        impoundType = 'car', -- aircraft, boat or car
-        menuCoords = {x = 120.01, y = 6625.96, z = 31.96},
-        spawnCoords = {
-            {x = 139.99, y = 6638.14, z = 31.6, h = 136.0},
-            {x = 129.55, y = 6628.82, z = 31.31, h = 133.69},
-        },
+    SandyAircraft = {
+        ImpoundType = 'aircraft',
+        PedCoords = {x = 1758.29, y = 3297.50, z = 40.15, h = 148.27},
+        Zone = {name = 'sandy air', x = 1758.66, y = 3297.51, z = 41.13, l = 3.0, w = 3.0, h = 325, minZ = 40.13, maxZ = 44.13},
+        Spawns = {
+            {x = 1753.72, y = 3272.12, z = 41.99, h = 105.71},
+            {x = 1746.85, y = 3252.57, z = 42.30, h = 105.58},
+        }
     },
-
-    SLSImpound = {
-        impoundName = 'South Los Santos Impound',
-        impoundType = 'boat', -- aircraft, boat or car
-        menuCoords = {x = 45.91, y = -2791.97, z = 5.72},
-        spawnCoords = {
-            {x = 55.52, y = -2791.26, z = 5.72, h = 174.32},
-            {x = 35.03, y = -2791.48, z = 5.32, h = 179.32},
+    --[[
+        TEMPLATE:
+        SomeName = {
+            ImpoundType = 'car', - can be 'car', 'boat' or 'aircraft',
+            PedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
+            Zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
+            Spawns = { -- You can have as many as you'd like
+                {x = X, y = X, z = X, h = X},
+                {x = X, y = X, z = X, h = X}
+            }
         },
-    },
-
-    LSAPImpound = {
-        impoundName = 'LSAP Impound',
-        impoundType = 'aircraft', -- aircraft, boat or car
-        menuCoords = {x = -1071.41, y = -2869.27, z = 13.95},
-        spawnCoords = {
-            {x = -1084.61, y = -2901.37, z = 13.95, h = 243.28},
-        },
-    },
-    --[[ TEMPLATE ----
-    ImpoundName = {
-        impoundName = '',
-        impoundType = '', -- aircraft, boat or car
-        menuCoords = {x = , y = , z = },
-        spawnCoords = {
-            {x = , y = , z = , h = },
-        },
-    },
     ]]
 }
 
 Config.Garages = {
     LegionGarage = {
-        garageName = 'Legion Garage',
-        garageType = 'car',
-        menuCoords = {x = 216.8, y = -810.8, z = 30.7},
-        spawnCoords = {
-            {x = 223.03, y = -801.57, z = 30.66, h = 68.92},
-            {x = 209.05, y = -796.54, z = 30.95, h = 67.96},
-            {x = 220.67, y = -786.34, z = 30.78, h = 249.37},
-        },
-        returnCoords = {x = 234.68, y = -787.05, z = 30.61},
+        GarageType = 'car', -- car, boat or aircraft
+        PedCoords = {x = 215.90, y = -808.87, z = 29.74, h = 248.0}, -- The Ped MUST be inside the PolyZone
+        Zone = {name = 'legion', x = 226.52, y = -790.15, z = 30.72, l = 45.6, w = 39.6, h = 340, minZ = 29.12, maxZ = 33.12},
+        Spawns = {
+            {x = 206.25, y = -801.21, z = 31.00, h = 250.47},
+            {x = 208.72, y = -796.45, z = 30.95, h = 246.74},
+            {x = 210.89, y = -791.42, z = 30.90, h = 248.02},
+            {x = 216.12, y = -801.68, z = 30.80, h = 68.72},  
+            {x = 218.21, y = -796.79, z = 30.77, h = 68.80},  
+            {x = 219.76, y = -791.47, z = 30.76, h = 69.89},  
+            {x = 221.37, y = -786.53, z = 30.78, h = 70.72},  
+            {x = 212.52, y = -783.46, z = 30.89, h = 248.63},
+        }
     },
-
-    ElRanchoGarage = {
-        garageName = 'El Rancho Garage',
-        garageType = 'car',
-        menuCoords = {x = 1204.65, y = -1084.42, z = 40.48},
-        spawnCoords = {
-            {x = 1199.92, y = -1059.37, z = 41.14, h = 301.52},
-            {x = 1204.44, y = -1062.48, z = 40.64, h = 299.62},
-            {x = 1208.21, y = -1065.76, z = 40.21, h = 298.76},
-            {x = 1211.22, y = -1069.71, z = 39.90, h = 303.09},
-            {x = 1215.04, y = -1073.32, z = 39.51, h = 305.75},
-        },
-        returnCoords = {x = 1195.72, y = -1056.44, z = 41.55},
+    AmericanoWayGarage = {
+        GarageType = 'car',
+        PedCoords = {x = -1651.83, y = 63.90, z = 61.86, h = 338.03},
+        Zone = {name = 'americano', x = -1682.74, y = 60.93, z = 63.5, l = 59.6, w = 60.6, h = 329, minZ = 61.15, maxZ = 68.35},
+        Spawns = {
+            {x = -1660.57, y = 75.52, z = 63.20, h = 170.90}, 
+            {x = -1666.24, y = 79.84, z = 63.45, h = 171.92},
+            {x = -1671.97, y = 84.59, z = 63.83, h = 169.94},
+            {x = -1662.57, y = 57.99, z = 62.90, h = 293.91},
+            {x = -1664.75, y = 60.63, z = 63.05, h = 292.60},
+            {x = -1667.53, y = 62.90, z = 63.21, h = 291.82},
+        }
     },
-
-    VespucciGarage = {
-        garageName = 'Vespucci Blvd Garage',
-        garageType = 'car',
-        menuCoords = {x = -332.66, y = -781.49, z = 33.96},
-        spawnCoords = {
-            {x = -334.57, y = -751.31, z = 33.97, h = 179.12},
-            {x = -343.02, y = -756.97, z = 33.97, h = 270.03},
-            {x = -329.05, y = -750.43, z = 33.97, h = 181.60},
-            {x = -323.11, y = -751.78, z = 33.97, h = 156.22},
-            {x = -317.46, y = -752.89, z = 33.97, h = 160.17},
-        },
-        returnCoords = {x = -348.57, y = -761.12, z = 33.97},
+    Route68 = {
+        GarageType = 'car',
+        PedCoords = {x = 587.23, y = 2723.50, z = 41.13, h = 7.85},
+        Zone = {name = 'route68', x = 570.69, y = 2727.16, z = 42.08, l = 22.0, w = 34.6, h = 4, minZ = 41.08, maxZ = 45.08},
+        Spawns = {
+            {x = 584.51, y = 2721.56, z = 41.88, h = 3.59}, 
+            {x = 581.14, y = 2721.32, z = 41.88, h = 3.99},
+            {x = 578.15, y = 2720.59, z = 41.88, h = 4.65},
+            {x = 574.86, y = 2721.09, z = 41.88, h = 4.85},
+            {x = 572.01, y = 2720.28, z = 41.88, h = 5.40},
+            {x = 568.78, y = 2720.25, z = 41.88, h = 5.15},
+            {x = 565.86, y = 2719.79, z = 41.88, h = 3.42},
+            {x = 562.68, y = 2719.95, z = 41.88, h = 3.98},
+            {x = 559.54, y = 2719.52, z = 41.88, h = 3.45},
+        }
     },
-
-    SpanishAveGarage = {
-        garageName = 'Spanish Avenue Garage',
-        garageType = 'car',
-        menuCoords = {x = 76.67, y = 20.34, z = 69.13},
-        spawnCoords = {
-            {x = 64.70, y = 17.97, z = 69.29, h = 158.63},
-            {x = 61.25, y = 19.31, z = 69.37, h = 158.63},
-            {x = 58.22, y = 20.33, z = 69.46, h = 161.80},
-            {x = 55.25, y = 21.32, z = 69.69, h = 164.56},
-        },
-        returnCoords = {x = 57.09, y = 28.96, z = 70.06},
+    Paleto = {
+        GarageType = 'car',
+        PedCoords = {x = 140.62, y = 6613.02, z = 31.06, h = 183.37},
+        Zone = {name = 'paleto', x = 152.63, y = 6600.21, z = 30.84, l = 28.2, w = 27.2, h = 0, minZ = 30.84, maxZ = 34.84},
+        Spawns = {
+            {x = 145.55, y = 6601.92, z = 31.67, h = 357.80},
+            {x = 150.56, y = 6597.71, z = 31.67, h = 359.00},
+            {x = 155.55, y = 6592.92, z = 31.67, h = 359.57},
+            {x = 145.90, y = 6613.97, z = 31.64, h = 0.60},
+            {x = 151.04, y = 6609.26, z = 31.69, h = 357.50},
+            {x = 155.84, y = 6602.45, z = 31.86, h = 0.47},
+        }
     },
-
-    SandyGarage = {
-        garageName = 'Sandy Shores Garage',
-        garageType = 'car',
-        menuCoords = {x = 1527.31, y = 3771.82, z = 34.51},
-        spawnCoords = {
-            {x = 1512.15, y = 3759.74, z = 34.00, h = 17.32},
-            {x = 1498.60, y = 3758.94, z = 33.92, h = 33.92},
-            {x = 1495.40, y = 3757.72, z = 33.90, h = 31.92},
-        },
-        returnCoords = {x = 1504.87, y = 3763.27, z = 34.0},
+    HighwayPier = {
+        GarageType = 'boat',
+        PedCoords = {x = -3428.27, y = 967.34, z = 7.35, h = 269.47},
+        Zone = {name = 'pier', x = -3437.0, y = 968.07, z = 8.35, l = 34.8, w = 20.0, h = 0, minZ = nil, maxZ = nil},
+        Spawns = {
+            {x = -3444.37, y = 952.64, z = 1.02, h = 98.70}, 
+            {x = -3441.02, y = 965.30, z = 0.17, h = 87.18},
+        }
     },
-
-    PaletoGarage = {
-        garageName = 'Paleto Bay Garage',
-        garageType = 'car',
-        menuCoords = {x = 109.08, y = 6606.11, z = 31.85},
-        spawnCoords = {
-            {x = 145.55, y = 6600.84, z = 31.85, h = 1.79},
-            {x = 140.58, y = 6605.59, z = 31.84, h = 359.21},
-            {x = 146.03, y = 6613.43, z = 31.82, h = 180.47},
-            {x = 150.98, y = 6609.00, z = 31.87, h = 181.67},
-            {x = 150.97, y = 6596.92, z = 31.84, h = 0.24},
-        },
-        returnCoords = {x = 123.98, y = 6611.3, z = 31.85},
+    LSIA = {
+        GarageType = 'aircraft',
+        PedCoords = {x = -941.43, y = -2954.87, z = 12.95, h = 151.00},
+        Zone = {name = 'lsia', x = -968.31, y = -2992.47, z = 13.95, l = 94.4, w = 84.6, h = 330, minZ = nil, maxZ = nil},
+        Spawns = {
+            {x = -958.57, y = -2987.20, z = 13.95, h = 58.19},
+            {x = -971.89, y = -3008.83, z = 13.95, h = 59.47},
+            {x = -984.30, y = -3025.04, z = 13.95, h = 58.52}, 
+        }
     },
-
-    PierBoatGarage = {
-        garageName = 'Pier Boat Garage',
-        garageType = 'boat',
-        menuCoords = {x = -829.92, y = -1411.64, z = 1.61},
-        spawnCoords = {
-            {x = -830.31, y = -1417.52, z = 0.8, h = 106.09},
+    --[[ 
+        TEMPLATE:
+        SomeName = {
+            GarageType = 'car', - can be 'car', 'boat' or 'aircraft',
+            PedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
+            Zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
+            Spawns = { -- You can have as many as you'd like
+                {x = X, y = X, z = X, h = X},
+                {x = X, y = X, z = X, h = X}
+            }
         },
-        returnCoords = {x = -842.0, y = -1411.02, z = 0.8},
-    },
-
-    AircraftGarage = {
-        garageName = 'LSAP Garage',
-        garageType = 'aircraft',
-        menuCoords = {x = -1101.89, y = -2988.86, z = 13.96},
-        spawnCoords = {
-            {x = -1091.9, y = -3006.18, z = 13.94, h = 218.08},
-        },
-        returnCoords = {x = -1130.73, y = -2988.73, z = 13.94},
-    },
-    --[[ TEMPLATE ----
-    GarageName = {
-        garageName = '',
-        garageType = '', -- aircraft, boat or car
-        menuCoords = {x = , y = , z = },
-        spawnCoords = {
-            {x = , y = , z = , h = },
-        },
-        returnCoords = {x = , y = , z = },
-    },
     ]]
 }
+  
+-- BoxZone:Create(vector3(226.52, -790.15, 30.72), 45.6, 39.6, { -- Example of the legion zone
+--     name="legion",
+--     heading=340,
+--     --debugPoly=true,
+--     minZ=29.12,
+--     maxZ=33.12
+--   })

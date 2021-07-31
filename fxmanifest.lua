@@ -2,18 +2,25 @@ fx_version 'cerulean'
 
 game 'gta5'
 
-author 'Luke'
-description 'Vehicle garages and impounds for the ESX framework'
-version '1.1.1'
+author 'Luke - https://www.github.com/lukewastakenn'
 
-client_scripts{
-    "@warmenu/warmenu.lua",
-    'client/client.lua',
-    'config.lua',
+version '2.0.0'
+
+shared_scripts {
+    '@es_extended/imports.lua',
+    'config.lua'
 }
 
-server_scripts{
-    '@mysql-async/lib/MySQL.lua',
-    'server/server.lua',
-    'config.lua',
+client_scripts {
+    '@PolyZone/client.lua',
+    '@PolyZone/BoxZone.lua',
+    '@PolyZone/CircleZone.lua',
+    'client/vehicle_names.lua',
+    'client/client.lua'
+}
+
+server_scripts {
+    '@mysql-async/lib/mysql.lua',
+    'server/version_check.lua',
+    'server/server.lua'
 }
