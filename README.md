@@ -6,6 +6,8 @@ Alongside cars, aircrafts and boats are also fully supported with them having th
 
 The impound has checks in place to prevent vehicle duping.
 
+I used esx_vehicleshop, but the resource should work with anything that follows that databse structure in `owned_vehicles` table.
+
 [Updated Video Showcase](https://www.youtube.com/watch?v=GT2u5uoz7Tc)
 
 ### Dependencies
