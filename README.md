@@ -17,6 +17,7 @@ Make sure to follow the well detailed installation instructions on qtarget.
 
 ### Installation
 * Download the resource from releases
+* Rename folder to luke_vehiclegarage
 * Drop the luke_vehiclegarage folder into your resources folder
 * Import the .sql file into your database
 * Start the resource in your server.cfg
