@@ -4,7 +4,7 @@ game 'gta5'
 
 author 'Luke - https://www.github.com/lukewastakenn'
 
-version '2.0.0'
+version '2.0.1'
 
 shared_scripts {
     '@es_extended/imports.lua',
