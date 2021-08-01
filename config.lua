@@ -44,7 +44,7 @@ Config.Impounds = {
     InnocenceBlvd = {
         ImpoundType = 'car', -- car, boat or aircraft
         PedCoords = {x = 409.25, y = -1623.08, z = 28.29, h = 228.84},
-        Zone = {name = 'innocence', x = 410.32, y = -1623.43, z = 29.29, l = 4.0, w = 6.4, h = 50, minZ = 28.29, maxZ = 32.29}, -- The zone is only here for the ped to not have the impound option everywhere in the world
+        Zone = {name = 'innocence', x = 408.02, y = -1637.08, z = 29.29, l = 31.6, w = 26.8, h = 320, minZ = 28.29, maxZ = 32.29}, -- The zone is only here for the ped to not have the impound option everywhere in the world
         Spawns = {
             {x = 416.83, y = -1628.29, z = 29.11, h = 140.43}, 
             {x = 419.58, y = -1629.71, z = 29.11, h = 141.98},
@@ -55,7 +55,7 @@ Config.Impounds = {
     LSBoatImpound = {
         ImpoundType = 'boat',
         PedCoords = {x = -462.92, y = -2443.44, z = 5.00, h = 322.40},
-        Zone = {name = 'lsboat impound', x = -463.04, y = -2443.69, z = 6.0, l = 5, w = 5, h = 320, minZ = 5.0, maxZ = 9.0},
+        Zone = {name = 'lsboat impound', x = -451.72, y = -2440.42, z = 6.0, l = 22.6, w = 29.4, h = 325, minZ = 5.0, maxZ = 9.0},
         Spawns = {
             {x = -493.48, y = -2466.38, z = -0.06, h = 142.26}, 
             {x = -471.09, y = -2483.94, z = 0.28, h = 152.74},
@@ -64,7 +64,7 @@ Config.Impounds = {
     SandyAircraft = {
         ImpoundType = 'aircraft',
         PedCoords = {x = 1758.29, y = 3297.50, z = 40.15, h = 148.27},
-        Zone = {name = 'sandy air', x = 1758.66, y = 3297.51, z = 41.13, l = 3.0, w = 3.0, h = 325, minZ = 40.13, maxZ = 44.13},
+        Zone = {name = 'sandy air', x = 1757.71, y = 3296.72, z = 41.15, l = 14.4, w = 18.0, h = 50, minZ = 40.13, maxZ = 44.13},
         Spawns = {
             {x = 1753.72, y = 3272.12, z = 41.99, h = 105.71},
             {x = 1746.85, y = 3252.57, z = 42.30, h = 105.58},
@@ -88,7 +88,7 @@ Config.Garages = {
     LegionGarage = {
         GarageType = 'car', -- car, boat or aircraft
         PedCoords = {x = 215.90, y = -808.87, z = 29.74, h = 248.0}, -- The Ped MUST be inside the PolyZone
-        Zone = {name = 'legion', x = 226.52, y = -790.15, z = 30.72, l = 45.6, w = 39.6, h = 340, minZ = 29.12, maxZ = 33.12},
+        Zone = {name = 'legion', x = 228.68, y = -789.15, z = 30.59, l = 52.4, w = 39.6, h = 340, minZ = 28.99, maxZ = 32.99},
         Spawns = {
             {x = 206.25, y = -801.21, z = 31.00, h = 250.47},
             {x = 208.72, y = -796.45, z = 30.95, h = 246.74},
@@ -116,7 +116,7 @@ Config.Garages = {
     Route68 = {
         GarageType = 'car',
         PedCoords = {x = 587.23, y = 2723.50, z = 41.13, h = 7.85},
-        Zone = {name = 'route68', x = 570.69, y = 2727.16, z = 42.08, l = 22.0, w = 34.6, h = 4, minZ = 41.08, maxZ = 45.08},
+        Zone = {name = 'route68', x = 573.19, y = 2727.17, z = 42.06, l = 22.4, w = 51.2, h = 4, minZ = 41.08, maxZ = 45.08},
         Spawns = {
             {x = 584.51, y = 2721.56, z = 41.88, h = 3.59}, 
             {x = 581.14, y = 2721.32, z = 41.88, h = 3.99},
@@ -145,7 +145,7 @@ Config.Garages = {
     HighwayPier = {
         GarageType = 'boat',
         PedCoords = {x = -3428.27, y = 967.34, z = 7.35, h = 269.47},
-        Zone = {name = 'pier', x = -3437.0, y = 968.07, z = 8.35, l = 34.8, w = 20.0, h = 0, minZ = nil, maxZ = nil},
+        Zone = {name = 'pier', x = -3426.48, y =  968.89, z = 8.35, l = 31.2, w = 39.2, h = 0, minZ = nil, maxZ = nil},
         Spawns = {
             {x = -3444.37, y = 952.64, z = 1.02, h = 98.70}, 
             {x = -3441.02, y = 965.30, z = 0.17, h = 87.18},
@@ -175,10 +175,10 @@ Config.Garages = {
     ]]
 }
   
--- BoxZone:Create(vector3(226.52, -790.15, 30.72), 45.6, 39.6, { -- Example of the legion zone
+-- BoxZone:Create(vector3(228.68, -789.15, 30.59), 52.4, 43.6, {
 --     name="legion",
 --     heading=340,
 --     --debugPoly=true,
---     minZ=29.12,
---     maxZ=33.12
+--     minZ=28.99,
+--     maxZ=32.99
 --   })

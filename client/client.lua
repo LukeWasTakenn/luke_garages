@@ -24,24 +24,33 @@ Citizen.CreateThread(function()
 
         garages[k].type = v.GarageType
 
-        local model = Config.GaragePed
+        garages[k]:onPlayerInOut(function(isPointInside, point)
+            local model = Config.GaragePed
+            if isPointInside then
         
-        RequestModel(model)
-        while not HasModelLoaded(model) do
-            Citizen.Wait(0)
-        end
+                --[[RequestModel(model)
+                while not HasModelLoaded(model) do
+                    Citizen.Wait(0)
+                end--]]
 
-        local ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, false)
+                ESX.Streaming.RequestModel(model)
 
-        SetPedFleeAttributes(ped, 2)
-        SetBlockingOfNonTemporaryEvents(ped, true)
-        SetPedCanRagdollFromPlayerImpact(ped, false)
-        SetPedDiesWhenInjured(ped, false)
-        FreezeEntityPosition(ped, true)
-        SetEntityInvincible(ped, true)
-        SetPedCanPlayAmbientAnims(ped, false)
-        
-        SetModelAsNoLongerNeeded(model)
+                ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, true)
+                SetEntityAlpha(ped, 0, false)
+                Wait(50)
+                SetEntityAlpha(ped, 255, false)
+
+                SetPedFleeAttributes(ped, 2)
+                SetBlockingOfNonTemporaryEvents(ped, true)
+                SetPedCanRagdollFromPlayerImpact(ped, false)
+                SetPedDiesWhenInjured(ped, false)
+                FreezeEntityPosition(ped, true)
+                SetEntityInvincible(ped, true)
+                SetPedCanPlayAmbientAnims(ped, false)
+            else
+                DeletePed(ped)
+            end
+        end)
     end
 end)
 
@@ -63,24 +72,28 @@ Citizen.CreateThread(function()
 
         impounds[k].type = v.ImpoundType
 
-        local model = Config.ImpoundPed
+        impounds[k]:onPlayerInOut(function(isPointInside, point)
+            local model = Config.ImpoundPed
+            if isPointInside then
+        
+                ESX.Streaming.RequestModel(model)
 
-        RequestModel(model)
-        while not HasModelLoaded(model) do
-            Citizen.Wait(0)
-        end
+                ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, true)
+                SetEntityAlpha(ped, 0, false)
+                Wait(50)
+                SetEntityAlpha(ped, 255, false)
 
-        local ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, false)
-
-        SetPedFleeAttributes(ped, 2)
-        SetBlockingOfNonTemporaryEvents(ped, true)
-        SetPedCanRagdollFromPlayerImpact(ped, false)
-        SetPedDiesWhenInjured(ped, false)
-        FreezeEntityPosition(ped, true)
-        SetEntityInvincible(ped, true)
-        SetPedCanPlayAmbientAnims(ped, false)
-
-        SetModelAsNoLongerNeeded(model)
+                SetPedFleeAttributes(ped, 2)
+                SetBlockingOfNonTemporaryEvents(ped, true)
+                SetPedCanRagdollFromPlayerImpact(ped, false)
+                SetPedDiesWhenInjured(ped, false)
+                FreezeEntityPosition(ped, true)
+                SetEntityInvincible(ped, true)
+                SetPedCanPlayAmbientAnims(ped, false)
+            else
+                DeletePed(ped)
+            end
+        end)
     end
 end)
 
