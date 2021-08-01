@@ -6,6 +6,8 @@ local garageType = nil
 local currentImpound = nil
 local impoundType = nil
 
+local ped = nil
+
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
@@ -28,11 +30,6 @@ Citizen.CreateThread(function()
             local model = Config.GaragePed
             if isPointInside then
         
-                --[[RequestModel(model)
-                while not HasModelLoaded(model) do
-                    Citizen.Wait(0)
-                end--]]
-
                 ESX.Streaming.RequestModel(model)
 
                 ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, true)
