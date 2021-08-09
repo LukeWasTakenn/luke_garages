@@ -110,3 +110,23 @@ AddEventHandler('luke_vehiclegarage:PayImpound', function(amount)
         end
     end
 end)
+
+ESX.RegisterServerCallback('luke_vehiclegarage:SpawnVehicle', function(source, callback, model, coords, heading)
+    if type(model) == 'string' then model = GetHashKey(model) end
+    Citizen.CreateThread(function()
+        entity = CreateVehicle(model, coords, heading, true, true)
+        while not DoesEntityExist(entity) do Wait(20) end
+        netid = NetworkGetNetworkIdFromEntity(entity)
+        callback(netid)
+    end)
+end)
+
+function SpawnVehicle(model, coords, heading, cb)
+	if type(model) == 'string' then model = GetHashKey(model) end
+	Citizen.CreateThread(function()
+		entity = CreateVehicle(model, coords, heading, true, true)
+		while not DoesEntityExist(entity) do Wait(20) end
+		netid = NetworkGetNetworkIdFromEntity(entity)
+		cb(netid)
+	end)
+end
