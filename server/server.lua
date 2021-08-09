@@ -120,13 +120,3 @@ ESX.RegisterServerCallback('luke_vehiclegarage:SpawnVehicle', function(source, c
         callback(netid)
     end)
 end)
-
-function SpawnVehicle(model, coords, heading, cb)
-	if type(model) == 'string' then model = GetHashKey(model) end
-	Citizen.CreateThread(function()
-		entity = CreateVehicle(model, coords, heading, true, true)
-		while not DoesEntityExist(entity) do Wait(20) end
-		netid = NetworkGetNetworkIdFromEntity(entity)
-		cb(netid)
-	end)
-end
