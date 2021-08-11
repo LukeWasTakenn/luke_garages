@@ -4,7 +4,7 @@ game 'gta5'
 
 author 'Luke - https://www.github.com/lukewastakenn'
 
-version '2.0.0'
+version '2.1.1'
 
 shared_scripts {
     '@es_extended/imports.lua',
@@ -20,7 +20,7 @@ client_scripts {
 }
 
 server_scripts {
-    '@mysql-async/lib/mysql.lua',
+    '@mysql-async/lib/MySQL.lua',
     'server/version_check.lua',
     'server/server.lua'
 }
