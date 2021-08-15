@@ -1,5 +1,7 @@
 # luke_vehiclegarage
 
+## NOTE: For people reporting crashes when trying to take out a vehicle, set your game build to 2060 (newer than that may also work). I'll be looking into this issue further.
+
 This resource now only supports ESX Legacy, other versions of the framework **will not** work without modifying the resource.
 
 Alongside cars, aircrafts and boats are also fully supported with them having their own separate garages and impounds.
