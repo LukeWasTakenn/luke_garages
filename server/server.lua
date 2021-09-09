@@ -91,20 +91,23 @@ AddEventHandler('luke_vehiclegarage:SaveVehicle', function(vehicle, health, plat
     end)
 end)
 
-RegisterNetEvent('luke_vehiclegarage:PayImpound')
-AddEventHandler('luke_vehiclegarage:PayImpound', function(amount)
+ESX.RegisterServerCallback('luke_vehiclegarage:PayImpound', function(source, callback, amount)
     local xPlayer = ESX.GetPlayerFromId(source)
     if xPlayer then
         if Config.PayInCash then
             if xPlayer.getMoney() >= amount then
                 xPlayer.removeMoney(amount)
+                callback(true)
             else
+                callback(false)
                 return xPlayer.showNotification("You don't have enough money on you.")
             end
         else
             if xPlayer.getAccount('bank').money >= amount then
                 xPlayer.removeAccountMoney('bank', amount)
+                callback(true)
             else
+                callback(false)
                 return xPlayer.showNotification("You don't have enough money in your bank.")
             end
         end

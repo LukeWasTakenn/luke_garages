@@ -345,6 +345,27 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
 
     for i = 1, #spawn do
         if ESX.Game.IsSpawnPointClear(vector3(spawn[i].x, spawn[i].y, spawn[i].z), 1.0) then
+            -- Probably needs to be cleaned up, but eh
+            if data.type == 'impound' then
+                ESX.TriggerServerCallback('luke_vehiclegarage:PayImpound', function(canAfford)
+                    if canAfford then
+                        ESX.TriggerServerCallback('luke_vehiclegarage:SpawnVehicle', function(vehicle)
+                    
+                            vehicle = NetToVeh(vehicle)
+        
+                            ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
+        
+                            TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+        
+                            if data.type == 'impound' then
+                                TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price)
+                            end
+        
+                            DoVehicleDamage(vehicle, data.health)
+                        end, data.vehicle.model, vector3(spawn[i].x, spawn[i].y, spawn[i].z-1), spawn[i].h)
+                    end
+                end, data.price)
+            else
                 ESX.TriggerServerCallback('luke_vehiclegarage:SpawnVehicle', function(vehicle)
                     
                     vehicle = NetToVeh(vehicle)
@@ -359,6 +380,7 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
 
                     DoVehicleDamage(vehicle, data.health)
                 end, data.vehicle.model, vector3(spawn[i].x, spawn[i].y, spawn[i].z-1), spawn[i].h)
+            end
             break
         end
         if i == #spawn then
