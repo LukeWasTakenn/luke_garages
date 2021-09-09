@@ -1,7 +1,5 @@
 # luke_vehiclegarage
 
-## NOTE: For people reporting crashes when trying to take out a vehicle, set your game build to 2060 (newer than that may also work). I'll be looking into this issue further.
-
 This resource now only supports ESX Legacy, other versions of the framework **will not** work without modifying the resource.
 
 Alongside cars, aircrafts and boats are also fully supported with them having their own separate garages and impounds.
@@ -15,7 +13,8 @@ I used esx_vehicleshop, but the resource should work with anything that follows 
 ### Dependencies
 * [PolyZone](https://github.com/mkafrin/PolyZone)
 * [qtarget](https://github.com/QuantusRP/qtarget)
-* [nh-context](https://github.com/nerohiro/nh-context)
+* [nh-context](https://github.com/LukeWasTakenn/nh-context) - Since the original nh-context was removed, this is a link to my fork that should be the same as the original. Any fork version that's the same as original will work fine.
+* Server game build 1868 or newer*
 
 Make sure to follow the well detailed installation instructions on qtarget.
 
@@ -33,3 +32,6 @@ Custom vehicles are now fully supported, for each custom vehicle you have to add
 For any issues or bugs that may occur please open an Issue in the repository. Make sure to describe the issue in detail and how to reproduce it.
 
 PRs are always welcome.
+
+
+**Setting the game build is required due to the use of GetMakeNameFromVehicleModel native which was introduced in the game version 1868. If (for whatever reason) you don't want to change from the base build that FiveM comes with, you can remove all the appearances of this native and it's variables from the client file. Otherwise your game will be consistently crashing when trying to open either the garage or the impound.*
