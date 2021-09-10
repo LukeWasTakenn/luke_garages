@@ -374,10 +374,6 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
 
                     TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
 
-                    if data.type == 'impound' then
-                        TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price)
-                    end
-
                     DoVehicleDamage(vehicle, data.health)
                 end, data.vehicle.model, vector3(spawn[i].x, spawn[i].y, spawn[i].z-1), spawn[i].h)
             end
