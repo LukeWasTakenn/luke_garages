@@ -13,7 +13,7 @@ if Config.EnableVersionCheck == true then
         end
 
         if versionData < repoVersion then
-            print(string.format("New version is available: ^1%s^7, current version: ^3%s", repoVersion, versionData))
+            print(string.format("New version is available: ^1%s^7, current version: ^3%s^0", repoVersion, versionData))
         end
     end
 
