@@ -114,10 +114,10 @@ ESX.RegisterServerCallback('luke_vehiclegarage:PayImpound', function(source, cal
     end
 end)
 
-ESX.RegisterServerCallback('luke_vehiclegarage:SpawnVehicle', function(source, callback, model, coords, heading)
+ESX.RegisterServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(source, callback, model, coords, heading)
     if type(model) == 'string' then model = GetHashKey(model) end
     Citizen.CreateThread(function()
-        entity = CreateVehicle(model, coords, heading, true, true)
+        entity = CreateVehicle(model, coords, heading, true, false)
         while not DoesEntityExist(entity) do Wait(20) end
         netid = NetworkGetNetworkIdFromEntity(entity)
         callback(netid)

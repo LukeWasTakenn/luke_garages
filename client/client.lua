@@ -8,6 +8,11 @@ local impoundType = nil
 
 local ped = nil
 
+function firstToUpper(str)
+    if type(str) ~= 'string' then return 'NULL' end
+    return (str:gsub("^%l", string.upper))
+end
+
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
@@ -345,43 +350,13 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
 
     for i = 1, #spawn do
         if ESX.Game.IsSpawnPointClear(vector3(spawn[i].x, spawn[i].y, spawn[i].z), 1.0) then
-            -- Probably needs to be cleaned up, but eh
             if data.type == 'impound' then
                 ESX.TriggerServerCallback('luke_vehiclegarage:PayImpound', function(canAfford)
-                    if canAfford then
-                        ESX.TriggerServerCallback('luke_vehiclegarage:SpawnVehicle', function(vehicle)
-                    
-                            vehicle = NetToVeh(vehicle)
-        
-                            ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
-        
-                            TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
-        
-                            if data.type == 'impound' then
-                                TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price)
-                            end
-        
-                            DoVehicleDamage(vehicle, data.health)
-                        end, data.vehicle.model, vector3(spawn[i].x, spawn[i].y, spawn[i].z-1), spawn[i].h)
-                    end
+                    if canAfford then VehicleSpawn(data, spawn[i]) end
                 end, data.price)
-            else
-                ESX.TriggerServerCallback('luke_vehiclegarage:SpawnVehicle', function(vehicle)
-                    
-                    vehicle = NetToVeh(vehicle)
-
-                    ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
-
-                    TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
-
-                    DoVehicleDamage(vehicle, data.health)
-                end, data.vehicle.model, vector3(spawn[i].x, spawn[i].y, spawn[i].z-1), spawn[i].h)
-            end
-            break
+            else VehicleSpawn(data, spawn[i]) end break
         end
-        if i == #spawn then
-            ESX.ShowNotification("There are no available parking spots")
-        end
+        if i == #spawn then ESX.ShowNotification("There are no available parking spots") end
     end
 end)
 
@@ -452,6 +427,23 @@ function DoVehicleDamage(vehicle, health)
     else
         return
     end
+end
+
+VehicleSpawn = function(data, spawn)
+    ESX.TriggerServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(vehicle)
+
+        while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
+                    
+        vehicle = NetToVeh(vehicle)
+
+        ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
+
+        TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+
+        if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
+
+        DoVehicleDamage(vehicle, data.health)
+    end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
 end
 
 function DoesVehicleExist(playerPlate)
@@ -530,8 +522,4 @@ function GarageBlips(coords, type)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(type .. ' Garage')
     EndTextCommandSetBlipName(blip)
-end
-
-function firstToUpper(str)
-    return (str:gsub("^%l", string.upper))
 end
