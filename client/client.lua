@@ -19,8 +19,7 @@ Citizen.CreateThread(function()
                 name = v.Zone.name,
                 heading = v.Zone.h,
                 debugPoly = false,
-                minZ = v.Zone.minZ,
-                maxZ = v.Zone.maxZ
+		useZ = true
             }
         )
 
@@ -62,8 +61,7 @@ Citizen.CreateThread(function()
                 name = v.Zone.name,
                 heading = v.Zone.h,
                 debugPoly = false,
-                minZ = v.Zone.minZ,
-                maxZ = v.Zone.maxZ
+		useZ = true
             }
         )
 
@@ -286,7 +284,7 @@ AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
             header = "Take Vehicle Out Of Impound",
             txt = 'Car: ' .. data.name .. ' <br> Plate: ' .. data.plate .. ' <br> Price: $' .. data.price,
             params = {
-                event = 'luke_vehiclegarage:SpawnVehicle',
+                event = 'luke_vehiclegarage:SpawnAVehicle',
                 args = {
                     vehicle = data.vehicle,
                     health = data.health,
@@ -314,7 +312,7 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
             header = "Take Out Vehicle",
             txt = 'Car: ' .. data.name .. ' | Plate: ' .. data.plate,
             params = {
-                event = 'luke_vehiclegarage:SpawnVehicle',
+                event = 'luke_vehiclegarage:SpawnAVehicle',
                 args = {
                     vehicle = data.vehicle,
                     health = data.health,
@@ -325,8 +323,8 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
     })
 end)
 
-RegisterNetEvent('luke_vehiclegarage:SpawnVehicle')
-AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
+RegisterNetEvent('luke_vehiclegarage:SpawnAVehicle')
+AddEventHandler('luke_vehiclegarage:SpawnAVehicle', function(data)
     local spawn = nil
     local model = data.vehicle.model
 
