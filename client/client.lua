@@ -86,30 +86,25 @@ function DoesVehicleExist(playerPlate)
     end
 end
 
-function IsInsideImpound(entity)
+function IsInsideZone(type, entity)
     local entityCoords = GetEntityCoords(entity)
-    for k, v in pairs(impounds) do
-        if impounds[k]:isPointInside(entityCoords) then
-            impoundType = v.type
-            currentImpound = k
-            return true 
+    if type == 'impound' then
+        for k, v in pairs(impounds) do
+            if impounds[k]:isPointInside(entityCoords) then
+                impoundType = v.type
+                currentImpound = k
+                return true 
+            end
+            if k == #impounds then return false end
         end
-        if k == #impounds then
-            return false
-        end
-    end
-end
-
-function IsInsideGarage(entity)
-    local entityCoords = GetEntityCoords(entity)
-    for k, v in pairs(garages) do
-        if garages[k]:isPointInside(entityCoords) then
-            garageType = v.type
-            currentGarage = k
-            return true
-        end
-        if k == #garages then
-            return false
+    else
+        for k, v in pairs(garages) do
+            if garages[k]:isPointInside(entityCoords) then
+                garageType = v.type
+                currentGarage = k
+                return true
+            end
+            if k == #garages then return false end
         end
     end
 end
@@ -119,17 +114,17 @@ function ImpoundBlips(coords, type)
     SetBlipSprite(blip, 285)
     SetBlipScale(blip, 0.8)
 
-    if type == 'Car' then
+    if type == 'car' then
         SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'Boat' then
+    elseif type == 'boat' then
         SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'Aircraft' then
+    elseif type == 'aircraft' then
         SetBlipColour(blip, Config.BlipColors.Aircraft)
     end
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(type .. ' Impound Lot')
+    AddTextComponentString(firstToUpper(type) .. ' Impound Lot')
     EndTextCommandSetBlipName(blip)
 end
 
@@ -138,17 +133,17 @@ function GarageBlips(coords, type)
     SetBlipSprite(blip, 357)
     SetBlipScale(blip, 0.8)
 
-    if type == 'Car' then
+    if type == 'car' then
         SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'Boat' then
+    elseif type == 'boat' then
         SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'Aircraft' then
+    elseif type == 'aircraft' then
         SetBlipColour(blip, Config.BlipColors.Aircraft)
     end
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(type .. ' Garage')
+    AddTextComponentString(firstToUpper(type) .. ' Garage')
     EndTextCommandSetBlipName(blip)
 end
 
@@ -160,7 +155,7 @@ exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
             label = "Access Impound",
             canInteract = function(entity)
                 hasChecked = false
-                if IsInsideImpound(entity) and not hasChecked then
+                if IsInsideZone('impound', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
@@ -178,7 +173,7 @@ exports['qtarget']:AddTargetModel({Config.GaragePed}, {
             label = "Take Out Vehicle",
             canInteract = function(entity)
                 hasChecked = false
-                if IsInsideGarage(entity) and not hasChecked then
+                if IsInsideZone('garage', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
@@ -197,7 +192,7 @@ exports['qtarget']:Vehicle({
 			icon = 'fas fa-parking',
             canInteract = function(entity)
                 hasChecked = false
-                if IsInsideGarage(entity) and not hasChecked then
+                if IsInsideZone('garage', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
@@ -210,7 +205,7 @@ exports['qtarget']:Vehicle({
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
-        GarageBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), firstToUpper(v.GarageType))
+        GarageBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.GarageType)
 
         garages[k] = BoxZone:Create(
             vector3(v.Zone.x, v.Zone.y, v.Zone.z),
@@ -253,7 +248,7 @@ end)
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Impounds) do
 
-        ImpoundBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), firstToUpper(v.ImpoundType))
+        ImpoundBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.ImpoundType)
 
         impounds[k] = BoxZone:Create(
             vector3(v.Zone.x, v.Zone.y, v.Zone.z),
