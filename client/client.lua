@@ -13,6 +13,200 @@ function firstToUpper(str)
     return (str:gsub("^%l", string.upper))
 end
 
+local tires = {0, 1, 4, 5}
+
+function DoVehicleDamage(vehicle, health)
+    if health ~= nil then
+        Citizen.Wait(1500)
+        health.engine = ESX.Math.Round(health.engine, 2)
+        health.body = ESX.Math.Round(health.body, 2)
+
+        -- Making the vehicle still drivable if it's completely totaled
+        if health.engine < 200.0 then
+            health.engine = 200.0
+        end
+    
+        if health.body < 150.0 then
+            health.body = 150.0
+        end
+    
+        if health.body < 950.0 then
+            for i = 0, 7 do
+                SmashVehicleWindow(vehicle, i)
+            end
+        end
+    
+        if health.body < 920.0 then
+            math.randomseed(GetGameTimer())
+            local num = math.random(1, 4)
+            for i = 0, 5, num do
+                SetVehicleDoorBroken(vehicle, i, false)
+            end
+        end
+
+        if health.body < 825.0 then
+            math.randomseed(GetGameTimer())
+            local randomTire = tires[math.random(#tires)]
+            SetVehicleTyreBurst(vehicle, randomTire, true, 1000.0)
+        end
+
+        SetVehicleBodyHealth(vehicle, health.body)
+        SetVehicleEngineHealth(vehicle, health.engine)
+    else
+        return
+    end
+end
+
+function VehicleSpawn(data, spawn)
+    ESX.TriggerServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(vehicle)
+
+        while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
+                    
+        vehicle = NetToVeh(vehicle)
+
+        ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
+
+        TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+
+        if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
+
+        DoVehicleDamage(vehicle, data.health)
+    end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
+end
+
+function DoesVehicleExist(playerPlate)
+    local vehicles = ESX.Game.GetVehicles()
+    for i = 1, #vehicles do
+        local vehicle = vehicles[i]
+        if DoesEntityExist(vehicle) then
+            if ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) == ESX.Math.Trim(playerPlate) then
+                return true
+            end
+        end
+    end
+end
+
+function IsInsideImpound(entity)
+    local entityCoords = GetEntityCoords(entity)
+    for k, v in pairs(impounds) do
+        if impounds[k]:isPointInside(entityCoords) then
+            impoundType = v.type
+            currentImpound = k
+            return true 
+        end
+        if k == #impounds then
+            return false
+        end
+    end
+end
+
+function IsInsideGarage(entity)
+    local entityCoords = GetEntityCoords(entity)
+    for k, v in pairs(garages) do
+        if garages[k]:isPointInside(entityCoords) then
+            garageType = v.type
+            currentGarage = k
+            return true
+        end
+        if k == #garages then
+            return false
+        end
+    end
+end
+
+function ImpoundBlips(coords, type)
+    local blip = AddBlipForCoord(coords)
+    SetBlipSprite(blip, 285)
+    SetBlipScale(blip, 0.8)
+
+    if type == 'Car' then
+        SetBlipColour(blip, Config.BlipColors.Car)
+    elseif type == 'Boat' then
+        SetBlipColour(blip, Config.BlipColors.Boat)
+    elseif type == 'Aircraft' then
+        SetBlipColour(blip, Config.BlipColors.Aircraft)
+    end
+
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(type .. ' Impound Lot')
+    EndTextCommandSetBlipName(blip)
+end
+
+function GarageBlips(coords, type)
+    local blip = AddBlipForCoord(coords)
+    SetBlipSprite(blip, 357)
+    SetBlipScale(blip, 0.8)
+
+    if type == 'Car' then
+        SetBlipColour(blip, Config.BlipColors.Car)
+    elseif type == 'Boat' then
+        SetBlipColour(blip, Config.BlipColors.Boat)
+    elseif type == 'Aircraft' then
+        SetBlipColour(blip, Config.BlipColors.Aircraft)
+    end
+
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(type .. ' Garage')
+    EndTextCommandSetBlipName(blip)
+end
+
+exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
+    options = {
+        {
+            event = 'luke_vehiclegarage:GetImpoundedVehicles',
+            icon = "fas fa-key",
+            label = "Access Impound",
+            canInteract = function(entity)
+                hasChecked = false
+                if IsInsideImpound(entity) and not hasChecked then
+                    hasChecked = true
+                    return true
+                end
+            end
+        },
+    },
+    distance = 2.5,
+})
+
+exports['qtarget']:AddTargetModel({Config.GaragePed}, {
+    options = {
+        {
+            event = "luke_vehiclegarage:GetOwnedVehicles",
+            icon = "fas fa-warehouse",
+            label = "Take Out Vehicle",
+            canInteract = function(entity)
+                hasChecked = false
+                if IsInsideGarage(entity) and not hasChecked then
+                    hasChecked = true
+                    return true
+                end
+            end
+        },
+    },
+    distance = 2.5,
+})
+
+
+exports['qtarget']:Vehicle({
+	options = {
+		{
+			event = 'luke_vehiclegarage:StoreVehicle',
+			label = 'Store Vehicle',
+			icon = 'fas fa-parking',
+            canInteract = function(entity)
+                hasChecked = false
+                if IsInsideGarage(entity) and not hasChecked then
+                    hasChecked = true
+                    return true
+                end
+            end
+		}
+	},
+	distance = 2.5
+})
+
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
@@ -99,60 +293,6 @@ Citizen.CreateThread(function()
     end
 end)
 
-exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
-    options = {
-        {
-            event = 'luke_vehiclegarage:GetImpoundedVehicles',
-            icon = "fas fa-key",
-            label = "Access Impound",
-            canInteract = function(entity)
-                hasChecked = false
-                if IsInsideImpound(entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end
-        },
-    },
-    distance = 2.5,
-})
-
-exports['qtarget']:AddTargetModel({Config.GaragePed}, {
-    options = {
-        {
-            event = "luke_vehiclegarage:GetOwnedVehicles",
-            icon = "fas fa-warehouse",
-            label = "Take Out Vehicle",
-            canInteract = function(entity)
-                hasChecked = false
-                if IsInsideGarage(entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end
-        },
-    },
-    distance = 2.5,
-})
-
-
-exports['qtarget']:Vehicle({
-	options = {
-		{
-			event = 'luke_vehiclegarage:StoreVehicle',
-			label = 'Store Vehicle',
-			icon = 'fas fa-parking',
-            canInteract = function(entity)
-                hasChecked = false
-                if IsInsideGarage(entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end
-		}
-	},
-	distance = 2.5
-})
 
 RegisterNetEvent('luke_vehiclegarage:GetImpoundedVehicles')
 AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
@@ -385,141 +525,3 @@ AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
     end, vehPlate)
 
 end)
-
-local tires = {0, 1, 4, 5}
-function DoVehicleDamage(vehicle, health)
-    if health ~= nil then
-        Citizen.Wait(1500)
-        health.engine = ESX.Math.Round(health.engine, 2)
-        health.body = ESX.Math.Round(health.body, 2)
-
-        -- Making the vehicle still drivable if it's completely totaled
-        if health.engine < 200.0 then
-            health.engine = 200.0
-        end
-    
-        if health.body < 150.0 then
-            health.body = 150.0
-        end
-    
-        if health.body < 950.0 then
-            for i = 0, 7 do
-                SmashVehicleWindow(vehicle, i)
-            end
-        end
-    
-        if health.body < 920.0 then
-            math.randomseed(GetGameTimer())
-            local num = math.random(1, 4)
-            for i = 0, 5, num do
-                SetVehicleDoorBroken(vehicle, i, false)
-            end
-        end
-
-        if health.body < 825.0 then
-            math.randomseed(GetGameTimer())
-            local randomTire = tires[math.random(#tires)]
-            SetVehicleTyreBurst(vehicle, randomTire, true, 1000.0)
-        end
-
-        SetVehicleBodyHealth(vehicle, health.body)
-        SetVehicleEngineHealth(vehicle, health.engine)
-    else
-        return
-    end
-end
-
-VehicleSpawn = function(data, spawn)
-    ESX.TriggerServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(vehicle)
-
-        while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
-                    
-        vehicle = NetToVeh(vehicle)
-
-        ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
-
-        TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
-
-        if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
-
-        DoVehicleDamage(vehicle, data.health)
-    end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
-end
-
-function DoesVehicleExist(playerPlate)
-    local vehicles = ESX.Game.GetVehicles()
-    for i = 1, #vehicles do
-        local vehicle = vehicles[i]
-        if DoesEntityExist(vehicle) then
-            if ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) == ESX.Math.Trim(playerPlate) then
-                return true
-            end
-        end
-    end
-end
-
-function IsInsideImpound(entity)
-    local entityCoords = GetEntityCoords(entity)
-    for k, v in pairs(impounds) do
-        if impounds[k]:isPointInside(entityCoords) then
-            impoundType = v.type
-            currentImpound = k
-            return true 
-        end
-        if k == #impounds then
-            return false
-        end
-    end
-end
-
-function IsInsideGarage(entity)
-    local entityCoords = GetEntityCoords(entity)
-    for k, v in pairs(garages) do
-        if garages[k]:isPointInside(entityCoords) then
-            garageType = v.type
-            currentGarage = k
-            return true
-        end
-        if k == #garages then
-            return false
-        end
-    end
-end
-
-function ImpoundBlips(coords, type)
-    local blip = AddBlipForCoord(coords)
-    SetBlipSprite(blip, 285)
-    SetBlipScale(blip, 0.8)
-
-    if type == 'Car' then
-        SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'Boat' then
-        SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'Aircraft' then
-        SetBlipColour(blip, Config.BlipColors.Aircraft)
-    end
-
-    SetBlipAsShortRange(blip, true)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(type .. ' Impound Lot')
-    EndTextCommandSetBlipName(blip)
-end
-
-function GarageBlips(coords, type)
-    local blip = AddBlipForCoord(coords)
-    SetBlipSprite(blip, 357)
-    SetBlipScale(blip, 0.8)
-
-    if type == 'Car' then
-        SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'Boat' then
-        SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'Aircraft' then
-        SetBlipColour(blip, Config.BlipColors.Aircraft)
-    end
-
-    SetBlipAsShortRange(blip, true)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(type .. ' Garage')
-    EndTextCommandSetBlipName(blip)
-end
