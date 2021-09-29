@@ -57,21 +57,35 @@ function DoVehicleDamage(vehicle, health)
     end
 end
 
+
 function VehicleSpawn(data, spawn)
-    ESX.TriggerServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(vehicle)
+    if Config.ServerSpawn then
+        ESX.TriggerServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(vehicle)
 
-        while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
-                    
-        vehicle = NetToVeh(vehicle)
+            while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
+                        
+            vehicle = NetToVeh(vehicle)
 
-        ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
+            ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
 
-        TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+            TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
 
-        if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
+            if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
 
-        DoVehicleDamage(vehicle, data.health)
-    end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
+            DoVehicleDamage(vehicle, data.health)
+        end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
+    else
+        ESX.Game.SpawnVehicle(data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z), spawn.h, function(vehicle)
+            
+            ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
+
+            TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+
+            if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
+
+            DoVehicleDamage(vehicle, data.health)
+        end)
+    end
 end
 
 function DoesVehicleExist(playerPlate)

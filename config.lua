@@ -3,6 +3,12 @@ Config = {}
 Config.EnableVersionCheck = true -- If set to true you'll get a print in server console when your resource is out of date
 Config.VersionCheckInterval = 60 -- in minutes
 
+--[[
+If you are having issues with your vehicle props applying, such as license plate, color, etc... then
+Set Config.ServerSpawn to false, otherwise I highly recommend keeping this set to true
+--]]
+Config.ServerSpawn = true
+
 Config.GaragePed = `s_m_y_airworker`
 Config.ImpoundPed = `s_m_y_construct_01`
 
