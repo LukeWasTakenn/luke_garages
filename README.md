@@ -33,5 +33,22 @@ For any issues or bugs that may occur please open an Issue in the repository. Ma
 
 PRs are always welcome.
 
+## Setting the game build
 
 **Setting the game build is required due to the use of GetMakeNameFromVehicleModel native which was introduced in the game version 1868. If (for whatever reason) you don't want to change from the base build that FiveM comes with, you can remove all the appearances of this native and it's variables from the client file. Otherwise your game will be consistently crashing when trying to open either the garage or the impound.*
+
+There are two way sto set your game build:
+  1. Setting the build in your server.cfg
+  2. Setting the build in your launch params
+
+Both methods work exactly the same, if you are setting your game build through launch params you will need to add a `+` in front of the command, otherwise you don't need to.
+
+The command you need to use is: `set sv_enforceGameBuild` (example: `set sv_enforceGameBuild 2189`)
+
+Depending on the game build number you choose is the GTA DLC your server is going to be running:
+```
+1604 - Vanilla 
+2060 - Casino Heist
+2189 - Cayo Perico Heist
+2373 - Tuners update
+```
