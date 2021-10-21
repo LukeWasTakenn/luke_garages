@@ -1,3 +1,7 @@
+RegisterNetEvent('luke_vehiclegarage:ThrowError', function()
+    error('This resource requires you to set a game build greater that 1868, it will cause crashes otherwise! Read the readme on the repository to see how to fix this!')
+end)
+
 ESX.RegisterServerCallback('luke_vehiclegarage:GetVehicles', function(source, callback, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()

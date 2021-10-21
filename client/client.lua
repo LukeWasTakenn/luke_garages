@@ -8,6 +8,8 @@ local impoundType = nil
 
 local ped = nil
 
+if GetMakeNameFromVehicleModel() == nil then TriggerServerEvent('luke_vehiclegarage:ThrowError') end
+
 function firstToUpper(str)
     if type(str) ~= 'string' then return 'NULL' end
     return (str:gsub("^%l", string.upper))
