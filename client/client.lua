@@ -322,8 +322,8 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
             for k, v in pairs(vehicles) do
                 if not DoesVehicleExist(v.plate) then
                     local vehModel = v.vehicle.model
-                    local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
-                    local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
+                    local vehMake = GetMakeNameFromVehicleModel(vehModel))
+                    local vehName = GetDisplayNameFromVehicleModel(vehModel))
                     local vehTitle = vehMake .. ' ' .. vehName
                     
                     local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehModel)]
@@ -379,8 +379,8 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
         if vehicles ~= nil then
             for k, v in pairs(vehicles) do
                 local vehModel = v.vehicle.model
-                local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
-                local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
+                local vehMake = GetMakeNameFromVehicleModel(vehModel))
+                local vehName = GetDisplayNameFromVehicleModel(vehModel))
                 local vehTitle = vehMake .. ' ' .. vehName
                 local vehStatus = ''
                 if v.stored then
