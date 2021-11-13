@@ -9,7 +9,9 @@ local garageLabel = nil
 
 local ped = nil
 
-if GetMakeNameFromVehicleModel() == nil then TriggerServerEvent('luke_vehiclegarage:ThrowError') end
+if GetMakeNameFromVehicleModel() == nil then 
+    TriggerServerEvent('luke_vehiclegarage:ThrowError', 'This resource requires you to set a game build greater that 1868, it will cause crashes otherwise! Read the readme on the repository to see how to fix this!')
+end
 
 function firstToUpper(str)
     if type(str) ~= 'string' then return 'NULL' end
@@ -223,8 +225,9 @@ exports['qtarget']:Vehicle({
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
-        --todo: throw error when no label?
-        if Config.SplitGarages and not v.GarageLabel then v.GarageLabel = 'NO LABEL' end
+        if not v.GarageLabel then
+            TriggerServerEvent('luke_vehiclegarage:ThrowError', "You need to set a unique GarageLabel for all the garages in the config file!")
+        end
 
         GarageBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.GarageType, v.GarageLabel)
 

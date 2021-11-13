@@ -125,6 +125,7 @@ Config.Garages = {
         }
     },
     Route68 = {
+        GarageLabel = 'Route 68 Garage',
         GarageType = 'car',
         PedCoords = {x = 587.23, y = 2723.50, z = 41.13, h = 7.85},
         Zone = {name = 'route68', x = 573.19, y = 2727.17, z = 42.06, l = 22.4, w = 51.2, h = 4, minZ = 41.08, maxZ = 45.08},
@@ -141,6 +142,7 @@ Config.Garages = {
         }
     },
     Paleto = {
+        GarageLabel = 'Paleto Bay Garage',
         GarageType = 'car',
         PedCoords = {x = 140.62, y = 6613.02, z = 31.06, h = 183.37},
         Zone = {name = 'paleto', x = 152.63, y = 6600.21, z = 30.84, l = 28.2, w = 27.2, h = 0, minZ = 30.84, maxZ = 34.84},
@@ -154,6 +156,7 @@ Config.Garages = {
         }
     },
     HighwayPier = {
+        GarageLabel = 'Highway Pier Garage',
         GarageType = 'boat',
         PedCoords = {x = -3428.27, y = 967.34, z = 7.35, h = 269.47},
         Zone = {name = 'pier', x = -3426.48, y =  968.89, z = 8.35, l = 31.2, w = 39.2, h = 0, minZ = nil, maxZ = nil},
@@ -163,6 +166,7 @@ Config.Garages = {
         }
     },
     LSIA = {
+        GarageLabel = 'LSIA Garage',
         GarageType = 'aircraft',
         PedCoords = {x = -941.43, y = -2954.87, z = 12.95, h = 151.00},
         Zone = {name = 'lsia', x = -968.31, y = -2992.47, z = 13.95, l = 94.4, w = 84.6, h = 330, minZ = nil, maxZ = nil},
@@ -175,7 +179,7 @@ Config.Garages = {
     --[[ 
         TEMPLATE:
         SomeName = {
-            GarageLabel = '' -- name that will be displayed in menus
+            GarageLabel = '', -- name that will be displayed in menus
             GarageType = 'car', - can be 'car', 'boat' or 'aircraft',
             PedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
             Zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
