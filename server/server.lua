@@ -2,6 +2,15 @@ RegisterNetEvent('luke_vehiclegarage:ThrowError', function(text)
     error(text)
 end)
 
+if Config.RestoreVehicles then
+    MySQL.ready(function()
+        print(next(Config.Garages))
+        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = @garage WHERE `stored` = 0", {
+            ['@garage'] = Config.DefaultGarage
+        })
+    end)
+end
+
 ESX.RegisterServerCallback('luke_vehiclegarage:GetVehicles', function(source, callback, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
