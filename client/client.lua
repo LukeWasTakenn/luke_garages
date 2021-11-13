@@ -5,6 +5,7 @@ local currentGarage = nil
 local garageType = nil
 local currentImpound = nil
 local impoundType = nil
+local garageLabel = nil
 
 local ped = nil
 
@@ -117,6 +118,7 @@ function IsInsideZone(type, entity)
         for k, v in pairs(garages) do
             if garages[k]:isPointInside(entityCoords) then
                 garageType = v.type
+                garageLabel = v.label
                 currentGarage = k
                 return true
             end
@@ -144,7 +146,7 @@ function ImpoundBlips(coords, type)
     EndTextCommandSetBlipName(blip)
 end
 
-function GarageBlips(coords, type)
+function GarageBlips(coords, type, label)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, 357)
     SetBlipScale(blip, 0.8)
@@ -159,7 +161,7 @@ function GarageBlips(coords, type)
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(firstToUpper(type) .. ' Garage')
+    AddTextComponentString(Config.SplitGarages == true and label or firstToUpper(type) .. ' Garage')
     EndTextCommandSetBlipName(blip)
 end
 
@@ -221,7 +223,10 @@ exports['qtarget']:Vehicle({
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
-        GarageBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.GarageType)
+        --todo: throw error when no label?
+        if Config.SplitGarages and not v.GarageLabel then v.GarageLabel = 'NO LABEL' end
+
+        GarageBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.GarageType, v.GarageLabel)
 
         garages[k] = BoxZone:Create(
             vector3(v.Zone.x, v.Zone.y, v.Zone.z),
@@ -235,6 +240,7 @@ Citizen.CreateThread(function()
         )
 
         garages[k].type = v.GarageType
+        garages[k].label = v.GarageLabel
 
         garages[k]:onPlayerInOut(function(isPointInside, point)
             local model = Config.GaragePed
@@ -362,6 +368,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
     end, impoundType)
 end)
 
+--todo: Refactor *everything*
 RegisterNetEvent('luke_vehiclegarage:GetOwnedVehicles')
 AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
     ESX.TriggerServerCallback('luke_vehiclegarage:GetVehicles', function(vehicles)
@@ -371,7 +378,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
         TriggerEvent('nh-context:sendMenu', {
             {
                 id = 0,
-                header = firstToUpper(garageType) .. ' Garage',
+                header = Config.SplitGarages == true and garageLabel or firstToUpper(garageType) .. ' Garage',
                 txt = ''
             },
         })
@@ -382,25 +389,48 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                 local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
                 local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
                 local vehTitle = vehMake .. ' ' .. vehName
-                local vehStatus = ''
-                if v.stored then
-                    vehStatus = 'In Garage'
-                    table.insert(menu, {
-                        id = k,
-                        header = vehTitle,
-                        txt = 'Plate: ' .. v.plate .. ' <br> Status: ' .. vehStatus,
-                        params = {
-                            event = 'luke_vehiclegarage:VehicleMenu',
-                            args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
-                        }
-                    })
+                if Config.SplitGarages then
+                    if (v.stored == 1 or v.stored == true) and (v.garage == garageLabel or not v.garage) then
+                        table.insert(menu, {
+                            id = k,
+                            header = vehTitle,
+                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'In garage',
+                            params = {
+                                event = 'luke_vehiclegarage:VehicleMenu',
+                                args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
+                            }  
+                        })
+                    elseif (v.stored == 1 or v.stored == true) and v.garage ~= garageLabel then
+                        table.insert(menu, {
+                            id = k,
+                            header = vehTitle,
+                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'Garage: ' .. v.garage,
+                        })
+                    else
+                        table.insert(menu, {
+                            id = k,
+                            header = vehTitle,
+                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'Not in garage',
+                        })
+                    end
                 else
-                    vehStatus = 'Not In Garage'
-                    table.insert(menu, {
-                        id = k,
-                        header = vehTitle,
-                        txt = 'Plate: ' .. v.plate .. ' <br> Status: ' .. vehStatus,
-                    })
+                    if v.stored == 1 or v.stored == true then
+                        table.insert(menu, {
+                            id = k,
+                            header = vehTitle,
+                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'In Garage',
+                            params = {
+                                event = 'luke_vehiclegarage:VehicleMenu',
+                                args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
+                            }
+                        })
+                    else
+                        table.insert(menu, {
+                            id = k,
+                            header = vehTitle,
+                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'Not in garage',
+                        })
+                    end
                 end
             end
             if #menu ~= 0 then
@@ -439,7 +469,7 @@ AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
         },
         {
             id = 1,
-            header = "Take Vehicle Out Of Impound",
+            header = "Take vehicle out of impound",
             txt = 'Car: ' .. data.name .. ' <br> Plate: ' .. data.plate .. ' <br> Price: $' .. data.price,
             params = {
                 event = 'luke_vehiclegarage:SpawnVehicle',
@@ -467,7 +497,7 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
         },
         {
             id = 1,
-            header = "Take Out Vehicle",
+            header = "Take out vehicle",
             txt = 'Car: ' .. data.name .. ' | Plate: ' .. data.plate,
             params = {
                 event = 'luke_vehiclegarage:SpawnVehicle',
@@ -527,7 +557,7 @@ AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
 
             ESX.Game.DeleteVehicle(vehicle)
 
-            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true)
+            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true, Config.Garages[currentGarage].GarageLabel)
 
             TriggerServerEvent('luke_vehiclegarage:SaveVehicle', vehProps, health, vehPlate)
         else

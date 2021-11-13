@@ -9,6 +9,9 @@ Set Config.ServerSpawn to false, otherwise I highly recommend keeping this set t
 --]]
 Config.ServerSpawn = true
 
+-- Setting to true will only allow you take out th vehicle from a garage you put it in
+Config.SplitGarages = false
+
 Config.GaragePed = `s_m_y_airworker`
 Config.ImpoundPed = `s_m_y_construct_01`
 
@@ -92,6 +95,7 @@ Config.Impounds = {
 
 Config.Garages = {
     LegionGarage = {
+        GarageLabel = 'Legion Garage',
         GarageType = 'car', -- car, boat or aircraft
         PedCoords = {x = 215.90, y = -808.87, z = 29.74, h = 248.0}, -- The Ped MUST be inside the PolyZone
         Zone = {name = 'legion', x = 228.68, y = -789.15, z = 30.59, l = 52.4, w = 39.6, h = 340, minZ = 28.99, maxZ = 32.99},
@@ -107,6 +111,7 @@ Config.Garages = {
         }
     },
     AmericanoWayGarage = {
+        GarageLabel = 'Americano Way Garage',
         GarageType = 'car',
         PedCoords = {x = -1651.83, y = 63.90, z = 61.86, h = 338.03},
         Zone = {name = 'americano', x = -1682.74, y = 60.93, z = 63.5, l = 59.6, w = 60.6, h = 329, minZ = 61.15, maxZ = 68.35},
@@ -170,6 +175,7 @@ Config.Garages = {
     --[[ 
         TEMPLATE:
         SomeName = {
+            GarageLabel = '' -- name that will be displayed in menus
             GarageType = 'car', - can be 'car', 'boat' or 'aircraft',
             PedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
             Zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate

@@ -1,4 +1,4 @@
-RegisterNetEvent('luke_vehiclegarage:ThrowError', function()
+RegisterNetEvent('luke_vehiclegarage:ThrowError', function(error)
     error('This resource requires you to set a game build greater that 1868, it will cause crashes otherwise! Read the readme on the repository to see how to fix this!')
 end)
 
@@ -15,7 +15,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:GetVehicles', function(source, ca
             for k, v in pairs(result) do
                 local veh = json.decode(v.vehicle)
                 local health = json.decode(v.health)
-                table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health})
+                table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
             end
             callback(vehicles)
         else
@@ -65,19 +65,15 @@ ESX.RegisterServerCallback('luke_vehiclegarage:CheckOwnership', function(source,
 end)
 
 RegisterNetEvent('luke_vehiclegarage:ChangeStored')
-AddEventHandler('luke_vehiclegarage:ChangeStored', function(plate, stored)
+AddEventHandler('luke_vehiclegarage:ChangeStored', function(plate, stored, garage)
     local xPlayer = ESX.GetPlayerFromId(source)
     
-    if stored then 
-        stored = 1 
-    else 
-        stored = 0 
-    end
+    if stored then stored = 1 else stored = 0 garage = 'none' end
 
     local plate = ESX.Math.Trim(plate)
 
-
-    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored WHERE `plate` = @plate', {
+    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
+        ['@garage'] = garage,
         ['@stored'] = stored,
         ['@plate'] = plate
     }, function(rowsChanged)
