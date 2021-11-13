@@ -4,7 +4,6 @@ end)
 
 if Config.RestoreVehicles then
     MySQL.ready(function()
-        print(next(Config.Garages))
         MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = @garage WHERE `stored` = 0", {
             ['@garage'] = Config.DefaultGarage
         })
