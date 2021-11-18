@@ -16,7 +16,7 @@ Set Config.ServerSpawn to false, otherwise I highly recommend keeping this set t
 --]]
 Config.ServerSpawn = true
 
--- Setting to true will only allow you take out th vehicle from a garage you put it in
+-- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 
 Config.GaragePed = `s_m_y_airworker`
