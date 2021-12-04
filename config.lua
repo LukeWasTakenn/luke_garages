@@ -7,9 +7,9 @@ Config.VersionCheckInterval = 60 -- in minutes
 -- If using split garages will set all vehicles into the first one in the Config.Garages table
 Config.RestoreVehicles = false
 
--- Default garage label the vehicles will be restored to
+-- Default garage zone name the vehicles will be restored to
 -- Ignore if not using split garages
-Config.DefaultGarage = 'Legion Garage' 
+Config.DefaultGarage = 'legion' 
 
 --[[
 If you are having issues with your vehicle props applying, such as license plate, color, etc... then

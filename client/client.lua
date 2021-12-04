@@ -6,6 +6,7 @@ local currentImpound = nil
 
 local ped = nil
 
+
 if GetMakeNameFromVehicleModel() == nil then 
     TriggerServerEvent('luke_vehiclegarage:ThrowError', 'This resource requires you to set a game build greater that 1868, it will cause crashes otherwise! Read the readme on the repository to see how to fix this!')
 end
@@ -370,7 +371,6 @@ RegisterNetEvent('luke_vehiclegarage:GetOwnedVehicles')
 AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
     ESX.TriggerServerCallback('luke_vehiclegarage:GetVehicles', function(vehicles)
         local menu = {}
-        local type = nil
 
         TriggerEvent('nh-context:sendMenu', {
             {
@@ -387,7 +387,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                 local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
                 local vehTitle = vehMake .. ' ' .. vehName
                 if Config.SplitGarages then
-                    if (v.stored == 1 or v.stored == true) and (v.garage == currentGarage.label or not v.garage) then
+                    if (v.stored == 1 or v.stored == true) and (v.garage == (currentGarage.zone.name or currentGarage.label) or not v.garage) then
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
@@ -397,7 +397,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                                 args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
                             }  
                         })
-                    elseif (v.stored == 1 or v.stored == true) and v.garage ~= currentGarage.label then
+                    elseif (v.stored == 1 or v.stored == true) and v.garage ~= currentGarage.zone.name then
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
@@ -554,7 +554,7 @@ AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
 
             ESX.Game.DeleteVehicle(vehicle)
 
-            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true, currentGarage.label)
+            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true, currentGarage.zone.name)
 
             TriggerServerEvent('luke_vehiclegarage:SaveVehicle', vehProps, health, vehPlate)
         else
