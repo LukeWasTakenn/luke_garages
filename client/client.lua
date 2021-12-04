@@ -2,10 +2,7 @@ local garages = {}
 local impounds = {}
 
 local currentGarage = nil
-local garageType = nil
 local currentImpound = nil
-local impoundType = nil
-local garageLabel = nil
 
 local ped = nil
 
@@ -110,8 +107,7 @@ function IsInsideZone(type, entity)
     if type == 'impound' then
         for k, v in pairs(impounds) do
             if impounds[k]:isPointInside(entityCoords) then
-                impoundType = v.type
-                currentImpound = k
+                currentImpound = Config.Impounds[k]
                 return true 
             end
             if k == #impounds then return false end
@@ -119,9 +115,7 @@ function IsInsideZone(type, entity)
     else
         for k, v in pairs(garages) do
             if garages[k]:isPointInside(entityCoords) then
-                garageType = v.type
-                garageLabel = v.label
-                currentGarage = k
+                currentGarage = Config.Garages[k]
                 return true
             end
             if k == #garages then return false end
@@ -225,7 +219,7 @@ exports['qtarget']:Vehicle({
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
-        if not v.GarageLabel then
+        if not v.label then
             TriggerServerEvent('luke_vehiclegarage:ThrowError', "You need to set a unique GarageLabel for all the garages in the config file!")
         end
 
@@ -322,7 +316,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
         TriggerEvent('nh-context:sendMenu', {
             {
                 id = 0,
-                header = firstToUpper(impoundType) .. ' Impound',
+                header = firstToUpper(currentImpound.type) .. ' Impound',
                 txt = ''
             },
         })
@@ -368,7 +362,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
                 }
             })
         end
-    end, impoundType)
+    end, currentImpound.type)
 end)
 
 --todo: Refactor *everything*
@@ -381,7 +375,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
         TriggerEvent('nh-context:sendMenu', {
             {
                 id = 0,
-                header = Config.SplitGarages == true and garageLabel or firstToUpper(garageType) .. ' Garage',
+                header = Config.SplitGarages == true and currentGarage.label or firstToUpper(currentGarage.type) .. ' Garage',
                 txt = ''
             },
         })
@@ -393,7 +387,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                 local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
                 local vehTitle = vehMake .. ' ' .. vehName
                 if Config.SplitGarages then
-                    if (v.stored == 1 or v.stored == true) and (v.garage == garageLabel or not v.garage) then
+                    if (v.stored == 1 or v.stored == true) and (v.garage == currentGarage.label or not v.garage) then
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
@@ -403,7 +397,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                                 args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
                             }  
                         })
-                    elseif (v.stored == 1 or v.stored == true) and v.garage ~= garageLabel then
+                    elseif (v.stored == 1 or v.stored == true) and v.garage ~= currentGarage.label then
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
@@ -456,7 +450,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                 }
             })
         end
-    end, garageType)
+    end, currentGarage.type)
 end)
 
 RegisterNetEvent('luke_vehiclegarage:ImpoundVehicleMenu')
@@ -520,9 +514,9 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
     local model = data.vehicle.model
 
     if data.type == 'garage' then
-        spawn = Config.Garages[currentGarage].spawns
+        spawn = currentGarage.spawns
     else
-        spawn = Config.Impounds[currentImpound].spawns
+        spawn = currentImpound.spawns
     end
 
     RequestModel(model)
@@ -560,7 +554,7 @@ AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
 
             ESX.Game.DeleteVehicle(vehicle)
 
-            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true, Config.Garages[currentGarage].GarageLabel)
+            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true, currentGarage.label)
 
             TriggerServerEvent('luke_vehiclegarage:SaveVehicle', vehProps, health, vehPlate)
         else
