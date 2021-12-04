@@ -229,21 +229,21 @@ Citizen.CreateThread(function()
             TriggerServerEvent('luke_vehiclegarage:ThrowError', "You need to set a unique GarageLabel for all the garages in the config file!")
         end
 
-        GarageBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.GarageType, v.GarageLabel)
+        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
 
         garages[k] = BoxZone:Create(
-            vector3(v.Zone.x, v.Zone.y, v.Zone.z),
-            v.Zone.l, v.Zone.w, {
-                name = v.Zone.name,
-                heading = v.Zone.h,
+            vector3(v.zone.x, v.zone.y, v.zone.z),
+            v.zone.l, v.zone.w, {
+                name = v.zone.name,
+                heading = v.zone.h,
                 debugPoly = false,
-                minZ = v.Zone.minZ,
-                maxZ = v.Zone.maxZ
+                minZ = v.zone.minZ,
+                maxZ = v.zone.maxZ
             }
         )
 
-        garages[k].type = v.GarageType
-        garages[k].label = v.GarageLabel
+        garages[k].type = v.type
+        garages[k].label = v.label
 
         garages[k]:onPlayerInOut(function(isPointInside, point)
             local model = Config.GaragePed
@@ -251,7 +251,7 @@ Citizen.CreateThread(function()
         
                 ESX.Streaming.RequestModel(model)
 
-                ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, true)
+                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, v.pedCoords.h, false, true)
                 SetEntityAlpha(ped, 0, false)
                 Wait(50)
                 SetEntityAlpha(ped, 255, false)
@@ -273,20 +273,20 @@ end)
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Impounds) do
 
-        ImpoundBlips(vector3(v.PedCoords.x, v.PedCoords.y, v.PedCoords.z), v.ImpoundType)
+        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type)
 
         impounds[k] = BoxZone:Create(
-            vector3(v.Zone.x, v.Zone.y, v.Zone.z),
-            v.Zone.l, v.Zone.w, {
-                name = v.Zone.name,
-                heading = v.Zone.h,
+            vector3(v.zone.x, v.zone.y, v.zone.z),
+            v.zone.l, v.zone.w, {
+                name = v.zone.name,
+                heading = v.zone.h,
                 debugPoly = false,
-                minZ = v.Zone.minZ,
-                maxZ = v.Zone.maxZ
+                minZ = v.zone.minZ,
+                maxZ = v.zone.maxZ
             }
         )
 
-        impounds[k].type = v.ImpoundType
+        impounds[k].type = v.type
 
         impounds[k]:onPlayerInOut(function(isPointInside, point)
             local model = Config.ImpoundPed
@@ -294,7 +294,7 @@ Citizen.CreateThread(function()
         
                 ESX.Streaming.RequestModel(model)
 
-                ped = CreatePed(0, model, v.PedCoords.x, v.PedCoords.y, v.PedCoords.z, v.PedCoords.h, false, true)
+                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, v.pedCoords.h, false, true)
                 SetEntityAlpha(ped, 0, false)
                 Wait(50)
                 SetEntityAlpha(ped, 255, false)
@@ -520,9 +520,9 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
     local model = data.vehicle.model
 
     if data.type == 'garage' then
-        spawn = Config.Garages[currentGarage].Spawns
+        spawn = Config.Garages[currentGarage].spawns
     else
-        spawn = Config.Impounds[currentImpound].Spawns
+        spawn = Config.Impounds[currentImpound].spawns
     end
 
     RequestModel(model)
