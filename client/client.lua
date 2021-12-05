@@ -8,15 +8,8 @@ local ped = nil
 
 
 if GetMakeNameFromVehicleModel() == nil then 
-    TriggerServerEvent('luke_vehiclegarage:ThrowError', 'This resource requires you to set a game build greater that 1868, it will cause crashes otherwise! Read the readme on the repository to see how to fix this!')
+    TriggerServerEvent('luke_vehiclegarage:ThrowError', Locale('error_build'))
 end
-
-function firstToUpper(str)
-    if type(str) ~= 'string' then return 'NULL' end
-    return (str:gsub("^%l", string.upper))
-end
-
-local tires = {0, 1, 4, 5}
 
 function DoVehicleDamage(vehicle, health)
     if health ~= nil then
@@ -131,7 +124,7 @@ function ImpoundBlips(coords, type)
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(firstToUpper(type) .. ' Impound Lot')
+    AddTextComponentString(Locale(type) .. ' ' .. Locale('impound_lot'))
     EndTextCommandSetBlipName(blip)
 end
 
@@ -150,7 +143,7 @@ function GarageBlips(coords, type, label)
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(Config.SplitGarages == true and label or firstToUpper(type) .. ' Garage')
+    AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
     EndTextCommandSetBlipName(blip)
 end
 
@@ -159,7 +152,7 @@ exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
         {
             event = 'luke_vehiclegarage:GetImpoundedVehicles',
             icon = "fas fa-key",
-            label = "Access Impound",
+            label = Locale('access_impound'),
             canInteract = function(entity)
                 hasChecked = false
                 if IsInsideZone('impound', entity) and not hasChecked then
@@ -177,7 +170,7 @@ exports['qtarget']:AddTargetModel({Config.GaragePed}, {
         {
             event = "luke_vehiclegarage:GetOwnedVehicles",
             icon = "fas fa-warehouse",
-            label = "Take Out Vehicle",
+            label = Locale('take_out_vehicle'),
             canInteract = function(entity)
                 hasChecked = false
                 if IsInsideZone('garage', entity) and not hasChecked then
@@ -195,7 +188,7 @@ exports['qtarget']:Vehicle({
 	options = {
 		{
 			event = 'luke_vehiclegarage:StoreVehicle',
-			label = 'Store Vehicle',
+			label = Locale('store_vehicle'),
 			icon = 'fas fa-parking',
             canInteract = function(entity)
                 hasChecked = false
@@ -213,7 +206,7 @@ Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
         if not v.label then
-            TriggerServerEvent('luke_vehiclegarage:ThrowError', "You need to set a unique GarageLabel for all the garages in the config file!")
+            TriggerServerEvent('luke_vehiclegarage:ThrowError', Locale('error_no_label'))
         end
 
         GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
@@ -309,7 +302,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
         TriggerEvent('nh-context:sendMenu', {
             {
                 id = 0,
-                header = firstToUpper(currentImpound.type) .. ' Impound',
+                header = Locale(currentImpound.type) .. ' ' .. Locale('impound'),
                 txt = ''
             },
         })
@@ -327,7 +320,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
                     table.insert(menu, {
                         id = k,
                         header = vehTitle,
-                        txt = 'Plate: ' .. v.plate,
+                        txt = Locale('plate') .. ': ' .. v.plate,
                         params = {
                             event = 'luke_vehiclegarage:ImpoundVehicleMenu',
                             args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health, price = impoundPrice}
@@ -341,7 +334,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
                 TriggerEvent('nh-context:sendMenu', {
                     {
                         id = 1,
-                        header = 'No vehicles in impound',
+                        header = Locale('no_vehicles_impound'),
                         txt = ''
                     }
                 })
@@ -350,7 +343,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
             TriggerEvent('nh-context:sendMenu', {
                 {
                     id = 1,
-                    header = 'No vehicles in impound',
+                    header = Locale('no_vehicles_impound'),
                     txt = ''
                 }
             })
@@ -367,7 +360,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
         TriggerEvent('nh-context:sendMenu', {
             {
                 id = 0,
-                header = Config.SplitGarages == true and currentGarage.label or firstToUpper(currentGarage.type) .. ' Garage',
+                header = Config.SplitGarages == true and currentGarage.label or Locale(currentGarage.type) .. ' ' .. Locale('garage'),
                 txt = ''
             },
         })
@@ -383,7 +376,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
-                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'In garage',
+                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('in_garage'),
                             params = {
                                 event = 'luke_vehiclegarage:VehicleMenu',
                                 args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
@@ -393,13 +386,13 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
-                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'Garage: ' .. v.garage,
+                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('garage') .. ': ' .. v.garage,
                         })
                     else
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
-                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'Not in garage',
+                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('not_in_garage'),
                         })
                     end
                 else
@@ -407,7 +400,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
-                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'In Garage',
+                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' ..  Locale('in_garage'),
                             params = {
                                 event = 'luke_vehiclegarage:VehicleMenu',
                                 args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
@@ -417,7 +410,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
-                            txt = 'Plate: ' .. v.plate .. ' <br>' .. 'Not in garage',
+                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('not_in_garage'),
                         })
                     end
                 end
@@ -428,7 +421,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                 TriggerEvent('nh-context:sendMenu', {
                     {
                         id = 1,
-                        header = 'No vehicles in garage',
+                        header = Locale('no_vehicles_garage'),
                         txt = ''
                     }
                 })
@@ -437,7 +430,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
             TriggerEvent('nh-context:sendMenu', {
                 {
                     id = 1,
-                    header = 'No vehicles in garage',
+                    header = Locale('no_vehicles_garage'),
                     txt = '',
                 }
             })
@@ -450,7 +443,7 @@ AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
     TriggerEvent('nh-context:sendMenu', {
         {
             id = 0,
-            header = '< Go Back',
+            header = Locale('menu_go_back'),
             txt = '',
             params = {
                 event = 'luke_vehiclegarage:GetImpoundedVehicles',
@@ -458,8 +451,8 @@ AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
         },
         {
             id = 1,
-            header = "Take vehicle out of impound",
-            txt = 'Car: ' .. data.name .. ' <br> Plate: ' .. data.plate .. ' <br> Price: $' .. data.price,
+            header = Locale('take_out_vehicle_impound'),
+            txt = Locale('car') .. ': ' .. data.name .. ' <br> ' .. Locale('plate') .. ': ' .. data.plate .. ' <br> ' .. Locale('price') .. ': ' .. Locale('$') .. data.price,
             params = {
                 event = 'luke_vehiclegarage:SpawnVehicle',
                 args = {
@@ -478,7 +471,7 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
     TriggerEvent('nh-context:sendMenu', {
         {
             id = 0,
-            header = '< Go Back',
+            header = Locale('menu_go_back'),
             txt = '',
             params = {
                 event = 'luke_vehiclegarage:GetOwnedVehicles'
@@ -486,8 +479,8 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
         },
         {
             id = 1,
-            header = "Take out vehicle",
-            txt = 'Car: ' .. data.name .. ' | Plate: ' .. data.plate,
+            header = Locale('take_out_vehicle'),
+            txt = Locale('car') .. ': ' .. data.name .. ' | ' .. Locale('plate') .. ': ' .. data.plate,
             params = {
                 event = 'luke_vehiclegarage:SpawnVehicle',
                 args = {
@@ -526,7 +519,7 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
                 end, data.price)
             else VehicleSpawn(data, spawn[i]) end break
         end
-        if i == #spawn then ESX.ShowNotification("There are no available parking spots") end
+        if i == #spawn then ESX.ShowNotification(Locale('no_spawn_spots')) end
     end
 end)
 
@@ -571,7 +564,7 @@ AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
 
             TriggerServerEvent('luke_vehiclegarage:SaveVehicle', vehProps, health, vehPlate)
         else
-            ESX.ShowNotification("You do not own this vehicle.")
+            ESX.ShowNotification(Locale('no_ownership'))
         end
     end, vehPlate)
 

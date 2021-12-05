@@ -1,5 +1,7 @@
 Config = {}
 
+Config.Locale = 'en'
+
 Config.EnableVersionCheck = true -- If set to true you'll get a print in server console when your resource is out of date
 Config.VersionCheckInterval = 60 -- in minutes
 

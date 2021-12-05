@@ -4,10 +4,12 @@ game 'gta5'
 
 author 'Luke - https://www.github.com/lukewastakenn'
 
-version '2.2.0'
+version '2.3.0'
 
 shared_scripts {
     '@es_extended/imports.lua',
+    'locale.lua',
+    'locales/*.lua',
     'config.lua'
 }
 
