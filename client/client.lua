@@ -33,24 +33,16 @@ function DoVehicleDamage(vehicle, health)
             health.body = 150.0
         end
     
-        if health.body < 950.0 then
-            for i = 0, 7 do
-                SmashVehicleWindow(vehicle, i)
-            end
-        end
-    
-        if health.body < 920.0 then
-            math.randomseed(GetGameTimer())
-            local num = math.random(1, 4)
-            for i = 0, 5, num do
-                SetVehicleDoorBroken(vehicle, i, false)
-            end
+        for _, window in pairs(health.parts.windows) do
+            SmashVehicleWindow(vehicle, window)
         end
 
-        if health.body < 825.0 then
-            math.randomseed(GetGameTimer())
-            local randomTire = tires[math.random(#tires)]
-            SetVehicleTyreBurst(vehicle, randomTire, true, 1000.0)
+        for _, tyre in pairs(health.parts.tires) do
+            SetVehicleTyreBurst(vehicle, tyre, true, 1000.0)
+        end
+
+        for _, door in pairs(health.parts.doors) do
+            SetVehicleDoorBroken(vehicle, door, false)
         end
 
         SetVehicleBodyHealth(vehicle, health.body)
@@ -541,12 +533,33 @@ end)
 RegisterNetEvent('luke_vehiclegarage:StoreVehicle')
 AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
     local health = {}
+    local brokenParts = {
+        windows = {},
+        tires = {},
+        doors = {}
+    }
 
     local vehicle = target.entity
     local vehPlate = GetVehicleNumberPlateText(vehicle)
-    
+
+    for window = 0, 7 do 
+        if not IsVehicleWindowIntact(vehicle, window) then
+            table.insert(brokenParts.windows, window)
+        end
+    end
+
+    for index = 0, 5 do
+        if IsVehicleTyreBurst(vehicle, index, false) then
+            table.insert(brokenParts.tires, index)
+        end
+        if IsVehicleDoorDamaged(vehicle, index) then
+            table.insert(brokenParts.doors, index)
+        end
+    end
+
     health.body = ESX.Math.Round(GetVehicleBodyHealth(vehicle), 2)
     health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
+    health.parts = brokenParts
 
     ESX.TriggerServerCallback('luke_vehiclegarage:CheckOwnership', function(doesOwn)
         if doesOwn then

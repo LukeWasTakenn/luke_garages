@@ -93,9 +93,8 @@ AddEventHandler('luke_vehiclegarage:SaveVehicle', function(vehicle, health, plat
     MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `health` = @health WHERE `plate` = @plate', {
         ['@health'] = json.encode(health),
         ['@vehicle'] = json.encode(vehicle),
-        ['@plate'] = plate
+        ['@plate'] = ESX.Math.Trim(plate)
     }, function(rowsChanged)
-        
     end)
 end)
 
