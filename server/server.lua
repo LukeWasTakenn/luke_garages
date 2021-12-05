@@ -74,8 +74,6 @@ end)
 
 RegisterNetEvent('luke_vehiclegarage:ChangeStored')
 AddEventHandler('luke_vehiclegarage:ChangeStored', function(plate, stored, garage)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    
     if stored then stored = 1 else stored = 0 garage = 'none' end
 
     local plate = ESX.Math.Trim(plate)
@@ -93,9 +91,8 @@ AddEventHandler('luke_vehiclegarage:SaveVehicle', function(vehicle, health, plat
     MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `health` = @health WHERE `plate` = @plate', {
         ['@health'] = json.encode(health),
         ['@vehicle'] = json.encode(vehicle),
-        ['@plate'] = plate
+        ['@plate'] = ESX.Math.Trim(plate)
     }, function(rowsChanged)
-        
     end)
 end)
 
@@ -108,7 +105,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:PayImpound', function(source, cal
                 callback(true)
             else
                 callback(false)
-                return xPlayer.showNotification("You don't have enough money on you.")
+                return xPlayer.showNotification(Locale('no_money_cash'))
             end
         else
             if xPlayer.getAccount('bank').money >= amount then
@@ -116,7 +113,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:PayImpound', function(source, cal
                 callback(true)
             else
                 callback(false)
-                return xPlayer.showNotification("You don't have enough money in your bank.")
+                return xPlayer.showNotification(Locale('no_money_bank'))
             end
         end
     end
