@@ -11,6 +11,12 @@ if GetMakeNameFromVehicleModel() == nil then
     TriggerServerEvent('luke_garages:ThrowError', Locale('error_build'))
 end
 
+local function GetGarageLabel(name)
+    for _, garage in pairs(Config.Garages) do
+        if garage.zone.name == name then return garage.label end
+    end
+end
+
 function DoVehicleDamage(vehicle, health)
     if health ~= nil then
         Citizen.Wait(1500)
@@ -386,7 +392,7 @@ AddEventHandler('luke_garages:GetOwnedVehicles', function()
                         table.insert(menu, {
                             id = k,
                             header = vehTitle,
-                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('garage') .. ': ' .. v.garage,
+                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('garage') .. ': ' .. GetGarageLabel(v.garage),
                         })
                     else
                         table.insert(menu, {
