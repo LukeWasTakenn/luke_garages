@@ -8,7 +8,7 @@ local ped = nil
 
 
 if GetMakeNameFromVehicleModel() == nil then 
-    TriggerServerEvent('luke_vehiclegarage:ThrowError', Locale('error_build'))
+    TriggerServerEvent('luke_garages:ThrowError', Locale('error_build'))
 end
 
 function DoVehicleDamage(vehicle, health)
@@ -48,7 +48,7 @@ end
 
 function VehicleSpawn(data, spawn)
     if Config.ServerSpawn then
-        ESX.TriggerServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(vehicle)
+        ESX.TriggerServerCallback('luke_garages:ServerSpawnVehicle', function(vehicle)
 
             while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
                         
@@ -56,9 +56,9 @@ function VehicleSpawn(data, spawn)
 
             ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
 
-            TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+            TriggerServerEvent('luke_garages:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
 
-            if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
+            if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
 
             DoVehicleDamage(vehicle, data.health)
         end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
@@ -67,9 +67,9 @@ function VehicleSpawn(data, spawn)
             
             ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
 
-            TriggerServerEvent('luke_vehiclegarage:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
+            TriggerServerEvent('luke_garages:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
 
-            if data.type == 'impound' then TriggerServerEvent('luke_vehiclegarage:PayImpound', data.price) end
+            if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
 
             DoVehicleDamage(vehicle, data.health)
         end)
@@ -150,7 +150,7 @@ end
 exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
     options = {
         {
-            event = 'luke_vehiclegarage:GetImpoundedVehicles',
+            event = 'luke_garages:GetImpoundedVehicles',
             icon = "fas fa-key",
             label = Locale('access_impound'),
             canInteract = function(entity)
@@ -168,7 +168,7 @@ exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
 exports['qtarget']:AddTargetModel({Config.GaragePed}, {
     options = {
         {
-            event = "luke_vehiclegarage:GetOwnedVehicles",
+            event = "luke_garages:GetOwnedVehicles",
             icon = "fas fa-warehouse",
             label = Locale('take_out_vehicle'),
             canInteract = function(entity)
@@ -187,7 +187,7 @@ exports['qtarget']:AddTargetModel({Config.GaragePed}, {
 exports['qtarget']:Vehicle({
 	options = {
 		{
-			event = 'luke_vehiclegarage:StoreVehicle',
+			event = 'luke_garages:StoreVehicle',
 			label = Locale('store_vehicle'),
 			icon = 'fas fa-parking',
             canInteract = function(entity)
@@ -206,7 +206,7 @@ Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
         if not v.label then
-            TriggerServerEvent('luke_vehiclegarage:ThrowError', Locale('error_no_label'))
+            TriggerServerEvent('luke_garages:ThrowError', Locale('error_no_label'))
         end
 
         GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
@@ -294,9 +294,9 @@ Citizen.CreateThread(function()
 end)
 
 
-RegisterNetEvent('luke_vehiclegarage:GetImpoundedVehicles')
-AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
-    ESX.TriggerServerCallback('luke_vehiclegarage:GetImpound', function(vehicles)
+RegisterNetEvent('luke_garages:GetImpoundedVehicles')
+AddEventHandler('luke_garages:GetImpoundedVehicles', function()
+    ESX.TriggerServerCallback('luke_garages:GetImpound', function(vehicles)
         local menu = {}
 
         TriggerEvent('nh-context:sendMenu', {
@@ -322,7 +322,7 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
                         header = vehTitle,
                         txt = Locale('plate') .. ': ' .. v.plate,
                         params = {
-                            event = 'luke_vehiclegarage:ImpoundVehicleMenu',
+                            event = 'luke_garages:ImpoundVehicleMenu',
                             args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health, price = impoundPrice}
                         }
                     })
@@ -352,9 +352,9 @@ AddEventHandler('luke_vehiclegarage:GetImpoundedVehicles', function()
 end)
 
 --todo: Refactor *everything*
-RegisterNetEvent('luke_vehiclegarage:GetOwnedVehicles')
-AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
-    ESX.TriggerServerCallback('luke_vehiclegarage:GetVehicles', function(vehicles)
+RegisterNetEvent('luke_garages:GetOwnedVehicles')
+AddEventHandler('luke_garages:GetOwnedVehicles', function()
+    ESX.TriggerServerCallback('luke_garages:GetVehicles', function(vehicles)
         local menu = {}
 
         TriggerEvent('nh-context:sendMenu', {
@@ -378,7 +378,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                             header = vehTitle,
                             txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('in_garage'),
                             params = {
-                                event = 'luke_vehiclegarage:VehicleMenu',
+                                event = 'luke_garages:VehicleMenu',
                                 args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
                             }  
                         })
@@ -402,7 +402,7 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
                             header = vehTitle,
                             txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' ..  Locale('in_garage'),
                             params = {
-                                event = 'luke_vehiclegarage:VehicleMenu',
+                                event = 'luke_garages:VehicleMenu',
                                 args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
                             }
                         })
@@ -438,15 +438,15 @@ AddEventHandler('luke_vehiclegarage:GetOwnedVehicles', function()
     end, currentGarage.type)
 end)
 
-RegisterNetEvent('luke_vehiclegarage:ImpoundVehicleMenu')
-AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
+RegisterNetEvent('luke_garages:ImpoundVehicleMenu')
+AddEventHandler('luke_garages:ImpoundVehicleMenu', function(data)
     TriggerEvent('nh-context:sendMenu', {
         {
             id = 0,
             header = Locale('menu_go_back'),
             txt = '',
             params = {
-                event = 'luke_vehiclegarage:GetImpoundedVehicles',
+                event = 'luke_garages:GetImpoundedVehicles',
             }
         },
         {
@@ -454,7 +454,7 @@ AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
             header = Locale('take_out_vehicle_impound'),
             txt = Locale('car') .. ': ' .. data.name .. ' <br> ' .. Locale('plate') .. ': ' .. data.plate .. ' <br> ' .. Locale('price') .. ': ' .. Locale('$') .. data.price,
             params = {
-                event = 'luke_vehiclegarage:SpawnVehicle',
+                event = 'luke_garages:SpawnVehicle',
                 args = {
                     vehicle = data.vehicle,
                     health = data.health,
@@ -466,15 +466,15 @@ AddEventHandler('luke_vehiclegarage:ImpoundVehicleMenu', function(data)
     })
 end)
 
-RegisterNetEvent('luke_vehiclegarage:VehicleMenu')
-AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
+RegisterNetEvent('luke_garages:VehicleMenu')
+AddEventHandler('luke_garages:VehicleMenu', function(data)
     TriggerEvent('nh-context:sendMenu', {
         {
             id = 0,
             header = Locale('menu_go_back'),
             txt = '',
             params = {
-                event = 'luke_vehiclegarage:GetOwnedVehicles'
+                event = 'luke_garages:GetOwnedVehicles'
             }
         },
         {
@@ -482,7 +482,7 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
             header = Locale('take_out_vehicle'),
             txt = Locale('car') .. ': ' .. data.name .. ' | ' .. Locale('plate') .. ': ' .. data.plate,
             params = {
-                event = 'luke_vehiclegarage:SpawnVehicle',
+                event = 'luke_garages:SpawnVehicle',
                 args = {
                     vehicle = data.vehicle,
                     health = data.health,
@@ -493,8 +493,8 @@ AddEventHandler('luke_vehiclegarage:VehicleMenu', function(data)
     })
 end)
 
-RegisterNetEvent('luke_vehiclegarage:SpawnVehicle')
-AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
+RegisterNetEvent('luke_garages:SpawnVehicle')
+AddEventHandler('luke_garages:SpawnVehicle', function(data)
     local spawn = nil
     local model = data.vehicle.model
 
@@ -514,7 +514,7 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
     for i = 1, #spawn do
         if ESX.Game.IsSpawnPointClear(vector3(spawn[i].x, spawn[i].y, spawn[i].z), 1.0) then
             if data.type == 'impound' then
-                ESX.TriggerServerCallback('luke_vehiclegarage:PayImpound', function(canAfford)
+                ESX.TriggerServerCallback('luke_garages:PayImpound', function(canAfford)
                     if canAfford then VehicleSpawn(data, spawn[i]) end
                 end, data.price)
             else VehicleSpawn(data, spawn[i]) end break
@@ -523,8 +523,8 @@ AddEventHandler('luke_vehiclegarage:SpawnVehicle', function(data)
     end
 end)
 
-RegisterNetEvent('luke_vehiclegarage:StoreVehicle')
-AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
+RegisterNetEvent('luke_garages:StoreVehicle')
+AddEventHandler('luke_garages:StoreVehicle', function(target)
     local health = {}
     local brokenParts = {
         windows = {},
@@ -554,15 +554,15 @@ AddEventHandler('luke_vehiclegarage:StoreVehicle', function(target)
     health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
     health.parts = brokenParts
 
-    ESX.TriggerServerCallback('luke_vehiclegarage:CheckOwnership', function(doesOwn)
+    ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
         if doesOwn then
             local vehProps = ESX.Game.GetVehicleProperties(vehicle)
 
             ESX.Game.DeleteVehicle(vehicle)
 
-            TriggerServerEvent('luke_vehiclegarage:ChangeStored', vehPlate, true, currentGarage.zone.name)
+            TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
 
-            TriggerServerEvent('luke_vehiclegarage:SaveVehicle', vehProps, health, vehPlate)
+            TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, vehPlate)
         else
             ESX.ShowNotification(Locale('no_ownership'))
         end

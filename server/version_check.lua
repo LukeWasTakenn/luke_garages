@@ -1,7 +1,7 @@
 if Config.EnableVersionCheck == true then
     local resource = GetCurrentResourceName()
     local versionData = GetResourceMetadata(resource, 'version')
-    local gitRepo = 'https://raw.githubusercontent.com/lukewastakenn/luke_vehiclegarage/master/fxmanifest.lua'
+    local gitRepo = 'https://raw.githubusercontent.com/lukewastakenn/luke_garages/master/fxmanifest.lua'
 
     function versionCheck(error, response, headers)
         local response = tostring(response)

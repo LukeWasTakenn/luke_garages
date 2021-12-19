@@ -1,4 +1,4 @@
-RegisterNetEvent('luke_vehiclegarage:ThrowError', function(text)
+RegisterNetEvent('luke_garages:ThrowError', function(text)
     error(text)
 end)
 
@@ -10,7 +10,7 @@ if Config.RestoreVehicles then
     end)
 end
 
-ESX.RegisterServerCallback('luke_vehiclegarage:GetVehicles', function(source, callback, type)
+ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
@@ -32,7 +32,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:GetVehicles', function(source, ca
     end)
 end)
 
-ESX.RegisterServerCallback('luke_vehiclegarage:GetImpound', function(source, callback, type)
+ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
@@ -54,7 +54,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:GetImpound', function(source, cal
     end)
 end)
 
-ESX.RegisterServerCallback('luke_vehiclegarage:CheckOwnership', function(source, callback, plate)
+ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
 
@@ -72,8 +72,8 @@ ESX.RegisterServerCallback('luke_vehiclegarage:CheckOwnership', function(source,
     end)
 end)
 
-RegisterNetEvent('luke_vehiclegarage:ChangeStored')
-AddEventHandler('luke_vehiclegarage:ChangeStored', function(plate, stored, garage)
+RegisterNetEvent('luke_garages:ChangeStored')
+AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
     if stored then stored = 1 else stored = 0 garage = 'none' end
 
     local plate = ESX.Math.Trim(plate)
@@ -86,8 +86,8 @@ AddEventHandler('luke_vehiclegarage:ChangeStored', function(plate, stored, garag
     end)
 end)
 
-RegisterNetEvent('luke_vehiclegarage:SaveVehicle')
-AddEventHandler('luke_vehiclegarage:SaveVehicle', function(vehicle, health, plate)
+RegisterNetEvent('luke_garages:SaveVehicle')
+AddEventHandler('luke_garages:SaveVehicle', function(vehicle, health, plate)
     MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `health` = @health WHERE `plate` = @plate', {
         ['@health'] = json.encode(health),
         ['@vehicle'] = json.encode(vehicle),
@@ -96,7 +96,7 @@ AddEventHandler('luke_vehiclegarage:SaveVehicle', function(vehicle, health, plat
     end)
 end)
 
-ESX.RegisterServerCallback('luke_vehiclegarage:PayImpound', function(source, callback, amount)
+ESX.RegisterServerCallback('luke_garages:PayImpound', function(source, callback, amount)
     local xPlayer = ESX.GetPlayerFromId(source)
     if xPlayer then
         if Config.PayInCash then
@@ -120,7 +120,7 @@ ESX.RegisterServerCallback('luke_vehiclegarage:PayImpound', function(source, cal
 end)
 
 if Config.ServerSpawn then
-    ESX.RegisterServerCallback('luke_vehiclegarage:ServerSpawnVehicle', function(source, callback, model, coords, heading)
+    ESX.RegisterServerCallback('luke_garages:ServerSpawnVehicle', function(source, callback, model, coords, heading)
         if type(model) == 'string' then model = GetHashKey(model) end
         Citizen.CreateThread(function()
             entity = CreateVehicle(model, coords, heading, true, false)
