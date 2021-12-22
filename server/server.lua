@@ -37,6 +37,8 @@ ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback,
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
 
+    local worldVehicles = GetAllVehicles()
+
     MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `stored` = 0', {
         ['@identifier'] = identifier,
         ['@type'] = type,
@@ -45,7 +47,13 @@ ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback,
             for k, v in pairs(results) do
                 local veh = json.decode(v.vehicle)
                 local health = json.decode(v.health)
-                table.insert(vehicles, {plate = v.plate, vehicle = veh, health = health})
+                for index, vehicle in pairs(worldVehicles) do
+                    if ESX.Math.Trim(v.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                        break
+                    elseif index == #worldVehicles then
+                        table.insert(vehicles, {plate = v.plate, vehicle = veh, health = health})
+                    end
+                end
             end
             callback(vehicles)
         else
@@ -123,7 +131,8 @@ if Config.ServerSpawn then
     ESX.RegisterServerCallback('luke_garages:ServerSpawnVehicle', function(source, callback, model, coords, heading)
         if type(model) == 'string' then model = GetHashKey(model) end
         Citizen.CreateThread(function()
-            entity = CreateVehicle(model, coords, heading, true, false)
+            -- entity = CreateVehicle(model, coords, heading, true, false)
+            entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
             while not DoesEntityExist(entity) do Wait(20) end
             netid = NetworkGetNetworkIdFromEntity(entity)
             callback(netid)

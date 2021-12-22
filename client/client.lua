@@ -82,18 +82,6 @@ function VehicleSpawn(data, spawn)
     end
 end
 
-function DoesVehicleExist(playerPlate)
-    local vehicles = ESX.Game.GetVehicles()
-    for i = 1, #vehicles do
-        local vehicle = vehicles[i]
-        if DoesEntityExist(vehicle) then
-            if ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) == ESX.Math.Trim(playerPlate) then
-                return true
-            end
-        end
-    end
-end
-
 function IsInsideZone(type, entity)
     local entityCoords = GetEntityCoords(entity)
     if type == 'impound' then
@@ -315,24 +303,22 @@ AddEventHandler('luke_garages:GetImpoundedVehicles', function()
 
         if vehicles ~= nil then
             for k, v in pairs(vehicles) do
-                if not DoesVehicleExist(v.plate) then
-                    local vehModel = v.vehicle.model
-                    local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
-                    local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
-                    local vehTitle = vehMake .. ' ' .. vehName
-                    
-                    local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehModel)]
+                local vehModel = v.vehicle.model
+                local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
+                local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
+                local vehTitle = vehMake .. ' ' .. vehName
+                
+                local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehModel)]
 
-                    table.insert(menu, {
-                        id = k,
-                        header = vehTitle,
-                        txt = Locale('plate') .. ': ' .. v.plate,
-                        params = {
-                            event = 'luke_garages:ImpoundVehicleMenu',
-                            args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health, price = impoundPrice}
-                        }
-                    })
-                end
+                table.insert(menu, {
+                    id = k,
+                    header = vehTitle,
+                    txt = Locale('plate') .. ': ' .. v.plate,
+                    params = {
+                        event = 'luke_garages:ImpoundVehicleMenu',
+                        args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health, price = impoundPrice}
+                    }
+                })
             end
             if #menu ~= 0 then
                 TriggerEvent('nh-context:sendMenu', menu)
