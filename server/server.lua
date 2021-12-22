@@ -128,20 +128,15 @@ ESX.RegisterServerCallback('luke_garages:PayImpound', function(source, callback,
     end
 end)
 
-if Config.ServerSpawn then
-    ESX.RegisterServerCallback('luke_garages:ServerSpawnVehicle', function(source, callback, model, plate, coords, heading)
-        if type(model) == 'string' then model = GetHashKey(model) end
-        Citizen.CreateThread(function()
-            entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
-            while not DoesEntityExist(entity) do Wait(20) end
-            netId = NetworkGetNetworkIdFromEntity(entity)
-            local entityOwner = NetworkGetEntityOwner(entity)
-            MySQL.Async.fetchAll('SELECT vehicle, plate, health FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = plate}, function(result)
-                if result[1] then
-                    TriggerClientEvent('luke_garages:SetVehicleMods', entityOwner, netId, result[1])
-                    callback(netId)
-                end
-            end)
+RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, heading)
+    if type(model) == 'string' then model = GetHashKey(model) end
+    Citizen.CreateThread(function()
+        entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
+        while not DoesEntityExist(entity) do Wait(20) end
+        netId = NetworkGetNetworkIdFromEntity(entity)
+        local entityOwner = NetworkGetEntityOwner(entity)
+        MySQL.Async.fetchAll('SELECT vehicle, plate, health FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
+            if result[1] then TriggerClientEvent('luke_garages:SetVehicleMods', entityOwner, netId, result[1]) end
         end)
     end)
-end
+end)

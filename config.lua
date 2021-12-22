@@ -13,12 +13,6 @@ Config.RestoreVehicles = false
 -- Ignore if not using split garages
 Config.DefaultGarage = 'legion' 
 
---[[
-If you are having issues with your vehicle props applying, such as license plate, color, etc... then
-Set Config.ServerSpawn to false, otherwise I highly recommend keeping this set to true
---]]
-Config.ServerSpawn = true
-
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 

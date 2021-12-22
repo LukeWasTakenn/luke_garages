@@ -51,25 +51,9 @@ function DoVehicleDamage(vehicle, health)
     end
 end
 
--- Todo: refactor, remove...?
 function VehicleSpawn(data, spawn)
-    if Config.ServerSpawn then
-        ESX.TriggerServerCallback('luke_garages:ServerSpawnVehicle', function(vehicle)
-            if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
-
-        end, data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
-    else
-        ESX.Game.SpawnVehicle(data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z), spawn.h, function(vehicle)
-            
-            ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
-
-            TriggerServerEvent('luke_garages:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
-
-            if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
-
-            DoVehicleDamage(vehicle, data.health)
-        end)
-    end
+    TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
+    if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
 end
 
 function IsInsideZone(type, entity)
@@ -443,7 +427,7 @@ AddEventHandler('luke_garages:ImpoundVehicleMenu', function(data)
             header = Locale('take_out_vehicle_impound'),
             txt = Locale('car') .. ': ' .. data.name .. ' <br> ' .. Locale('plate') .. ': ' .. data.plate .. ' <br> ' .. Locale('price') .. ': ' .. Locale('$') .. data.price,
             params = {
-                event = 'luke_garages:SpawnVehicle',
+                event = 'luke_garages:RequestVehicle',
                 args = {
                     vehicle = data.vehicle,
                     health = data.health,
@@ -471,7 +455,7 @@ AddEventHandler('luke_garages:VehicleMenu', function(data)
             header = Locale('take_out_vehicle'),
             txt = Locale('car') .. ': ' .. data.name .. ' | ' .. Locale('plate') .. ': ' .. data.plate,
             params = {
-                event = 'luke_garages:SpawnVehicle',
+                event = 'luke_garages:RequestVehicle',
                 args = {
                     vehicle = data.vehicle,
                     health = data.health,
@@ -482,8 +466,8 @@ AddEventHandler('luke_garages:VehicleMenu', function(data)
     })
 end)
 
-RegisterNetEvent('luke_garages:SpawnVehicle')
-AddEventHandler('luke_garages:SpawnVehicle', function(data)
+RegisterNetEvent('luke_garages:RequestVehicle')
+AddEventHandler('luke_garages:RequestVehicle', function(data)
     local spawn = nil
     local model = data.vehicle.model
 
