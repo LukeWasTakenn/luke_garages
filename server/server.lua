@@ -91,6 +91,7 @@ AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
         ['@stored'] = stored,
         ['@plate'] = plate
     }, function(rowsChanged)
+        print(rowsChanged)
     end)
 end)
 
@@ -128,14 +129,19 @@ ESX.RegisterServerCallback('luke_garages:PayImpound', function(source, callback,
 end)
 
 if Config.ServerSpawn then
-    ESX.RegisterServerCallback('luke_garages:ServerSpawnVehicle', function(source, callback, model, coords, heading)
+    ESX.RegisterServerCallback('luke_garages:ServerSpawnVehicle', function(source, callback, model, plate, coords, heading)
         if type(model) == 'string' then model = GetHashKey(model) end
         Citizen.CreateThread(function()
-            -- entity = CreateVehicle(model, coords, heading, true, false)
             entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
             while not DoesEntityExist(entity) do Wait(20) end
-            netid = NetworkGetNetworkIdFromEntity(entity)
-            callback(netid)
+            netId = NetworkGetNetworkIdFromEntity(entity)
+            local entityOwner = NetworkGetEntityOwner(entity)
+            MySQL.Async.fetchAll('SELECT vehicle, plate, health FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = plate}, function(result)
+                if result[1] then
+                    TriggerClientEvent('luke_garages:SetVehicleMods', entityOwner, netId, result[1])
+                    callback(netId)
+                end
+            end)
         end)
     end)
 end

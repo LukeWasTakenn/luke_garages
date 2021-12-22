@@ -51,23 +51,13 @@ function DoVehicleDamage(vehicle, health)
     end
 end
 
-
+-- Todo: refactor, remove...?
 function VehicleSpawn(data, spawn)
     if Config.ServerSpawn then
         ESX.TriggerServerCallback('luke_garages:ServerSpawnVehicle', function(vehicle)
-
-            while not NetworkDoesEntityExistWithNetworkId(vehicle) do Citizen.Wait(25) end
-                        
-            vehicle = NetToVeh(vehicle)
-
-            ESX.Game.SetVehicleProperties(vehicle, data.vehicle)
-
-            TriggerServerEvent('luke_garages:ChangeStored', GetVehicleNumberPlateText(vehicle), false)
-
             if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
 
-            DoVehicleDamage(vehicle, data.health)
-        end, data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
+        end, data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
     else
         ESX.Game.SpawnVehicle(data.vehicle.model, vector3(spawn.x, spawn.y, spawn.z), spawn.h, function(vehicle)
             
@@ -287,6 +277,13 @@ Citizen.CreateThread(function()
     end
 end)
 
+RegisterNetEvent('luke_garages:SetVehicleMods', function(netId, svData)
+    while not NetworkDoesEntityExistWithNetworkId(netId) do Wait(25) end
+    vehicle = NetToVeh(netId)
+    ESX.Game.SetVehicleProperties(vehicle, json.decode(svData.vehicle))
+    TriggerServerEvent('luke_garages:ChangeStored', svData.plate, false)
+    DoVehicleDamage(vehicle, json.decode(svData.health))
+end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles')
 AddEventHandler('luke_garages:GetImpoundedVehicles', function()
