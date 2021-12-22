@@ -469,21 +469,13 @@ end)
 RegisterNetEvent('luke_garages:RequestVehicle')
 AddEventHandler('luke_garages:RequestVehicle', function(data)
     local spawn = nil
-    local model = data.vehicle.model
 
     if data.type == 'garage' then
         spawn = currentGarage.spawns
     else
         spawn = currentImpound.spawns
     end
-
-    RequestModel(model)
-    while not HasModelLoaded(model) do
-        Citizen.Wait(0)
-    end
-
-    SetModelAsNoLongerNeeded(model)
-
+    
     for i = 1, #spawn do
         if ESX.Game.IsSpawnPointClear(vector3(spawn[i].x, spawn[i].y, spawn[i].z), 1.0) then
             if data.type == 'impound' then
