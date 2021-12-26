@@ -7,10 +7,6 @@ local currentImpound = nil
 local ped = nil
 
 
-if GetMakeNameFromVehicleModel() == nil then 
-    TriggerServerEvent('luke_garages:ThrowError', Locale('error_build'))
-end
-
 local function GetGarageLabel(name)
     for _, garage in pairs(Config.Garages) do
         if garage.zone.name == name then return garage.label end
@@ -172,10 +168,6 @@ exports['qtarget']:Vehicle({
 
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
-
-        if not v.label then
-            TriggerServerEvent('luke_garages:ThrowError', Locale('error_no_label'))
-        end
 
         GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
 

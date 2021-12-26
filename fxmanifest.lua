@@ -6,6 +6,12 @@ author 'Luke - https://www.github.com/lukewastakenn'
 
 version '2.3.2'
 
+dependencies { 
+    '/server:5104',
+    '/gameBuild:1868',
+    '/onesync',
+}
+
 shared_scripts {
     '@es_extended/imports.lua',
     'locale.lua',
