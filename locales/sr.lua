@@ -21,6 +21,4 @@ Locales['sr'] = {
     ['no_money_cash'] = "Nemaš dovoljno novca kod sebe",
     ['no_money_bank'] = "Nemaš dovoljno novca na bankovnom računu",
     ['menu_go_back'] = "< Vrati se",
-    ['error_build'] = "Ovaj resurs zahteva da staviš game build na verziju veće od 1868, inače će praviti crashove! Pročitaj readme na repositoriju da vidiš kako to da popraviš!",
-    ['error_no_label'] = "Moraš staviti label za sve garaže u config fajlu!",
 }

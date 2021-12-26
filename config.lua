@@ -11,7 +11,7 @@ Config.RestoreVehicles = false
 
 -- Default garage zone name the vehicles will be restored to
 -- Ignore if not using split garages
-Config.DefaultGarage = 'legion' 
+Config.DefaultGarage = 'legion'
 
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false

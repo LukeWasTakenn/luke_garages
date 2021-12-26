@@ -21,6 +21,4 @@ Locales['en'] = {
     ['no_money_cash'] = "You do not have enough money on you",
     ['no_money_bank'] = "You do not have enough money in your bank account",
     ['menu_go_back'] = "< Go back",
-    ['error_build'] = "This resource requires you to set a game build greater that 1868, it will cause crashes otherwise! Read the readme on the repository to see how to fix this!",
-    ['error_no_label'] = "You need to set a label for all the garages in the config file!",
 }
