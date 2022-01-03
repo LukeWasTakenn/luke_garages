@@ -510,10 +510,11 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
     health.body = ESX.Math.Round(GetVehicleBodyHealth(vehicle), 2)
     health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
     health.parts = brokenParts
+    
+    local vehProps = ESX.Game.GetVehicleProperties(vehicle)
 
     ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
         if doesOwn then
-            local vehProps = ESX.Game.GetVehicleProperties(vehicle)
 
             ESX.Game.DeleteVehicle(vehicle)
 
@@ -523,6 +524,6 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
         else
             ESX.ShowNotification(Locale('no_ownership'))
         end
-    end, vehPlate)
+    end, vehPlate, vehProps.model)
 
 end)

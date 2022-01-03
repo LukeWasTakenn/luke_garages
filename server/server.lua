@@ -62,18 +62,24 @@ ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback,
     end)
 end)
 
-ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate)
+ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate, model)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
 
     local plate = ESX.Math.Trim(plate)
 
-    MySQL.Async.fetchScalar('SELECT 1 FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
+    MySQL.Async.fetchScalar('SELECT `vehicle` FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
         ['@owner'] = identifier,
         ['@plate'] = plate
     }, function(result)
         if result then
-            callback(true)
+            result = json.decode(result)
+            if result.plate == plate and result.model == model then
+                callback(true)
+            else
+                -- Player tried to cheat
+                callback(false)
+            end
         else
             callback(false)
         end
@@ -91,7 +97,6 @@ AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
         ['@stored'] = stored,
         ['@plate'] = plate
     }, function(rowsChanged)
-        print(rowsChanged)
     end)
 end)
 

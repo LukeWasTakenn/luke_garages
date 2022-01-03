@@ -4,7 +4,7 @@ game 'gta5'
 
 author 'Luke - https://www.github.com/lukewastakenn'
 
-version '2.3.2'
+version '2.3.3'
 
 dependencies { 
     '/server:5104',
