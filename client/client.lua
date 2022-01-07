@@ -111,43 +111,6 @@ function GarageBlips(coords, type, label)
     EndTextCommandSetBlipName(blip)
 end
 
-exports['qtarget']:AddTargetModel({Config.ImpoundPed}, {
-    options = {
-        {
-            event = 'luke_garages:GetImpoundedVehicles',
-            icon = "fas fa-key",
-            label = Locale('access_impound'),
-            canInteract = function(entity)
-                hasChecked = false
-                if IsInsideZone('impound', entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end
-        },
-    },
-    distance = 2.5,
-})
-
-exports['qtarget']:AddTargetModel({Config.GaragePed}, {
-    options = {
-        {
-            event = "luke_garages:GetOwnedVehicles",
-            icon = "fas fa-warehouse",
-            label = Locale('take_out_vehicle'),
-            canInteract = function(entity)
-                hasChecked = false
-                if IsInsideZone('garage', entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end
-        },
-    },
-    distance = 2.5,
-})
-
-
 exports['qtarget']:Vehicle({
 	options = {
 		{
@@ -167,6 +130,7 @@ exports['qtarget']:Vehicle({
 })
 
 Citizen.CreateThread(function()
+    local garagePeds = {Config.DefaultGaragePed}
     for k, v in pairs(Config.Garages) do
 
         GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
@@ -185,8 +149,10 @@ Citizen.CreateThread(function()
         garages[k].type = v.type
         garages[k].label = v.label
 
+        table.insert(garagePeds, v.ped)
+
         garages[k]:onPlayerInOut(function(isPointInside, point)
-            local model = Config.GaragePed
+            local model = v.ped or Config.DefaultGaragePed
             if isPointInside then
         
                 ESX.Streaming.RequestModel(model)
@@ -208,9 +174,28 @@ Citizen.CreateThread(function()
             end
         end)
     end
+
+    exports['qtarget']:AddTargetModel(garagePeds, {
+        options = {
+            {
+                event = "luke_garages:GetOwnedVehicles",
+                icon = "fas fa-warehouse",
+                label = Locale('take_out_vehicle'),
+                canInteract = function(entity)
+                    hasChecked = false
+                    if IsInsideZone('garage', entity) and not hasChecked then
+                        hasChecked = true
+                        return true
+                    end
+                end
+            },
+        },
+        distance = 2.5,
+    })
 end)
 
 Citizen.CreateThread(function()
+    local impoundPeds = {Config.DefaultImpoundPed}
     for k, v in pairs(Config.Impounds) do
 
         ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type)
@@ -228,8 +213,10 @@ Citizen.CreateThread(function()
 
         impounds[k].type = v.type
 
+        table.insert(impoundPeds, v.ped)
+
         impounds[k]:onPlayerInOut(function(isPointInside, point)
-            local model = Config.ImpoundPed
+            local model = v.ped or Config.DefaultImpoundPed
             if isPointInside then
         
                 ESX.Streaming.RequestModel(model)
@@ -251,6 +238,24 @@ Citizen.CreateThread(function()
             end
         end)
     end
+
+    exports['qtarget']:AddTargetModel(impoundPeds, {
+        options = {
+            {
+                event = 'luke_garages:GetImpoundedVehicles',
+                icon = "fas fa-key",
+                label = Locale('access_impound'),
+                canInteract = function(entity)
+                    hasChecked = false
+                    if IsInsideZone('impound', entity) and not hasChecked then
+                        hasChecked = true
+                        return true
+                    end
+                end
+            },
+        },
+        distance = 2.5,
+    })
 end)
 
 RegisterNetEvent('luke_garages:SetVehicleMods', function(netId, svData)

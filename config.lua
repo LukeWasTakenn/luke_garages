@@ -16,8 +16,8 @@ Config.DefaultGarage = 'legion'
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 
-Config.GaragePed = `s_m_y_airworker`
-Config.ImpoundPed = `s_m_y_construct_01`
+Config.DefaultGaragePed = `s_m_y_airworker`
+Config.DefaultImpoundPed = `s_m_y_construct_01`
 
 Config.BlipColors = {
     Car = 3,
@@ -87,6 +87,7 @@ Config.Impounds = {
         TEMPLATE:
         {
             type = 'car', - can be 'car', 'boat' or 'aircraft',
+            ped = `ped_model_name` -- Define the model model you want to use for the impound (Optional)
             pedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
             spawns = { -- You can have as many as you'd like
@@ -184,7 +185,8 @@ Config.Garages = {
         TEMPLATE:
         {
             label = '', -- name that will be displayed in menus
-            type = 'car', - can be 'car', 'boat' or 'aircraft',
+            type = 'car', -- can be 'car', 'boat' or 'aircraft',
+            ped = `ped_model_name` -- Define the model model you want to use for the garage (Optional)
             pedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
             spawns = { -- You can have as many as you'd like
