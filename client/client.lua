@@ -130,7 +130,6 @@ exports['qtarget']:Vehicle({
 })
 
 Citizen.CreateThread(function()
-    local garagePeds = {Config.DefaultGaragePed}
     for k, v in pairs(Config.Garages) do
 
         GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
@@ -149,7 +148,24 @@ Citizen.CreateThread(function()
         garages[k].type = v.type
         garages[k].label = v.label
 
-        table.insert(garagePeds, v.ped)
+        exports['qtarget']:AddTargetModel({v.ped or Config.DefaultGaragePed}, {
+            options = {
+                {
+                    event = "luke_garages:GetOwnedVehicles",
+                    icon = "fas fa-warehouse",
+                    label = Locale('take_out_vehicle'),
+                    job = v.job or nil,
+                    canInteract = function(entity)
+                        hasChecked = false
+                        if IsInsideZone('garage', entity) and not hasChecked then
+                            hasChecked = true
+                            return true
+                        end
+                    end
+                },
+            },
+            distance = 2.5,
+        })
 
         garages[k]:onPlayerInOut(function(isPointInside, point)
             local model = v.ped or Config.DefaultGaragePed
@@ -174,24 +190,6 @@ Citizen.CreateThread(function()
             end
         end)
     end
-
-    exports['qtarget']:AddTargetModel(garagePeds, {
-        options = {
-            {
-                event = "luke_garages:GetOwnedVehicles",
-                icon = "fas fa-warehouse",
-                label = Locale('take_out_vehicle'),
-                canInteract = function(entity)
-                    hasChecked = false
-                    if IsInsideZone('garage', entity) and not hasChecked then
-                        hasChecked = true
-                        return true
-                    end
-                end
-            },
-        },
-        distance = 2.5,
-    })
 end)
 
 Citizen.CreateThread(function()
@@ -405,7 +403,7 @@ AddEventHandler('luke_garages:GetOwnedVehicles', function()
                 }
             })
         end
-    end, currentGarage.type)
+    end, currentGarage.type, currentGarage.job)
 end)
 
 RegisterNetEvent('luke_garages:ImpoundVehicleMenu')
@@ -520,7 +518,7 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
 
     ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
         if doesOwn then
-
+            if type(doesOwn) == 'table' then return ESX.ShowNotification("You can't store your job vehicle here") end
             ESX.Game.DeleteVehicle(vehicle)
 
             TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
@@ -529,6 +527,6 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
         else
             ESX.ShowNotification(Locale('no_ownership'))
         end
-    end, vehPlate, vehProps.model)
+    end, vehPlate, vehProps.model, currentGarage.job)
 
 end)

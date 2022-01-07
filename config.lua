@@ -100,6 +100,37 @@ Config.Impounds = {
 
 Config.Garages = {
     {
+        label = 'MRPD Police Garage',
+        type = 'car',
+        job = 'police',
+        ped = `s_m_y_cop_01`,
+        pedCoords = {x = 450.6633, y = -1027.3324, z = 27.5732, h = 5.1321},
+        zone = {name = 'mrpd', x = 439.36, y= -1021.04, z = 28.83, l = 20, w = 40, h = 0, minZ = 27.03, maxZ = 31.03},
+        spawns = {
+            {x = 446.4181, y = -1026.2117, z = 28.2490, h = 357.9764},
+            {x = 442.5637, y = -1025.5530, z = 28.2984, h = 1.7611},
+            {x = 438.6664, y = -1027.0088, z = 28.3936, h = 3.1104},
+            {x = 434.8707, y = -1026.6675, z = 28.4554, h = 3.9030},
+            {x = 431.6170, y = -1026.7904, z = 28.5088, h = 0.9789},
+            {x = 427.3045, y = -1027.6506, z = 28.5950, h = 5.8251}
+        }
+    },
+    {
+        label = 'Pillbox Ambulance Garage',
+        type = 'car',
+        job = 'ambulance',
+        ped = `s_m_m_doctor_01`,
+        pedCoords = {x = 319.3737, y = -559.4569, z = 27.7438, h = 21.0252},
+        zone = {name = 'pillbox', x = 325.59, y = -549.27, z = 28.74, l = 25, w = 25, h = 0, minZ = 27.74, maxZ = 30.74},
+        spawns = {
+            {x = 321.0445, y = -542.4713, z = 28.5142, h = 180.9354},
+            {x = 323.8813, y = -542.8687, z = 28.5135, h = 181.6986},
+            {x = 326.6019, y = -542.6691, z = 28.5133, h = 179.8377},
+            {x = 329.3755, y = -542.5102, z = 28.5137, h = 179.7974},
+            {x = 332.2085, y = -542.5237, z = 28.5125, h = 181.5656}
+        }
+    },
+    {
         label = 'Legion Garage',
         type = 'car', -- car, boat or aircraft
         pedCoords = {x = 215.90, y = -808.87, z = 29.74, h = 248.0}, -- The Ped MUST be inside the PolyZone
@@ -108,10 +139,10 @@ Config.Garages = {
             {x = 206.25, y = -801.21, z = 31.00, h = 250.47},
             {x = 208.72, y = -796.45, z = 30.95, h = 246.74},
             {x = 210.89, y = -791.42, z = 30.90, h = 248.02},
-            {x = 216.12, y = -801.68, z = 30.80, h = 68.72},  
-            {x = 218.21, y = -796.79, z = 30.77, h = 68.80},  
-            {x = 219.76, y = -791.47, z = 30.76, h = 69.89},  
-            {x = 221.37, y = -786.53, z = 30.78, h = 70.72},  
+            {x = 216.12, y = -801.68, z = 30.80, h = 68.72},
+            {x = 218.21, y = -796.79, z = 30.77, h = 68.80},
+            {x = 219.76, y = -791.47, z = 30.76, h = 69.89},
+            {x = 221.37, y = -786.53, z = 30.78, h = 70.72},
             {x = 212.52, y = -783.46, z = 30.89, h = 248.63},
         }
     },
@@ -121,7 +152,7 @@ Config.Garages = {
         pedCoords = {x = -1651.83, y = 63.90, z = 61.86, h = 338.03},
         zone = {name = 'americano', x = -1682.74, y = 60.93, z = 63.5, l = 59.6, w = 60.6, h = 329, minZ = 61.15, maxZ = 68.35},
         spawns = {
-            {x = -1660.57, y = 75.52, z = 63.20, h = 170.90}, 
+            {x = -1660.57, y = 75.52, z = 63.20, h = 170.90},
             {x = -1666.24, y = 79.84, z = 63.45, h = 171.92},
             {x = -1671.97, y = 84.59, z = 63.83, h = 169.94},
             {x = -1662.57, y = 57.99, z = 62.90, h = 293.91},
@@ -135,7 +166,7 @@ Config.Garages = {
         pedCoords = {x = 587.23, y = 2723.50, z = 41.13, h = 7.85},
         zone = {name = 'route68', x = 573.19, y = 2727.17, z = 42.06, l = 22.4, w = 51.2, h = 4, minZ = 41.08, maxZ = 45.08},
         Spawns = {
-            {x = 584.51, y = 2721.56, z = 41.88, h = 3.59}, 
+            {x = 584.51, y = 2721.56, z = 41.88, h = 3.59},
             {x = 581.14, y = 2721.32, z = 41.88, h = 3.99},
             {x = 578.15, y = 2720.59, z = 41.88, h = 4.65},
             {x = 574.86, y = 2721.09, z = 41.88, h = 4.85},
@@ -166,7 +197,7 @@ Config.Garages = {
         pedCoords = {x = -3428.27, y = 967.34, z = 7.35, h = 269.47},
         zone = {name = 'pier', x = -3426.48, y =  968.89, z = 8.35, l = 31.2, w = 39.2, h = 0, minZ = nil, maxZ = nil},
         spawns = {
-            {x = -3444.37, y = 952.64, z = 1.02, h = 98.70}, 
+            {x = -3444.37, y = 952.64, z = 1.02, h = 98.70},
             {x = -3441.02, y = 965.30, z = 0.17, h = 87.18},
         }
     },
@@ -178,7 +209,7 @@ Config.Garages = {
         spawns = {
             {x = -958.57, y = -2987.20, z = 13.95, h = 58.19},
             {x = -971.89, y = -3008.83, z = 13.95, h = 59.47},
-            {x = -984.30, y = -3025.04, z = 13.95, h = 58.52}, 
+            {x = -984.30, y = -3025.04, z = 13.95, h = 58.52},
         }
     },
     --[[ 
@@ -186,7 +217,8 @@ Config.Garages = {
         {
             label = '', -- name that will be displayed in menus
             type = 'car', -- can be 'car', 'boat' or 'aircraft',
-            ped = `ped_model_name` -- Define the model model you want to use for the garage (Optional)
+            job = 'jobName', -- Set garage to be only accessed and stored into by a job (Optional)
+            ped = `ped_model_name`, -- Define the model model you want to use for the garage (Optional)
             pedCoords = {x = X, y = X, z = X, h = X}, -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
             spawns = { -- You can have as many as you'd like

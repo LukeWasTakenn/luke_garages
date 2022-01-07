@@ -10,26 +10,45 @@ if Config.RestoreVehicles then
     end)
 end
 
-ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback, type)
+ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback, type, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
 
-    MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type', {
-        ['@identifier'] = identifier,
-        ['@type'] = type
-    }, function(result)
-        if result[1] ~= nil then
-            for k, v in pairs(result) do
-                local veh = json.decode(v.vehicle)
-                local health = json.decode(v.health)
-                table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+    if not job then
+        MySQL.Async.fetchAll("SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `job` IS NULL OR job = 'civ'", {
+            ['@identifier'] = identifier,
+            ['@type'] = type
+        }, function(result)
+            if result[1] ~= nil then
+                for k, v in pairs(result) do
+                    local veh = json.decode(v.vehicle)
+                    local health = json.decode(v.health)
+                    table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+                end
+                callback(vehicles)
+            else
+                callback(nil)
             end
-            callback(vehicles)
-        else
-            callback(nil)
-        end
-    end)
+        end)
+    else
+        MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `job` = @job', {
+            ['@identifier'] = identifier,
+            ['@type'] = type,
+            ['@job'] = job
+        }, function(result)
+            if result[1] ~= nil then
+                for k, v in pairs(result) do
+                    local veh = json.decode(v.vehicle)
+                    local health = json.decode(v.health)
+                    table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+                end
+                callback(vehicles)
+            else
+                callback(nil)
+            end
+        end)
+    end
 end)
 
 ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type)
@@ -62,19 +81,22 @@ ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback,
     end)
 end)
 
-ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate, model)
+ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate, model, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
 
     local plate = ESX.Math.Trim(plate)
 
-    MySQL.Async.fetchScalar('SELECT `vehicle` FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
+    MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
         ['@owner'] = identifier,
         ['@plate'] = plate
     }, function(result)
-        if result then
-            result = json.decode(result)
-            if result.plate == plate and result.model == model then
+        if result[1] then
+            local vehicle = json.decode(result[1].vehicle)
+            local vehicleJob = result[1].job
+            if vehicle.plate == plate and vehicle.model == model then
+                if not job and vehicleJob then return callback({true, false})
+                else return callback(true) end
                 callback(true)
             else
                 -- Player tried to cheat
