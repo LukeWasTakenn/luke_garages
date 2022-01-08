@@ -76,7 +76,7 @@ end
 function ImpoundBlips(coords, type)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, 285)
-    SetBlipScale(blip, 0.8)
+    SetBlipScale(blip, 0.6)
 
     if type == 'car' then
         SetBlipColour(blip, Config.BlipColors.Car)
@@ -92,23 +92,88 @@ function ImpoundBlips(coords, type)
     EndTextCommandSetBlipName(blip)
 end
 
-function GarageBlips(coords, type, label)
-    local blip = AddBlipForCoord(coords)
-    SetBlipSprite(blip, 357)
-    SetBlipScale(blip, 0.8)
+function GarageBlips(coords, type, label, job)
+    if job ~= 'police' and job ~= 'ambulance' and job ~= 'mechanic' then
+        local blip = AddBlipForCoord(coords)
+        SetBlipSprite(blip, 357)
+        SetBlipScale(blip, 0.8)
 
-    if type == 'car' then
-        SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'boat' then
-        SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'aircraft' then
-        SetBlipColour(blip, Config.BlipColors.Aircraft)
+        if type == 'car' then
+            SetBlipColour(blip, Config.BlipColors.Car)
+        elseif type == 'boat' then
+            SetBlipColour(blip, Config.BlipColors.Boat)
+        elseif type == 'aircraft' then
+            SetBlipColour(blip, Config.BlipColors.Aircraft)
+        end
+
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
+        EndTextCommandSetBlipName(blip)
     end
+end
 
-    SetBlipAsShortRange(blip, true)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
-    EndTextCommandSetBlipName(blip)
+function GarageBlipsPolice(coords, type, label, job)
+    if job == 'police' then
+        local blip = AddBlipForCoord(coords)
+        SetBlipSprite(blip, 357)
+        SetBlipScale(blip, 0.8)
+
+        if type == 'car' then
+            SetBlipColour(blip, Config.BlipColors.Car)
+        elseif type == 'boat' then
+            SetBlipColour(blip, Config.BlipColors.Boat)
+        elseif type == 'aircraft' then
+            SetBlipColour(blip, Config.BlipColors.Aircraft)
+        end
+
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
+        EndTextCommandSetBlipName(blip)
+    end
+end
+
+function GarageBlipsAmbulance(coords, type, label, job)
+    if job == 'ambulance' then
+        local blip = AddBlipForCoord(coords)
+        SetBlipSprite(blip, 357)
+        SetBlipScale(blip, 0.8)
+
+        if type == 'car' then
+            SetBlipColour(blip, Config.BlipColors.Car)
+        elseif type == 'boat' then
+            SetBlipColour(blip, Config.BlipColors.Boat)
+        elseif type == 'aircraft' then
+            SetBlipColour(blip, Config.BlipColors.Aircraft)
+        end
+
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
+        EndTextCommandSetBlipName(blip)
+    end
+end
+
+function GarageBlipsMechanic(coords, type, label, job)
+    if job == 'mechanic' then
+        local blip = AddBlipForCoord(coords)
+        SetBlipSprite(blip, 357)
+        SetBlipScale(blip, 0.8)
+
+        if type == 'car' then
+            SetBlipColour(blip, Config.BlipColors.Car)
+        elseif type == 'boat' then
+            SetBlipColour(blip, Config.BlipColors.Boat)
+        elseif type == 'aircraft' then
+            SetBlipColour(blip, Config.BlipColors.Aircraft)
+        end
+
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
+        EndTextCommandSetBlipName(blip)
+    end
 end
 
 exports['qtarget']:Vehicle({
@@ -131,8 +196,15 @@ exports['qtarget']:Vehicle({
 
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
+        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job)
 
-        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
+        if v.job == 'police' and ESX.PlayerData.job.name == 'police' then
+            GarageBlipsPolice(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job)
+        elseif v.job == 'ambulance' and ESX.PlayerData.job.name == 'ambulance' then
+            GarageBlipsAmbulance(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job)
+        elseif v.job == 'mechanic' and ESX.PlayerData.job.name == 'mechanic' then
+            GarageBlipsMechanic(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job)
+        end
 
         garages[k] = BoxZone:Create(
             vector3(v.zone.x, v.zone.y, v.zone.z),
