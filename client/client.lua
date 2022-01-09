@@ -521,7 +521,7 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
             if type(doesOwn) == 'table' then return ESX.ShowNotification("You can't store your job vehicle here") end
             ESX.Game.DeleteVehicle(vehicle)
 
-            TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
+            TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name, currentGarage.job)
 
             TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, vehPlate)
         else
