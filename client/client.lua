@@ -48,7 +48,7 @@ function DoVehicleDamage(vehicle, health)
 end
 
 function VehicleSpawn(data, spawn)
-    TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), spawn.h)
+    TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), type(spawn) == 'vector4' and spawn.w or spawn.h)
     if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
 end
 
@@ -169,11 +169,12 @@ Citizen.CreateThread(function()
 
         garages[k]:onPlayerInOut(function(isPointInside, point)
             local model = v.ped or Config.DefaultGaragePed
+            local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
             if isPointInside then
         
                 ESX.Streaming.RequestModel(model)
 
-                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, v.pedCoords.h, false, true)
+                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
                 SetEntityAlpha(ped, 0, false)
                 Wait(50)
                 SetEntityAlpha(ped, 255, false)
@@ -215,11 +216,12 @@ Citizen.CreateThread(function()
 
         impounds[k]:onPlayerInOut(function(isPointInside, point)
             local model = v.ped or Config.DefaultImpoundPed
+            local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
             if isPointInside then
         
                 ESX.Streaming.RequestModel(model)
 
-                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, v.pedCoords.h, false, true)
+                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
                 SetEntityAlpha(ped, 0, false)
                 Wait(50)
                 SetEntityAlpha(ped, 255, false)
