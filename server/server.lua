@@ -109,15 +109,16 @@ ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callb
 end)
 
 RegisterNetEvent('luke_garages:ChangeStored')
-AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
+AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage, job)
     if stored then stored = 1 else stored = 0 garage = 'none' end
 
     local plate = ESX.Math.Trim(plate)
 
-    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
+    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage, `job` = @job WHERE `plate` = @plate', {
         ['@garage'] = garage,
         ['@stored'] = stored,
-        ['@plate'] = plate
+        ['@plate'] = plate,
+        ['@job'] = job
     }, function(rowsChanged)
     end)
 end)
