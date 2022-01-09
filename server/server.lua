@@ -123,7 +123,8 @@ AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
 end)
 
 RegisterNetEvent('luke_garages:SaveVehicle')
-AddEventHandler('luke_garages:SaveVehicle', function(vehicle, health, plate)
+AddEventHandler('luke_garages:SaveVehicle', function(vehicle, health, plate, ent)
+    DeleteEntity(NetworkGetEntityFromNetworkId(ent))
     MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `health` = @health WHERE `plate` = @plate', {
         ['@health'] = json.encode(health),
         ['@vehicle'] = json.encode(vehicle),
