@@ -3,6 +3,7 @@ local impounds = {}
 
 local currentGarage = nil
 local currentImpound = nil
+local jobBlips = {}
 
 local ped = nil
 
@@ -92,7 +93,8 @@ function ImpoundBlips(coords, type)
     EndTextCommandSetBlipName(blip)
 end
 
-function GarageBlips(coords, type, label)
+function GarageBlips(coords, type, label, job)
+    if job then return end
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, 357)
     SetBlipScale(blip, 0.8)
@@ -109,6 +111,28 @@ function GarageBlips(coords, type, label)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
     EndTextCommandSetBlipName(blip)
+end
+
+local function JobGarageBlip(garage)
+    local index = #jobBlips + 1
+    local blip = AddBlipForCoord(garage.pedCoords.x, garage.pedCoords.y, garage.pedCoords.z)
+    jobBlips[index] = blip
+
+    SetBlipSprite(jobBlips[index], 357)
+    SetBlipScale(jobBlips[index], 0.8)
+
+    if garage.type == 'car' then
+        SetBlipColour(jobBlips[index], Config.BlipColors.Car)
+    elseif garage.type == 'boat' then
+        SetBlipColour(jobBlips[index], Config.BlipColors.Boat)
+    elseif garage.type == 'aircraft' then
+        SetBlipColour(jobBlips[index], Config.BlipColors.Aircraft)
+    end
+
+    SetBlipAsShortRange(jobBlips[index], true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(Config.SplitGarages == true and garage.label or Locale(garage.type) .. ' ' .. Locale('garage'))
+    EndTextCommandSetBlipName(jobBlips[index])
 end
 
 exports['qtarget']:Vehicle({
@@ -132,7 +156,7 @@ exports['qtarget']:Vehicle({
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
-        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
+        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job)
 
         garages[k] = BoxZone:Create(
             vector3(v.zone.x, v.zone.y, v.zone.z),
@@ -531,4 +555,11 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
         end
     end, vehPlate, vehProps.model, currentGarage.job)
 
+end)
+
+RegisterNetEvent('esx:setJob', function(job)
+    for i = 1, #jobBlips do RemoveBlip(jobBlips[i]) end
+    for i = 1, #Config.Garages do
+        if Config.Garages[i].job == job.name then JobGarageBlip(Config.Garages[i]) end
+    end
 end)
