@@ -522,7 +522,7 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
 
             TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
 
-            TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, VehToNet(vehicle))
+            TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, vehPlate,VehToNet(vehicle))
         else
             ESX.ShowNotification(Locale('no_ownership'))
         end
