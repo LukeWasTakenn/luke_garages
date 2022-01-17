@@ -539,12 +539,12 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
     health.body = ESX.Math.Round(GetVehicleBodyHealth(vehicle), 2)
     health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
     health.parts = brokenParts
-    
+
     local vehProps = ESX.Game.GetVehicleProperties(vehicle)
 
     ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
         if doesOwn then
-            if type(doesOwn) == 'table' then return ESX.ShowNotification("You can't store your job vehicle here") end
+            if type(doesOwn) == 'table' then return ESX.ShowNotification("You can't store this vehicle here") end
 
             TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
 

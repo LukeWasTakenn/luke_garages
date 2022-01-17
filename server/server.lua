@@ -95,9 +95,9 @@ ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callb
             local vehicle = json.decode(result[1].vehicle)
             local vehicleJob = result[1].job
             if vehicle.plate == plate and vehicle.model == model then
-                if not job and vehicleJob then return callback({true, false})
-                else return callback(true) end
-                callback(true)
+                if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
+                if job and job == vehicleJob then return callback(true)
+                else return callback({true, false}) end
             else
                 -- Player tried to cheat
                 callback(false)
