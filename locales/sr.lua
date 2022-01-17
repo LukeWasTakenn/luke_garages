@@ -11,6 +11,7 @@ Locales['sr'] = {
     ['take_out_vehicle_impound'] = "Izvadi vozilo iz deponije",
     ['no_vehicles_impound'] = "Nema vozila u deponiji",
     ['garage'] = "Garaža",
+    ['garage_cant_store'] = "Ne možes parkirati ovo vozilo ovde.",
     ['take_out_vehicle'] = "Izvadi vozilo",
     ['store_vehicle'] = "Parkiraj vozilo",
     ['in_garage'] = "U garaži",

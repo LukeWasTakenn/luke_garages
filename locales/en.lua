@@ -11,6 +11,7 @@ Locales['en'] = {
     ['take_out_vehicle_impound'] = "Take vehicle out of impound",
     ['no_vehicles_impound'] = "No vehicles in impound",
     ['garage'] = "Garage",
+    ['garage_cant_store'] = "You can't store this vehicle here",
     ['take_out_vehicle'] = "Take out vehicle",
     ['store_vehicle'] = "Store vehicle",
     ['in_garage'] = "In garage",

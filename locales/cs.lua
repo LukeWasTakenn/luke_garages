@@ -11,6 +11,7 @@ Locales['cs'] = {
     ['take_out_vehicle_impound'] = "Vyzvednout zabavená vozidla",
     ['no_vehicles_impound'] = "Žádná zabavená vozidla",
     ['garage'] = "Garáž",
+    ['garage_cant_store'] = "You can't store this vehicle here", -- Need translation
     ['take_out_vehicle'] = "Vyparkovat vozidlo",
     ['store_vehicle'] = "Uložit vozidlo",
     ['in_garage'] = "V garáži",
