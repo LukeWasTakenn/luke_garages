@@ -16,15 +16,17 @@ ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback
     local vehicles = {}
 
     if not job then
-        MySQL.Async.fetchAll("SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `job` IS NULL OR job = 'civ'", {
+        MySQL.Async.fetchAll("SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
             ['@identifier'] = identifier,
             ['@type'] = type
         }, function(result)
             if result[1] ~= nil then
                 for k, v in pairs(result) do
-                    local veh = json.decode(v.vehicle)
-                    local health = json.decode(v.health)
-                    table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+                    if not v.job or v.job == 'civ' then
+                        local veh = json.decode(v.vehicle)
+                        local health = json.decode(v.health)
+                        table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+                    end
                 end
                 callback(vehicles)
             else
