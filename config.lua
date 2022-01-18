@@ -86,6 +86,7 @@ Config.Impounds = {
     --[[
         TEMPLATE:
         {
+            label = "" -- Display label for the impound (Optional)
             type = 'car', - can be 'car', 'boat' or 'aircraft',
             ped = `ped_model_name` -- Define the model model you want to use for the impound (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone

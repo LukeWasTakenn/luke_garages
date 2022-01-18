@@ -74,7 +74,7 @@ function IsInsideZone(type, entity)
     end
 end
 
-function ImpoundBlips(coords, type)
+function ImpoundBlips(coords, type, label)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, 285)
     SetBlipScale(blip, 0.8)
@@ -89,7 +89,7 @@ function ImpoundBlips(coords, type)
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(Locale(type) .. ' ' .. Locale('impound_lot'))
+    AddTextComponentString(label or Locale(type) .. ' ' .. Locale('impound_lot'))
     EndTextCommandSetBlipName(blip)
 end
 
@@ -221,7 +221,7 @@ Citizen.CreateThread(function()
     local impoundPeds = {Config.DefaultImpoundPed}
     for k, v in pairs(Config.Impounds) do
 
-        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type)
+        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
 
         impounds[k] = BoxZone:Create(
             vector3(v.zone.x, v.zone.y, v.zone.z),
@@ -298,7 +298,7 @@ AddEventHandler('luke_garages:GetImpoundedVehicles', function()
         TriggerEvent('nh-context:sendMenu', {
             {
                 id = 0,
-                header = Locale(currentImpound.type) .. ' ' .. Locale('impound'),
+                header = currentImpound.label or Locale(currentImpound.type) .. ' ' .. Locale('impound'),
                 txt = ''
             },
         })
