@@ -74,18 +74,20 @@ function IsInsideZone(type, entity)
     end
 end
 
-function ImpoundBlips(coords, type, label)
+function ImpoundBlips(coords, type, label, blipOptions)
     local blip = AddBlipForCoord(coords)
-    SetBlipSprite(blip, 285)
-    SetBlipScale(blip, 0.8)
+    SetBlipSprite(blip, blipOptions?.sprite or 285)
+    SetBlipScale(blip, blipOptions?.scale or 0.8)
 
-    if type == 'car' then
-        SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'boat' then
-        SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'aircraft' then
-        SetBlipColour(blip, Config.BlipColors.Aircraft)
-    end
+    if not blipOptions?.colour then
+        if type == 'car' then
+            SetBlipColour(blip, Config.BlipColors.Car)
+        elseif type == 'boat' then
+            SetBlipColour(blip, Config.BlipColors.Boat)
+        elseif type == 'aircraft' then
+            SetBlipColour(blip, Config.BlipColors.Aircraft)
+        end
+    else SetBlipColour(blip, blipOptions.colour) end
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
@@ -93,19 +95,21 @@ function ImpoundBlips(coords, type, label)
     EndTextCommandSetBlipName(blip)
 end
 
-function GarageBlips(coords, type, label, job)
+function GarageBlips(coords, type, label, job, blipOptions)
     if job then return end
     local blip = AddBlipForCoord(coords)
-    SetBlipSprite(blip, 357)
-    SetBlipScale(blip, 0.8)
+    SetBlipSprite(blip, blipOptions?.sprite or 357)
+    SetBlipScale(blip, blipOptions?.scale or 0.8)
 
-    if type == 'car' then
-        SetBlipColour(blip, Config.BlipColors.Car)
-    elseif type == 'boat' then
-        SetBlipColour(blip, Config.BlipColors.Boat)
-    elseif type == 'aircraft' then
-        SetBlipColour(blip, Config.BlipColors.Aircraft)
-    end
+    if not blipOptions?.colour then
+        if type == 'car' then
+            SetBlipColour(blip, Config.BlipColors.Car)
+        elseif type == 'boat' then
+            SetBlipColour(blip, Config.BlipColors.Boat)
+        elseif type == 'aircraft' then
+            SetBlipColour(blip, Config.BlipColors.Aircraft)
+        end
+    else SetBlipColour(blip, blipOptions.colour) end
 
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
@@ -156,7 +160,7 @@ exports['qtarget']:Vehicle({
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Garages) do
 
-        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job)
+        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
 
         garages[k] = BoxZone:Create(
             vector3(v.zone.x, v.zone.y, v.zone.z),
@@ -221,7 +225,7 @@ Citizen.CreateThread(function()
     local impoundPeds = {Config.DefaultImpoundPed}
     for k, v in pairs(Config.Impounds) do
 
-        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label)
+        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.blip)
 
         impounds[k] = BoxZone:Create(
             vector3(v.zone.x, v.zone.y, v.zone.z),

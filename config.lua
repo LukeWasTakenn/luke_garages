@@ -58,6 +58,11 @@ Config.Impounds = {
         type = 'car', -- car, boat or aircraft
         pedCoords = vector4(409.25, -1623.08, 28.29, 228.84),
         zone = {name = 'innocence', x = 408.02, y = -1637.08, z = 29.29, l = 31.6, w = 26.8, h = 320, minZ = 28.29, maxZ = 32.29}, -- The zone is only here for the ped to not have the impound option everywhere in the world
+        blip = {
+            scale = 0.8,
+            sprite = 285,
+            colour = 3
+        },
         spawns = {
             vector4(416.83, -1628.29, 29.11, 140.43),
             vector4(419.58, -1629.71, 29.11, 141.98),
@@ -86,11 +91,16 @@ Config.Impounds = {
     --[[
         TEMPLATE:
         {
-            label = "" -- Display label for the impound (Optional)
-            type = 'car', - can be 'car', 'boat' or 'aircraft',
+            label = "", -- Display label for the impound (Optional)
+            type = 'car', -- can be 'car', 'boat' or 'aircraft',
             ped = `ped_model_name` -- Define the model model you want to use for the impound (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
+            blip = { -- Define specific blip setting for this impound (Optional)
+                scale = 0.8,
+                sprite = 285,
+                colour = 3
+            },
             spawns = { -- You can have as many as you'd like
                 vector4(x, y, z, h),
                 vector4(x, y, z, h)
@@ -100,37 +110,6 @@ Config.Impounds = {
 }
 
 Config.Garages = {
-    {
-        label = 'MRPD Police Garage',
-        type = 'car',
-        job = 'police',
-        ped = `s_m_y_cop_01`,
-        pedCoords = vector4(450.6633, -1027.3324, 27.5732, 5.1321),
-        zone = {name = 'mrpd', x = 439.36, y= -1021.04, z = 28.83, l = 20, w = 40, h = 0, minZ = 27.03, maxZ = 31.03},
-        spawns = {
-            vector4(446.4181, -1026.2117, 28.2490, 357.9764),
-            vector4(442.5637, -1025.5530, 28.2984, 1.7611),
-            vector4(438.6664, -1027.0088, 28.3936, 3.1104),
-            vector4(434.8707, -1026.6675, 28.4554, 3.9030),
-            vector4(431.6170, -1026.7904, 28.5088, 0.9789),
-            vector4(427.3045, -1027.6506, 28.5950, 5.8251)
-        }
-    },
-    {
-        label = 'Pillbox Ambulance Garage',
-        type = 'car',
-        job = 'ambulance',
-        ped = `s_m_m_doctor_01`,
-        pedCoords = vector4(319.3737, -559.4569, 27.7438, 21.0252),
-        zone = {name = 'pillbox', x = 325.59, y = -549.27, z = 28.74, l = 25, w = 25, h = 0, minZ = 27.74, maxZ = 30.74},
-        spawns = {
-            vector4(321.0445, 542.4713, 28.5142, 180.9354),
-            vector4(323.8813, 542.8687, 28.5135, 181.6986),
-            vector4(326.6019, 542.6691, 28.5133, 179.8377),
-            vector4(329.3755, 542.5102, 28.5137, 179.7974),
-            vector4(332.2085, 542.5237, 28.5125, 181.5656)
-        }
-    },
     {
         label = 'Legion Garage',
         type = 'car', -- car, boat or aircraft
@@ -214,7 +193,38 @@ Config.Garages = {
             vector4(-984.30, 3025.04, 13.95, 58.52),
         }
     },
-    --[[ 
+    {
+        label = 'MRPD Police Garage',
+        type = 'car',
+        job = 'police',
+        ped = `s_m_y_cop_01`,
+        pedCoords = vector4(450.6633, -1027.3324, 27.5732, 5.1321),
+        zone = {name = 'mrpd', x = 439.36, y= -1021.04, z = 28.83, l = 20, w = 40, h = 0, minZ = 27.03, maxZ = 31.03},
+        spawns = {
+            vector4(446.4181, -1026.2117, 28.2490, 357.9764),
+            vector4(442.5637, -1025.5530, 28.2984, 1.7611),
+            vector4(438.6664, -1027.0088, 28.3936, 3.1104),
+            vector4(434.8707, -1026.6675, 28.4554, 3.9030),
+            vector4(431.6170, -1026.7904, 28.5088, 0.9789),
+            vector4(427.3045, -1027.6506, 28.5950, 5.8251)
+        }
+    },
+    {
+        label = 'Pillbox Ambulance Garage',
+        type = 'car',
+        job = 'ambulance',
+        ped = `s_m_m_doctor_01`,
+        pedCoords = vector4(319.3737, -559.4569, 27.7438, 21.0252),
+        zone = {name = 'pillbox', x = 325.59, y = -549.27, z = 28.74, l = 25, w = 25, h = 0, minZ = 27.74, maxZ = 30.74},
+        spawns = {
+            vector4(321.0445, 542.4713, 28.5142, 180.9354),
+            vector4(323.8813, 542.8687, 28.5135, 181.6986),
+            vector4(326.6019, 542.6691, 28.5133, 179.8377),
+            vector4(329.3755, 542.5102, 28.5137, 179.7974),
+            vector4(332.2085, 542.5237, 28.5125, 181.5656)
+        }
+    },
+    --[[
         TEMPLATE:
         {
             label = '', -- name that will be displayed in menus
@@ -223,6 +233,11 @@ Config.Garages = {
             ped = `ped_model_name`, -- Define the model model you want to use for the garage (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
+            blip = { -- Define specific blip setting for this garage (Optional)
+                scale = 0.8,
+                sprite = 357,
+                colour = 3
+            },
             spawns = { -- You can have as many as you'd like
                 vector4(x, y, z, h),
                 vector4(x, y, z, h)
