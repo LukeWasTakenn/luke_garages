@@ -14,7 +14,7 @@ I used esx_vehicleshop, but the resource should work with anything that follows 
 
 - [PolyZone](https://github.com/mkafrin/PolyZone)
 - [qtarget](https://github.com/QuantusRP/qtarget)
-- [nh-context](https://github.com/LukeWasTakenn/nh-context) - Since the original nh-context was removed, this is a link to my fork that should be the same as the original. Any fork version that's the same as original will work fine.
+- [zf_context](https://github.com/zf-development/zf_context)
 - Server game build 1868 or newer\*
 
 Make sure to follow the well detailed installation instructions on qtarget.
@@ -55,4 +55,5 @@ Depending on the game build number you choose is the GTA DLC your server is goin
 2060 - Casino Heist
 2189 - Cayo Perico Heist
 2373 - Tuners update
+2545 - The Contract update
 ```
