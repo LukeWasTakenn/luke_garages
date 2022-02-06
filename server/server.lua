@@ -34,22 +34,40 @@ ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback
             end
         end)
     else
-        MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `job` = @job', {
-            ['@identifier'] = identifier,
-            ['@type'] = type,
-            ['@job'] = job
-        }, function(result)
-            if result[1] ~= nil then
-                for k, v in pairs(result) do
-                    local veh = json.decode(v.vehicle)
-                    local health = json.decode(v.health)
-                    table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+        if Config.societyjobgarage == true then
+            MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `type` = @type AND `job` = @job', {
+                ['@type'] = type,
+                ['@job'] = job
+            }, function(result)
+                if result[1] ~= nil then
+                    for k, v in pairs(result) do
+                        local veh = json.decode(v.vehicle)
+                        local health = json.decode(v.health)
+                        table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+                    end
+                    callback(vehicles)
+                else
+                    callback(nil)
                 end
-                callback(vehicles)
-            else
-                callback(nil)
-            end
-        end)
+            end)
+        else
+            MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `job` = @job', {
+                ['@identifier'] = identifier,
+                ['@type'] = type,
+                ['@job'] = job
+            }, function(result)
+                if result[1] ~= nil then
+                    for k, v in pairs(result) do
+                        local veh = json.decode(v.vehicle)
+                        local health = json.decode(v.health)
+                        table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
+                    end
+                    callback(vehicles)
+                else
+                    callback(nil)
+                end
+            end)
+        end
     end
 end)
 
