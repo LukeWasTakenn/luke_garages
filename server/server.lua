@@ -71,10 +71,11 @@ ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback
     end
 end)
 
-ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type, job)
+ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
+    local job = xPlayer.job.name
 
     local worldVehicles = GetAllVehicles()
     if Config.societyjobgarage == true then
