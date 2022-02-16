@@ -288,7 +288,7 @@ end)
 
 RegisterNetEvent('luke_garages:SetVehicleMods', function(netId, svData)
     while not NetworkDoesEntityExistWithNetworkId(netId) do Wait(25) end
-    vehicle = NetToVeh(netId)
+    local vehicle = NetToVeh(netId)
     ESX.Game.SetVehicleProperties(vehicle, json.decode(svData.vehicle))
     TriggerServerEvent('luke_garages:ChangeStored', svData.plate, false)
     DoVehicleDamage(vehicle, json.decode(svData.health))

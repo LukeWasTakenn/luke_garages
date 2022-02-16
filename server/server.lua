@@ -180,7 +180,7 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
     if type(model) == 'string' then model = GetHashKey(model) end
     Citizen.CreateThread(function()
         entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
-        while not DoesEntityExist(entity) do Wait(20) end
+        Wait(50)
         netId = NetworkGetNetworkIdFromEntity(entity)
         local entityOwner = NetworkGetEntityOwner(entity)
         MySQL.Async.fetchAll('SELECT vehicle, plate, health FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
