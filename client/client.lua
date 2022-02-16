@@ -77,7 +77,7 @@ end
 function ImpoundBlips(coords, type, label, blipOptions)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, blipOptions?.sprite or 285)
-    SetBlipScale(blip, blipOptions?.scale or 0.8)
+    SetBlipScale(blip, blipOptions?.scale or 0.6)
 
     if not blipOptions?.colour then
         if type == 'car' then
@@ -99,7 +99,7 @@ function GarageBlips(coords, type, label, job, blipOptions)
     if job then return end
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, blipOptions?.sprite or 357)
-    SetBlipScale(blip, blipOptions?.scale or 0.8)
+    SetBlipScale(blip, blipOptions?.scale or 0.6)
 
     if not blipOptions?.colour then
         if type == 'car' then
@@ -292,6 +292,8 @@ RegisterNetEvent('luke_garages:SetVehicleMods', function(netId, svData)
     ESX.Game.SetVehicleProperties(vehicle, json.decode(svData.vehicle))
     TriggerServerEvent('luke_garages:ChangeStored', svData.plate, false)
     DoVehicleDamage(vehicle, json.decode(svData.health))
+    local plate = GetVehicleNumberPlateText(vehicle)
+    TriggerServerEvent('hsn-hotwire:addKeys',plate)
 end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles')
@@ -368,7 +370,7 @@ AddEventHandler('luke_garages:GetOwnedVehicles', function()
                 local vehModel = v.vehicle.model
                 local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
                 local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
-                local vehTitle = vehMake .. ' ' .. vehName
+                local vehTitle = vehName --vehMake .. ' ' .. vehName
                 if Config.SplitGarages then
                     if (v.stored == 1 or v.stored == true) and (v.garage == (currentGarage.zone.name or currentGarage.label) or not v.garage) then
                         table.insert(menu, {
