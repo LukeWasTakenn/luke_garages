@@ -71,61 +71,128 @@ ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback
     end
 end)
 
-ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type)
+ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
 
     local worldVehicles = GetAllVehicles()
-
-    MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `stored` = 0', {
-        ['@identifier'] = identifier,
-        ['@type'] = type,
-    }, function(results)
-        if results[1] ~= nil then
-            for k, v in pairs(results) do
-                local veh = json.decode(v.vehicle)
-                local health = json.decode(v.health)
-                for index, vehicle in pairs(worldVehicles) do
-                    if ESX.Math.Trim(v.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
-                        break
-                    elseif index == #worldVehicles then
-                        table.insert(vehicles, {plate = v.plate, vehicle = veh, health = health})
+    if Config.societyjobgarage == true then
+        MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE  `type` = @type AND `stored` = 0 AND `job` = @job' , {
+            ['@job'] = job,
+            ['@type'] = type,
+        }, function(results)
+            if results[1] ~= nil then
+                for k, v in pairs(results) do
+                    local veh = json.decode(v.vehicle)
+                    local health = json.decode(v.health)
+                    for index, vehicle in pairs(worldVehicles) do
+                        if ESX.Math.Trim(v.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                            break
+                        elseif index == #worldVehicles then
+                            table.insert(vehicles, {plate = v.plate, vehicle = veh, health = health})
+                        end
                     end
                 end
+                callback(vehicles)
+            else
+                callback(nil)
             end
-            callback(vehicles)
-        else
-            callback(nil)
-        end
-    end)
+        end)
+    else
+        MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type AND `stored` = 0', {
+            ['@identifier'] = identifier,
+            ['@type'] = type,
+        }, function(results)
+            if results[1] ~= nil then
+                for k, v in pairs(results) do
+                    local veh = json.decode(v.vehicle)
+                    local health = json.decode(v.health)
+                    for index, vehicle in pairs(worldVehicles) do
+                        if ESX.Math.Trim(v.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                            break
+                        elseif index == #worldVehicles then
+                            table.insert(vehicles, {plate = v.plate, vehicle = veh, health = health})
+                        end
+                    end
+                end
+                callback(vehicles)
+            else
+                callback(nil)
+            end
+        end)
+    end
 end)
 
 ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate, model, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
+    local xjob = xPlayer.job.name
 
     local plate = ESX.Math.Trim(plate)
-
-    MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
-        ['@owner'] = identifier,
-        ['@plate'] = plate
-    }, function(result)
-        if result[1] then
-            local vehicle = json.decode(result[1].vehicle)
-            local vehicleJob = result[1].job
-            if vehicle.plate == plate and vehicle.model == model then
-                if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
-                if job and job == vehicleJob then return callback(true)
-                else return callback({true, false}) end
+    if Config.societyjobgarage then
+        if xjob == job then
+        
+            MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM `owned_vehicles` WHERE  `plate` = @plate', {
+                ['@plate'] = plate
+            }, function(result)
+                if result[1] then
+                    local vehicle = json.decode(result[1].vehicle)
+                    local vehicleJob = result[1].job
+                    if vehicle.plate == plate and vehicle.model == model then
+                        if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
+                        if job and job == vehicleJob then return callback(true)
+                        else return callback({true, false}) end
+                    else
+                        -- Player tried to cheat
+                        callback(false)
+                    end
+                else
+                    callback(false)
+                end
+            end)
+        else
+            MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
+                ['@owner'] = identifier,
+                ['@plate'] = plate
+            }, function(result)
+                if result[1] then
+                    local vehicle = json.decode(result[1].vehicle)
+                    local vehicleJob = result[1].job
+                    if vehicle.plate == plate and vehicle.model == model then
+                        if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
+                        if job and job == vehicleJob then return callback(true)
+                        else return callback({true, false}) end
+                    else
+                        -- Player tried to cheat
+                        callback(false)
+                    end
+                else
+                    callback(false)
+                end
+            end)
+        end
+    else
+        MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM `owned_vehicles` WHERE `owner` = @owner AND `plate` = @plate', {
+            ['@owner'] = identifier,
+            ['@plate'] = plate
+        }, function(result)
+            if result[1] then
+                local vehicle = json.decode(result[1].vehicle)
+                local vehicleJob = result[1].job
+                if vehicle.plate == plate and vehicle.model == model then
+                    if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
+                    if job and job == vehicleJob then return callback(true)
+                    else return callback({true, false}) end
+                else
+                    -- Player tried to cheat
+                    callback(false)
+                end
             else
-                -- Player tried to cheat
                 callback(false)
             end
-        else
-            callback(false)
-        end
-    end)
+        end)
+    end
 end)
 
 RegisterNetEvent('luke_garages:ChangeStored')
