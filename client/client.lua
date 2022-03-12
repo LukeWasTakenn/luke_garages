@@ -78,17 +78,7 @@ function ImpoundBlips(coords, type, label, blipOptions)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, blipOptions?.sprite or 285)
     SetBlipScale(blip, blipOptions?.scale or 0.8)
-
-    if not blipOptions?.colour then
-        if type == 'car' then
-            SetBlipColour(blip, Config.BlipColors.Car)
-        elseif type == 'boat' then
-            SetBlipColour(blip, Config.BlipColors.Boat)
-        elseif type == 'aircraft' then
-            SetBlipColour(blip, Config.BlipColors.Aircraft)
-        end
-    else SetBlipColour(blip, blipOptions.colour) end
-
+    SetBlipColour(blip, blipOptions?.colour and blipOptions.colour or type == 'car' and Config.BlipColors.Car or type == 'boat' and Config.BlipColors.Boat or Config.BlipColors.Aircraft)
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(label or Locale(type) .. ' ' .. Locale('impound_lot'))
@@ -100,17 +90,7 @@ function GarageBlips(coords, type, label, job, blipOptions)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, blipOptions?.sprite or 357)
     SetBlipScale(blip, blipOptions?.scale or 0.8)
-
-    if not blipOptions?.colour then
-        if type == 'car' then
-            SetBlipColour(blip, Config.BlipColors.Car)
-        elseif type == 'boat' then
-            SetBlipColour(blip, Config.BlipColors.Boat)
-        elseif type == 'aircraft' then
-            SetBlipColour(blip, Config.BlipColors.Aircraft)
-        end
-    else SetBlipColour(blip, blipOptions.colour) end
-
+    SetBlipColour(blip, blipOptions?.colour ~= nil and blipOptions.colour or type == 'car' and Config.BlipColors.Car or type == 'boat' and Config.BlipColors.Boat or Config.BlipColors.Aircraft)
     SetBlipAsShortRange(blip, true)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(Config.SplitGarages == true and label or Locale(type) .. ' ' .. Locale('garage'))
@@ -121,18 +101,9 @@ local function JobGarageBlip(garage)
     local index = #jobBlips + 1
     local blip = AddBlipForCoord(garage.pedCoords.x, garage.pedCoords.y, garage.pedCoords.z)
     jobBlips[index] = blip
-
     SetBlipSprite(jobBlips[index], 357)
     SetBlipScale(jobBlips[index], 0.8)
-
-    if garage.type == 'car' then
-        SetBlipColour(jobBlips[index], Config.BlipColors.Car)
-    elseif garage.type == 'boat' then
-        SetBlipColour(jobBlips[index], Config.BlipColors.Boat)
-    elseif garage.type == 'aircraft' then
-        SetBlipColour(jobBlips[index], Config.BlipColors.Aircraft)
-    end
-
+    SetBlipColour(jobBlips[index], garage.type == 'car' and Config.BlipColors.Car or garage.type == 'boat' and Config.BlipColors.Boat or Config.BlipColors.Aircraft)
     SetBlipAsShortRange(jobBlips[index], true)
     BeginTextCommandSetBlipName("STRING")
     AddTextComponentString(Config.SplitGarages == true and garage.label or Locale(garage.type) .. ' ' .. Locale('garage'))
@@ -157,125 +128,34 @@ exports['qtarget']:Vehicle({
 	distance = 2.5
 })
 
-Citizen.CreateThread(function()
-    for k, v in pairs(Config.Garages) do
+for k, v in pairs(Config.Garages) do
 
-        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
+    GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
 
-        garages[k] = BoxZone:Create(
-            vector3(v.zone.x, v.zone.y, v.zone.z),
-            v.zone.l, v.zone.w, {
-                name = v.zone.name,
-                heading = v.zone.h,
-                debugPoly = false,
-                minZ = v.zone.minZ,
-                maxZ = v.zone.maxZ
-            }
-        )
+    garages[k] = BoxZone:Create(
+        vector3(v.zone.x, v.zone.y, v.zone.z),
+        v.zone.l, v.zone.w, {
+            name = v.zone.name,
+            heading = v.zone.h,
+            debugPoly = false,
+            minZ = v.zone.minZ,
+            maxZ = v.zone.maxZ
+        }
+    )
 
-        garages[k].type = v.type
-        garages[k].label = v.label
+    garages[k].type = v.type
+    garages[k].label = v.label
 
-        exports['qtarget']:AddTargetModel({v.ped or Config.DefaultGaragePed}, {
-            options = {
-                {
-                    event = "luke_garages:GetOwnedVehicles",
-                    icon = "fas fa-warehouse",
-                    label = Locale('take_out_vehicle'),
-                    job = v.job or nil,
-                    canInteract = function(entity)
-                        hasChecked = false
-                        if IsInsideZone('garage', entity) and not hasChecked then
-                            hasChecked = true
-                            return true
-                        end
-                    end
-                },
-            },
-            distance = 2.5,
-        })
-
-        garages[k]:onPlayerInOut(function(isPointInside, point)
-            local model = v.ped or Config.DefaultGaragePed
-            local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
-            if isPointInside then
-        
-                ESX.Streaming.RequestModel(model)
-
-                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
-                SetEntityAlpha(ped, 0, false)
-                Wait(50)
-                SetEntityAlpha(ped, 255, false)
-
-                SetPedFleeAttributes(ped, 2)
-                SetBlockingOfNonTemporaryEvents(ped, true)
-                SetPedCanRagdollFromPlayerImpact(ped, false)
-                SetPedDiesWhenInjured(ped, false)
-                FreezeEntityPosition(ped, true)
-                SetEntityInvincible(ped, true)
-                SetPedCanPlayAmbientAnims(ped, false)
-            else
-                DeletePed(ped)
-            end
-        end)
-    end
-end)
-
-Citizen.CreateThread(function()
-    local impoundPeds = {Config.DefaultImpoundPed}
-    for k, v in pairs(Config.Impounds) do
-
-        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.blip)
-
-        impounds[k] = BoxZone:Create(
-            vector3(v.zone.x, v.zone.y, v.zone.z),
-            v.zone.l, v.zone.w, {
-                name = v.zone.name,
-                heading = v.zone.h,
-                debugPoly = false,
-                minZ = v.zone.minZ,
-                maxZ = v.zone.maxZ
-            }
-        )
-
-        impounds[k].type = v.type
-
-        table.insert(impoundPeds, v.ped)
-
-        impounds[k]:onPlayerInOut(function(isPointInside, point)
-            local model = v.ped or Config.DefaultImpoundPed
-            local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
-            if isPointInside then
-        
-                ESX.Streaming.RequestModel(model)
-
-                ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
-                SetEntityAlpha(ped, 0, false)
-                Wait(50)
-                SetEntityAlpha(ped, 255, false)
-
-                SetPedFleeAttributes(ped, 2)
-                SetBlockingOfNonTemporaryEvents(ped, true)
-                SetPedCanRagdollFromPlayerImpact(ped, false)
-                SetPedDiesWhenInjured(ped, false)
-                FreezeEntityPosition(ped, true)
-                SetEntityInvincible(ped, true)
-                SetPedCanPlayAmbientAnims(ped, false)
-            else
-                DeletePed(ped)
-            end
-        end)
-    end
-
-    exports['qtarget']:AddTargetModel(impoundPeds, {
+    exports['qtarget']:AddTargetModel({v.ped or Config.DefaultGaragePed}, {
         options = {
             {
-                event = 'luke_garages:GetImpoundedVehicles',
-                icon = "fas fa-key",
-                label = Locale('access_impound'),
+                event = "luke_garages:GetOwnedVehicles",
+                icon = "fas fa-warehouse",
+                label = Locale('take_out_vehicle'),
+                job = v.job or nil,
                 canInteract = function(entity)
                     hasChecked = false
-                    if IsInsideZone('impound', entity) and not hasChecked then
+                    if IsInsideZone('garage', entity) and not hasChecked then
                         hasChecked = true
                         return true
                     end
@@ -284,7 +164,94 @@ Citizen.CreateThread(function()
         },
         distance = 2.5,
     })
-end)
+
+    garages[k]:onPlayerInOut(function(isPointInside, point)
+        local model = v.ped or Config.DefaultGaragePed
+        local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
+        if isPointInside then
+    
+            ESX.Streaming.RequestModel(model)
+
+            ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
+            SetEntityAlpha(ped, 0, false)
+            Wait(50)
+            SetEntityAlpha(ped, 255, false)
+
+            SetPedFleeAttributes(ped, 2)
+            SetBlockingOfNonTemporaryEvents(ped, true)
+            SetPedCanRagdollFromPlayerImpact(ped, false)
+            SetPedDiesWhenInjured(ped, false)
+            FreezeEntityPosition(ped, true)
+            SetEntityInvincible(ped, true)
+            SetPedCanPlayAmbientAnims(ped, false)
+        else
+            DeletePed(ped)
+        end
+    end)
+end
+
+local impoundPeds = {Config.DefaultImpoundPed}
+for k, v in pairs(Config.Impounds) do
+
+    ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.blip)
+
+    impounds[k] = BoxZone:Create(
+        vector3(v.zone.x, v.zone.y, v.zone.z),
+        v.zone.l, v.zone.w, {
+            name = v.zone.name,
+            heading = v.zone.h,
+            debugPoly = false,
+            minZ = v.zone.minZ,
+            maxZ = v.zone.maxZ
+        }
+    )
+
+    impounds[k].type = v.type
+
+    table.insert(impoundPeds, v.ped)
+
+    impounds[k]:onPlayerInOut(function(isPointInside, point)
+        local model = v.ped or Config.DefaultImpoundPed
+        local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
+        if isPointInside then
+    
+            ESX.Streaming.RequestModel(model)
+
+            ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
+            SetEntityAlpha(ped, 0, false)
+            Wait(50)
+            SetEntityAlpha(ped, 255, false)
+
+            SetPedFleeAttributes(ped, 2)
+            SetBlockingOfNonTemporaryEvents(ped, true)
+            SetPedCanRagdollFromPlayerImpact(ped, false)
+            SetPedDiesWhenInjured(ped, false)
+            FreezeEntityPosition(ped, true)
+            SetEntityInvincible(ped, true)
+            SetPedCanPlayAmbientAnims(ped, false)
+        else
+            DeletePed(ped)
+        end
+    end)
+end
+
+exports['qtarget']:AddTargetModel(impoundPeds, {
+    options = {
+        {
+            event = 'luke_garages:GetImpoundedVehicles',
+            icon = "fas fa-key",
+            label = Locale('access_impound'),
+            canInteract = function(entity)
+                hasChecked = false
+                if IsInsideZone('impound', entity) and not hasChecked then
+                    hasChecked = true
+                    return true
+                end
+            end
+        },
+    },
+    distance = 2.5,
+})
 
 RegisterNetEvent('luke_garages:SetVehicleMods', function(netId, svData)
     while not NetworkDoesEntityExistWithNetworkId(netId) do Wait(25) end
