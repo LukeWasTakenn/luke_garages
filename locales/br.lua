@@ -22,4 +22,5 @@ Locales['br'] = {
     ['no_money_cash'] = "Você não tem dinheiro suficiente com você",
     ['no_money_bank'] = "Você não tem dinheiro suficiente em sua conta bancária",
     ['menu_go_back'] = "< Voltar",
+    ['vehicle_already_exists'] = "Vehicle already exists"
 }

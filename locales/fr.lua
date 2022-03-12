@@ -11,6 +11,7 @@ Locales['fr'] = {
     ['take_out_vehicle_impound'] = "Sortir Véhicule Fourrière",
     ['no_vehicles_impound'] = "Aucun Véhicule en Fourrière",
     ['garage'] = "Garage",
+    ['garage_cant_store'] = "You can't store this vehicle here",
     ['take_out_vehicle'] = "Sortir Véhicule",
     ['store_vehicle'] = "Entreposer Véhicule",
     ['in_garage'] = "En garage",
@@ -21,4 +22,5 @@ Locales['fr'] = {
     ['no_money_cash'] = "Tu n'a pas assez d'argent sur toi",
     ['no_money_bank'] = "Tu n'a pas assez d'argent en banque",
     ['menu_go_back'] = "< Revenir",
+    ['vehicle_already_exists'] = "Vehicle already exists"
 }
