@@ -48,9 +48,8 @@ function DoVehicleDamage(vehicle, health)
     end
 end
 
-function VehicleSpawn(data, spawn)
-    TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), type(spawn) == 'vector4' and spawn.w or spawn.h)
-    if data.type == 'impound' then TriggerServerEvent('luke_garages:PayImpound', data.price) end
+function VehicleSpawn(data, spawn, price)
+    TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), type(spawn) == 'vector4' and spawn.w or spawn.h, price)
 end
 
 function IsInsideZone(type, entity)
@@ -467,14 +466,10 @@ AddEventHandler('luke_garages:RequestVehicle', function(data)
     else
         spawn = currentImpound.spawns
     end
-    
+
     for i = 1, #spawn do
         if ESX.Game.IsSpawnPointClear(vector3(spawn[i].x, spawn[i].y, spawn[i].z), 1.0) then
-            if data.type == 'impound' then
-                ESX.TriggerServerCallback('luke_garages:PayImpound', function(canAfford)
-                    if canAfford then VehicleSpawn(data, spawn[i]) end
-                end, data.price)
-            else VehicleSpawn(data, spawn[i]) end break
+            return VehicleSpawn(data, spawn[i], data.type == 'impound' and data.price or nil)
         end
         if i == #spawn then ESX.ShowNotification(Locale('no_spawn_spots')) end
     end

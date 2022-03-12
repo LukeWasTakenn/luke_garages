@@ -22,4 +22,5 @@ Locales['sr'] = {
     ['no_money_cash'] = "Nemaš dovoljno novca kod sebe",
     ['no_money_bank'] = "Nemaš dovoljno novca na bankovnom računu",
     ['menu_go_back'] = "< Vrati se",
+    ['vehicle_already_exists'] = "Vozilo već postoji"
 }
