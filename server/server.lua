@@ -4,7 +4,7 @@ end)
 
 if Config.RestoreVehicles then
     MySQL.ready(function()
-        MySQL.Async.execute("UPDATE owned_vehicles SET stored = 1, garage = @garage WHERE stored = 0", {
+        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = @garage WHERE stored = 0", {
             ['@garage'] = Config.DefaultGarage
         })
     end)
@@ -16,7 +16,7 @@ ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback
     local vehicles = {}
 
     if not job then
-        MySQL.Async.fetchAll("SELECT plate, vehicle, stored, health, garage, job FROM owned_vehicles WHERE owner = @identifier AND type = @type", {
+        MySQL.Async.fetchAll("SELECT `plate`, `vehicle`, `stored`, `health`, `garage`, `job` FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
             ['@identifier'] = identifier,
             ['@type'] = type
         }, function(result)
@@ -34,7 +34,7 @@ ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback
             end
         end)
     else
-        MySQL.Async.fetchAll('SELECT plate, vehicle, stored, health, garage FROM owned_vehicles WHERE (owner = @identifier OR owner = @job) AND type = @type AND job = @job', {
+        MySQL.Async.fetchAll('SELECT `plate`, `vehicle`, `stored`, `health`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `job` = @job', {
             ['@identifier'] = identifier,
             ['@type'] = type,
             ['@job'] = job
@@ -60,7 +60,7 @@ ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback,
 
     local worldVehicles = GetAllVehicles()
 
-    MySQL.Async.fetchAll('SELECT plate, vehicle, health, job FROM owned_vehicles WHERE (owner = @identifier OR owner = @job) AND type = @type AND stored = 0', {
+    MySQL.Async.fetchAll('SELECT `plate`, `vehicle`, `health`, `job` FROM owned_vehicles WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `stored` = 0', {
         ['@identifier'] = identifier,
         ['@type'] = type,
         ['@job'] = xPlayer.job.name
@@ -93,7 +93,7 @@ ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callb
 
     local plate = ESX.Math.Trim(plate)
 
-    MySQL.Async.fetchAll('SELECT vehicle, job FROM owned_vehicles WHERE (owner = @owner OR job = @job) AND plate = @plate', {
+    MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` = @job) AND `plate` = @plate', {
         ['@owner'] = identifier,
         ['@plate'] = plate,
         ['@job'] = xPlayer.job.name
@@ -121,7 +121,7 @@ AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
 
     local plate = ESX.Math.Trim(plate)
 
-    MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored, garage = @garage WHERE plate = @plate', {
+    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
         ['@garage'] = garage,
         ['@stored'] = stored,
         ['@plate'] = plate
@@ -131,7 +131,7 @@ end)
 RegisterNetEvent('luke_garages:SaveVehicle')
 AddEventHandler('luke_garages:SaveVehicle', function(vehicle, health, plate, ent)
     DeleteEntity(NetworkGetEntityFromNetworkId(ent))
-    MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle, health = @health WHERE plate = @plate', {
+    MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `health` = @health WHERE `plate` = @plate', {
         ['@health'] = json.encode(health),
         ['@vehicle'] = json.encode(vehicle),
         ['@plate'] = ESX.Math.Trim(plate)
@@ -184,7 +184,7 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
 				end
 			end
 		end
-        MySQL.Async.fetchAll('SELECT vehicle, plate, health FROM owned_vehicles WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
+        MySQL.Async.fetchAll('SELECT `vehicle`, `plate`, `health` FROM owned_vehicles WHERE `plate` = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
             if result[1] then TriggerClientEvent('luke_garages:SetVehicleMods', entityOwner, netId, result[1]) end
         end)
     end)
