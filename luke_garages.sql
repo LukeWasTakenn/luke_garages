@@ -10,4 +10,5 @@ CREATE TABLE IF NOT EXISTS `owned_vehicles` (
 
 ALTER TABLE `owned_vehicles`
   ADD COLUMN `health` TEXT(255) DEFAULT NULL,
+  ADD COLUMN `lastgarage` TEXT(255) DEFAULT 'legion',
   ADD COLUMN `garage` TEXT(255) DEFAULT NULL;

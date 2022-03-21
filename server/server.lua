@@ -4,9 +4,7 @@ end)
 
 if Config.RestoreVehicles then
     MySQL.ready(function()
-        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = @garage WHERE stored = 0", {
-            ['@garage'] = Config.DefaultGarage
-        })
+        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = `lastgarage` WHERE `stored` = 0", {})
     end)
 end
 
@@ -71,6 +69,12 @@ ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback,
                 local health = json.decode(v.health)
                 for index, vehicle in pairs(worldVehicles) do
                     if ESX.Math.Trim(v.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                            if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then
+                            break 
+                            end
+                            if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then
+                                DeleteEntity(vehicle)
+                            end
                         break
                     elseif index == #worldVehicles then
                         -- Allows players to only get their job vehicle from impound while having the job
@@ -117,15 +121,25 @@ end)
 
 RegisterNetEvent('luke_garages:ChangeStored')
 AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
-    if stored then stored = 1 else stored = 0 garage = 'none' end
-
     local plate = ESX.Math.Trim(plate)
-
-    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
-        ['@garage'] = garage,
-        ['@stored'] = stored,
-        ['@plate'] = plate
-    })
+    if stored then 
+        stored = 1 
+        MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage, `lastgarage` = @garage WHERE `plate` = @plate', {
+            ['@garage'] = garage,
+            ['@stored'] = stored,
+            ['@plate'] = plate
+        }, function(rowsChanged)
+        end)
+    else 
+        stored = 0 
+        garage = 'none' 
+        MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
+            ['@garage'] = garage,
+            ['@stored'] = stored,
+            ['@plate'] = plate
+        }, function(rowsChanged)
+        end)
+    end 
 end)
 
 RegisterNetEvent('luke_garages:SaveVehicle')
@@ -138,8 +152,8 @@ AddEventHandler('luke_garages:SaveVehicle', function(vehicle, health, plate, ent
     })
 end)
 
-local function canAfford(price)
-    local xPlayer = ESX.GetPlayerFromId(source)
+local function canAfford(src, price)
+    local xPlayer = ESX.GetPlayerFromId(src)
     if xPlayer then
         if Config.PayInCash then
             if xPlayer.getMoney() >= price then
@@ -149,7 +163,7 @@ local function canAfford(price)
                 return false
             end
         else
-            if xPlayer.getAccountMoney('bank') >= price then
+            if xPlayer.getAccount('bank').money >= price then
                 return true
             else
                 xPlayer.showNotification(Locale('no_money_bank'))
@@ -164,28 +178,30 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
     local xPlayer = ESX.GetPlayerFromId(source)
     local vehicles = GetAllVehicles()
     plate = ESX.Math.Trim(plate)
-    if price and not canAfford(price) then return end
+    if price and not canAfford(source, price) then return end
     for i = 1, #vehicles do
-        if ESX.Math.Trim(GetVehicleNumberPlateText(vehicles[i])) == plate then return xPlayer.showNotification(Locale('vehicle_already_exists')) end
+        if ESX.Math.Trim(GetVehicleNumberPlateText(vehicles[i])) == plate then
+            if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then
+            return xPlayer.showNotification(Locale('vehicle_already_exists')) end
+        end
     end
-    Citizen.CreateThread(function()
-        local entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
-        Wait(50)
-        local netId = NetworkGetNetworkIdFromEntity(entity)
-        local entityOwner = NetworkGetEntityOwner(entity)
-        -- Sometimes peds can spawn inside vehicles
-        local ped = GetPedInVehicleSeat(entity, -1)
-		if ped > 0 then
-			for i = -1, 6 do
-				ped = GetPedInVehicleSeat(entity, i)
-				local popType = GetEntityPopulationType(ped)
-				if popType <= 5 or popType >= 1 then
-					DeleteEntity(ped)
-				end
-			end
-		end
-        MySQL.Async.fetchAll('SELECT `vehicle`, `plate`, `health` FROM owned_vehicles WHERE `plate` = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
-            if result[1] then TriggerClientEvent('luke_garages:SetVehicleMods', entityOwner, netId, result[1]) end
-        end)
+    MySQL.Async.fetchAll('SELECT vehicle, plate, health, garage FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
+        if result[1] then
+            Citizen.CreateThread(function()
+                local entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
+                local ped = GetPedInVehicleSeat(entity, -1)
+                if ped > 0 then
+                    for i = -1, 6 do
+                        ped = GetPedInVehicleSeat(entity, i)
+                        local popType = GetEntityPopulationType(ped)
+                        if popType <= 5 or popType >= 1 then
+                            DeleteEntity(ped)
+                        end
+                    end
+                end
+                local ent = Entity(entity)
+                ent.state.vehicledata = result[1]
+            end)
+        end
     end)
 end)
