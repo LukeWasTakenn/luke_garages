@@ -95,7 +95,7 @@ ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callb
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
 
-    local plate = ESX.Math.Trim(plate)
+    plate = ESX.Math.Trim(plate)
 
     MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` = @job) AND `plate` = @plate', {
         ['@owner'] = identifier,
@@ -105,7 +105,7 @@ ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callb
         if result[1] then
             local vehicle = json.decode(result[1].vehicle)
             local vehicleJob = result[1].job
-            if vehicle.plate == plate and vehicle.model == model then
+            if ESX.Math.Trim(vehicle.plate) == plate and vehicle.model == model then
                 if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
                 if job and job == vehicleJob then return callback(true)
                 else return callback({true, false}) end
@@ -200,7 +200,7 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
                     end
                 end
                 local ent = Entity(entity)
-                ent.state.vehicledata = result[1]
+                ent.state.vehicleData = result[1]
             end)
         end
     end)

@@ -3,7 +3,7 @@ function getVehProperties(vehicle)
         local ent = Entity(vehicle)
 		local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
 		local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
-        local customPrimaryColor, customSecondaryColor = nil
+        local customPrimaryColor, customSecondaryColor = nil, nil
 
 		if GetIsVehiclePrimaryColourCustom(vehicle) then
             local r, g, b = GetVehicleCustomPrimaryColour(vehicle)
@@ -449,6 +449,5 @@ function SetVehProperties(vehicle, props, health)
         else
             return
         end
-        TriggerServerEvent('luke_garages:ChangeStored', props.plate, false, nil)
     end
 end

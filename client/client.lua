@@ -135,7 +135,7 @@ for k, v in pairs(Config.Garages) do
         local model = v.ped or Config.DefaultGaragePed
         local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
         if isPointInside then
-    
+
             ESX.Streaming.RequestModel(model)
 
             ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
@@ -180,7 +180,7 @@ for k, v in pairs(Config.Impounds) do
         local model = v.ped or Config.DefaultImpoundPed
         local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
         if isPointInside then
-    
+
             ESX.Streaming.RequestModel(model)
 
             ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
@@ -219,13 +219,14 @@ exports['qtarget']:AddTargetModel(impoundPeds, {
     distance = 2.5,
 })
 
-AddStateBagChangeHandler('vehicledata', nil, function(bagName, key, value, _unused, replicated)
+AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unused, replicated)
     if not value then return end
     local entNet = bagName:gsub('entity:', '')
     while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) do Wait(0) end
     local vehicle = NetToVeh(tonumber(entNet))
     if NetworkGetEntityOwner(vehicle) ~= PlayerId() then return end
     SetVehProperties(vehicle, json.decode(value.vehicle), json.decode(value.health))
+    TriggerServerEvent('luke_garages:ChangeStored', props.plate, false, nil)
 end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles')
@@ -474,6 +475,7 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
     health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
     health.parts = brokenParts
     health.fuel = ESX.Math.Round(GetVehicleFuelLevel(vehicle), 2)
+
     local ent = Entity(vehicle)
     if ent.state.fuel ~= nil then
         health.fuel = ESX.Math.Round(ent.state.fuel, 2)
