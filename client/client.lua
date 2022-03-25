@@ -14,41 +14,8 @@ local function GetGarageLabel(name)
     end
 end
 
-function DoVehicleDamage(vehicle, health)
-    if health ~= nil then
-        Citizen.Wait(1500)
-        health.engine = ESX.Math.Round(health.engine, 2)
-        health.body = ESX.Math.Round(health.body, 2)
-
-        -- Making the vehicle still drivable if it's completely totaled
-        if health.engine < 200.0 then
-            health.engine = 200.0
-        end
-    
-        if health.body < 150.0 then
-            health.body = 150.0
-        end
-    
-        for _, window in pairs(health.parts.windows) do
-            SmashVehicleWindow(vehicle, window)
-        end
-
-        for _, tyre in pairs(health.parts.tires) do
-            SetVehicleTyreBurst(vehicle, tyre, true, 1000.0)
-        end
-
-        for _, door in pairs(health.parts.doors) do
-            SetVehicleDoorBroken(vehicle, door, false)
-        end
-
-        SetVehicleBodyHealth(vehicle, health.body)
-        SetVehicleEngineHealth(vehicle, health.engine)
-    else
-        return
-    end
-end
-
 function VehicleSpawn(data, spawn, price)
+    ESX.Streaming.RequestModel(data.vehicle.model)
     TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), type(spawn) == 'vector4' and spawn.w or spawn.h, price)
 end
 
@@ -168,7 +135,7 @@ for k, v in pairs(Config.Garages) do
         local model = v.ped or Config.DefaultGaragePed
         local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
         if isPointInside then
-    
+
             ESX.Streaming.RequestModel(model)
 
             ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
@@ -213,7 +180,7 @@ for k, v in pairs(Config.Impounds) do
         local model = v.ped or Config.DefaultImpoundPed
         local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
         if isPointInside then
-    
+
             ESX.Streaming.RequestModel(model)
 
             ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
@@ -252,12 +219,14 @@ exports['qtarget']:AddTargetModel(impoundPeds, {
     distance = 2.5,
 })
 
-RegisterNetEvent('luke_garages:SetVehicleMods', function(netId, svData)
-    while not NetworkDoesEntityExistWithNetworkId(netId) do Wait(25) end
-    local vehicle = NetToVeh(netId)
-    ESX.Game.SetVehicleProperties(vehicle, json.decode(svData.vehicle))
-    TriggerServerEvent('luke_garages:ChangeStored', svData.plate, false)
-    DoVehicleDamage(vehicle, json.decode(svData.health))
+AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unused, replicated)
+    if not value then return end
+    local entNet = bagName:gsub('entity:', '')
+    while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) do Wait(0) end
+    local vehicle = NetToVeh(tonumber(entNet))
+    if NetworkGetEntityOwner(vehicle) ~= PlayerId() then return end
+    SetVehProperties(vehicle, json.decode(value.vehicle), json.decode(value.health))
+    TriggerServerEvent('luke_garages:ChangeStored', props.plate, false, nil)
 end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles')
@@ -505,8 +474,14 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
     health.body = ESX.Math.Round(GetVehicleBodyHealth(vehicle), 2)
     health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
     health.parts = brokenParts
+    health.fuel = ESX.Math.Round(GetVehicleFuelLevel(vehicle), 2)
 
-    local vehProps = ESX.Game.GetVehicleProperties(vehicle)
+    local ent = Entity(vehicle)
+    if ent.state.fuel ~= nil then
+        health.fuel = ESX.Math.Round(ent.state.fuel, 2)
+    end
+
+    local vehProps = getVehProperties(vehicle)
 
     ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
         if doesOwn then

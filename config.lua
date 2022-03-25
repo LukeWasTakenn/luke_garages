@@ -5,8 +5,7 @@ Config.Locale = 'en'
 Config.EnableVersionCheck = true -- If set to true you'll get a print in server console when your resource is out of date
 Config.VersionCheckInterval = 60 -- in minutes
 
--- Puts all vehicles in garage on resource start
--- If using split garages will set all vehicles into the first one in the Config.Garages table
+-- If using split garages on first start all vehicles will default to legion garage. after that they will restore at the last garage you put it in.
 Config.RestoreVehicles = false
 
 -- Default garage zone name the vehicles will be restored to
@@ -15,6 +14,8 @@ Config.DefaultGarage = 'legion'
 
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
+
+Config.lockdoors = false
 
 Config.DefaultGaragePed = `s_m_y_airworker`
 Config.DefaultImpoundPed = `s_m_y_construct_01`
