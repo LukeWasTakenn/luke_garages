@@ -129,7 +129,7 @@ function SetVehProperties(vehicle, props, health)
         local ent = Entity(vehicle)
         local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
         local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
-        if Config.lockdoors then SetVehicleDoorsLocked(vehicle, 2) end
+        if Config.LockDoors then SetVehicleDoorsLocked(vehicle, 2) end
         SetVehicleModKit(vehicle, 0)
         SetVehicleAutoRepairDisabled(vehicle, true)
 

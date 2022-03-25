@@ -15,7 +15,8 @@ Config.DefaultGarage = 'legion'
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 
-Config.lockdoors = false
+-- Locks vehicles doors on spawn
+Config.LockDoors = false
 
 Config.DefaultGaragePed = `s_m_y_airworker`
 Config.DefaultImpoundPed = `s_m_y_construct_01`
