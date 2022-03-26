@@ -226,7 +226,7 @@ AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unus
     local vehicle = NetToVeh(tonumber(entNet))
     if NetworkGetEntityOwner(vehicle) ~= PlayerId() then return end
     SetVehProperties(vehicle, json.decode(value.vehicle), json.decode(value.health))
-    TriggerServerEvent('luke_garages:ChangeStored', props.plate, false, nil)
+    TriggerServerEvent('luke_garages:ChangeStored', value.plate, false, nil)
 end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles')
