@@ -4,7 +4,7 @@ end)
 
 if Config.RestoreVehicles then
     MySQL.ready(function()
-        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = `lastgarage` WHERE `stored` = 0", {})
+        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = `last_garage` WHERE `stored` = 0", {})
     end)
 end
 
@@ -124,7 +124,7 @@ AddEventHandler('luke_garages:ChangeStored', function(plate, stored, garage)
     local plate = ESX.Math.Trim(plate)
     if stored then 
         stored = 1 
-        MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage, `lastgarage` = @garage WHERE `plate` = @plate', {
+        MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage, `last_garage` = @garage WHERE `plate` = @plate', {
             ['@garage'] = garage,
             ['@stored'] = stored,
             ['@plate'] = plate
