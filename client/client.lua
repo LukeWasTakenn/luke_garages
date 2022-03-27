@@ -485,7 +485,7 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
 
     ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
         if doesOwn then
-            if type(doesOwn) == 'table' then return ESX.ShowNotification("You can't store this vehicle here") end
+            if type(doesOwn) == 'table' then return ESX.ShowNotification(Locale('no_store_here') end
 
             TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
 
