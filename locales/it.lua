@@ -22,5 +22,6 @@ Locales['it'] = {
     ['no_money_cash'] = "Non hai abbastanza soldi con te",
     ['no_money_bank'] = "Non hai abbastanza soldi in banca",
     ['menu_go_back'] = "< Torna Indietro",
-    ['vehicle_already_exists'] = "Il veicolo è già fuori dal garage"
+    ['vehicle_already_exists'] = "Il veicolo è già fuori dal garage",
+    ['no_store_here'] = "Non puoi parcheggiare questo veicolo qui!"
 }
