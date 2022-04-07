@@ -157,6 +157,7 @@ local function canAfford(src, price)
     if xPlayer then
         if Config.PayInCash then
             if xPlayer.getMoney() >= price then
+                xPlayer.removeMoney(price)
                 return true
             else
                 xPlayer.showNotification(Locale('no_money_cash'))
@@ -164,6 +165,7 @@ local function canAfford(src, price)
             end
         else
             if xPlayer.getAccount('bank').money >= price then
+                xPlayer.removeAccountMoney('bank', price)
                 return true
             else
                 xPlayer.showNotification(Locale('no_money_bank'))
