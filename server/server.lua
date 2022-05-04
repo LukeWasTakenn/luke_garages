@@ -8,115 +8,107 @@ if Config.RestoreVehicles then
     end)
 end
 
-ESX.RegisterServerCallback('luke_garages:GetVehicles', function(source, callback, type, job)
+lib.callback.register('luke_garages:GetVehicles', function(source, type, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
 
     if not job then
-        MySQL.Async.fetchAll("SELECT `plate`, `vehicle`, `stored`, `health`, `garage`, `job` FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
+        local results = MySQL.Sync.fetchAll("SELECT `plate`, `vehicle`, `stored`, `health`, `garage`, `job` FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
             ['@identifier'] = identifier,
             ['@type'] = type
-        }, function(result)
-            if result[1] ~= nil then
-                for k, v in pairs(result) do
-                    if not v.job or v.job == 'civ' then
-                        local veh = json.decode(v.vehicle)
-                        local health = json.decode(v.health)
-                        table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
-                    end
+        })
+        if results[1] ~= nil then
+            for i = 1, #results do
+                local result = results[i]
+                if not result.job or result.job == 'civ' then
+                    local veh = json.decode(result.vehicle)
+                    local health = json.decode(result.health)
+                    vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, stored = result.stored, health = health, garage = result.garage}
                 end
-                callback(vehicles)
-            else
-                callback(nil)
             end
-        end)
+
+            return vehicles
+        end
     else
-        MySQL.Async.fetchAll('SELECT `plate`, `vehicle`, `stored`, `health`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `job` = @job', {
+        local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `stored`, `health`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `job` = @job', {
             ['@identifier'] = identifier,
             ['@type'] = type,
             ['@job'] = job
-        }, function(result)
-            if result[1] ~= nil then
-                for k, v in pairs(result) do
-                    local veh = json.decode(v.vehicle)
-                    local health = json.decode(v.health)
-                    table.insert(vehicles, {plate = v.plate, vehicle = veh, stored = v.stored, health = health, garage = v.garage})
-                end
-                callback(vehicles)
-            else
-                callback(nil)
+        })
+        if results[1] ~= nil then
+            for i = 1, #results do
+                local result = results[i]
+                local veh = json.decode(result.vehicle)
+                local health = json.decode(result.health)
+                vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, stored = result.stored, health = health, garage = result.garage}
             end
-        end)
+
+            return vehicles
+        end
     end
 end)
 
-ESX.RegisterServerCallback('luke_garages:GetImpound', function(source, callback, type)
+lib.callback.register('luke_garages:GetImpound', function(source, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
 
     local worldVehicles = GetAllVehicles()
 
-    MySQL.Async.fetchAll('SELECT `plate`, `vehicle`, `health`, `job` FROM owned_vehicles WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `stored` = 0', {
+    local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `health`, `job` FROM owned_vehicles WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `stored` = 0', {
         ['@identifier'] = identifier,
         ['@type'] = type,
         ['@job'] = xPlayer.job.name
-    }, function(results)
-        if results[1] ~= nil then
-            for k, v in pairs(results) do
-                local veh = json.decode(v.vehicle)
-                local health = json.decode(v.health)
-                for index, vehicle in pairs(worldVehicles) do
-                    if ESX.Math.Trim(v.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
-                            if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then
-                            break 
-                            end
-                            if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then
-                                DeleteEntity(vehicle)
-                            end
-                        break
-                    elseif index == #worldVehicles then
-                        -- Allows players to only get their job vehicle from impound while having the job
-                        if (v.job == 'civ' or v.job == nil) or v.job == xPlayer.job.name then
-                            table.insert(vehicles, {plate = v.plate, vehicle = veh, health = health})
-                        end
+    })
+    if results[1] ~= nil then
+        for i = 1, #results do
+            local result = results[i]
+            local veh = json.decode(result.vehicle)
+            local health = json.decode(result.health)
+            for index = 1, #worldVehicles do
+                local vehicle = worldVehicles[index]
+                if ESX.Math.Trim(result.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                    if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then break end
+                    if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then DeleteEntity(vehicle) end
+                    break
+                elseif index == #worldVehicles then
+                    -- Allows players to only get their job vehicle from impound while having the job
+                    if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
+                        vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, health = health}
                     end
                 end
             end
-            callback(vehicles)
-        else
-            callback(nil)
         end
-    end)
+
+        return vehicles
+    end
 end)
 
-ESX.RegisterServerCallback('luke_garages:CheckOwnership', function(source, callback, plate, model, job)
+lib.callback.register('luke_garages:CheckOwnership', function(source, plate, model, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
 
     plate = ESX.Math.Trim(plate)
 
-    MySQL.Async.fetchAll('SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` = @job) AND `plate` = @plate', {
+    local result = MySQL.Sync.fetchAll('SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` = @job) AND `plate` = @plate', {
         ['@owner'] = identifier,
         ['@plate'] = plate,
         ['@job'] = xPlayer.job.name
-    }, function(result)
-        if result[1] then
-            local vehicle = json.decode(result[1].vehicle)
-            local vehicleJob = result[1].job
-            if ESX.Math.Trim(vehicle.plate) == plate and vehicle.model == model then
-                if not job and not vehicleJob or vehicleJob == 'civ' then return callback(true) end
-                if job and job == vehicleJob then return callback(true)
-                else return callback({true, false}) end
-            else
-                -- Player tried to cheat
-                callback(false)
-            end
+    })
+
+    if result[1] then
+        local vehicle = json.decode(result[1].vehicle)
+        local vehicleJob = result[1].job
+        if ESX.Math.Trim(vehicle.plate) == plate and vehicle.model == model then
+            if not job and not vehicleJob or vehicleJob == 'civ' then return true end
+            if job and job == vehicleJob then return true
+            else return {true, false} end
         else
-            callback(false)
+            -- Player tried to cheat
+            return false
         end
-    end)
+    end
 end)
 
 RegisterNetEvent('luke_garages:ChangeStored')

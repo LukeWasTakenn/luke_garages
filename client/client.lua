@@ -229,49 +229,39 @@ AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unus
     TriggerServerEvent('luke_garages:ChangeStored', value.plate, false, nil)
 end)
 
-RegisterNetEvent('luke_garages:GetImpoundedVehicles')
-AddEventHandler('luke_garages:GetImpoundedVehicles', function()
-    ESX.TriggerServerCallback('luke_garages:GetImpound', function(vehicles)
-        local menu = {}
+RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
+    local vehicles = lib.callback.await('luke_garages:GetImpound', false, currentImpound.type)
+    local menu = {}
 
-        TriggerEvent('nh-context:sendMenu', {
-            {
-                id = 0,
-                header = currentImpound.label or Locale(currentImpound.type) .. ' ' .. Locale('impound'),
-                txt = ''
-            },
-        })
+    TriggerEvent('nh-context:sendMenu', {
+        {
+            id = 0,
+            header = currentImpound.label or Locale(currentImpound.type) .. ' ' .. Locale('impound'),
+            txt = ''
+        },
+    })
 
-        if vehicles ~= nil then
-            for k, v in pairs(vehicles) do
-                local vehModel = v.vehicle.model
-                local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
-                local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
-                local vehTitle = vehMake .. ' ' .. vehName
-                
-                local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehModel)]
+    if vehicles ~= nil then
+        for k, v in pairs(vehicles) do
+            local vehModel = v.vehicle.model
+            local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
+            local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
+            local vehTitle = vehMake .. ' ' .. vehName
+            
+            local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehModel)]
 
-                table.insert(menu, {
-                    id = k,
-                    header = vehTitle,
-                    txt = Locale('plate') .. ': ' .. v.plate,
-                    params = {
-                        event = 'luke_garages:ImpoundVehicleMenu',
-                        args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health, price = impoundPrice}
-                    }
-                })
-            end
-            if #menu ~= 0 then
-                TriggerEvent('nh-context:sendMenu', menu)
-            else
-                TriggerEvent('nh-context:sendMenu', {
-                    {
-                        id = 1,
-                        header = Locale('no_vehicles_impound'),
-                        txt = ''
-                    }
-                })
-            end
+            table.insert(menu, {
+                id = k,
+                header = vehTitle,
+                txt = Locale('plate') .. ': ' .. v.plate,
+                params = {
+                    event = 'luke_garages:ImpoundVehicleMenu',
+                    args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health, price = impoundPrice}
+                }
+            })
+        end
+        if #menu ~= 0 then
+            TriggerEvent('nh-context:sendMenu', menu)
         else
             TriggerEvent('nh-context:sendMenu', {
                 {
@@ -281,94 +271,100 @@ AddEventHandler('luke_garages:GetImpoundedVehicles', function()
                 }
             })
         end
-    end, currentImpound.type)
+    else
+        TriggerEvent('nh-context:sendMenu', {
+            {
+                id = 1,
+                header = Locale('no_vehicles_impound'),
+                txt = ''
+            }
+        })
+    end
 end)
 
 --todo: Refactor *everything*
-RegisterNetEvent('luke_garages:GetOwnedVehicles')
-AddEventHandler('luke_garages:GetOwnedVehicles', function()
-    ESX.TriggerServerCallback('luke_garages:GetVehicles', function(vehicles)
-        local menu = {}
+RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
+    local vehicles = lib.callback.await('luke_garages:GetVehicles', false, currentGarage.type, currentGarage.job)
+    local menu = {}
 
-        TriggerEvent('nh-context:sendMenu', {
-            {
-                id = 0,
-                header = Config.SplitGarages == true and currentGarage.label or Locale(currentGarage.type) .. ' ' .. Locale('garage'),
-                txt = ''
-            },
-        })
+    TriggerEvent('nh-context:sendMenu', {
+        {
+            id = 0,
+            header = Config.SplitGarages == true and currentGarage.label or Locale(currentGarage.type) .. ' ' .. Locale('garage'),
+            txt = ''
+        },
+    })
 
-        if vehicles ~= nil then
-            for k, v in pairs(vehicles) do
-                local vehModel = v.vehicle.model
-                local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
-                local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
-                local vehTitle = vehMake .. ' ' .. vehName
-                if Config.SplitGarages then
-                    if (v.stored == 1 or v.stored == true) and (v.garage == (currentGarage.zone.name or currentGarage.label) or not v.garage) then
-                        table.insert(menu, {
-                            id = k,
-                            header = vehTitle,
-                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('in_garage'),
-                            params = {
-                                event = 'luke_garages:VehicleMenu',
-                                args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
-                            }  
-                        })
-                    elseif (v.stored == 1 or v.stored == true) and v.garage ~= currentGarage.zone.name then
-                        table.insert(menu, {
-                            id = k,
-                            header = vehTitle,
-                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('garage') .. ': ' .. GetGarageLabel(v.garage),
-                        })
-                    else
-                        table.insert(menu, {
-                            id = k,
-                            header = vehTitle,
-                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('not_in_garage'),
-                        })
-                    end
+    if vehicles ~= nil then
+        for k, v in pairs(vehicles) do
+            local vehModel = v.vehicle.model
+            local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
+            local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
+            local vehTitle = vehMake .. ' ' .. vehName
+            if Config.SplitGarages then
+                if (v.stored == 1 or v.stored == true) and (v.garage == (currentGarage.zone.name or currentGarage.label) or not v.garage) then
+                    table.insert(menu, {
+                        id = k,
+                        header = vehTitle,
+                        txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('in_garage'),
+                        params = {
+                            event = 'luke_garages:VehicleMenu',
+                            args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
+                        }  
+                    })
+                elseif (v.stored == 1 or v.stored == true) and v.garage ~= currentGarage.zone.name then
+                    table.insert(menu, {
+                        id = k,
+                        header = vehTitle,
+                        txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('garage') .. ': ' .. GetGarageLabel(v.garage),
+                    })
                 else
-                    if v.stored == 1 or v.stored == true then
-                        table.insert(menu, {
-                            id = k,
-                            header = vehTitle,
-                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' ..  Locale('in_garage'),
-                            params = {
-                                event = 'luke_garages:VehicleMenu',
-                                args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
-                            }
-                        })
-                    else
-                        table.insert(menu, {
-                            id = k,
-                            header = vehTitle,
-                            txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('not_in_garage'),
-                        })
-                    end
+                    table.insert(menu, {
+                        id = k,
+                        header = vehTitle,
+                        txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('not_in_garage'),
+                    })
+                end
+            else
+                if v.stored == 1 or v.stored == true then
+                    table.insert(menu, {
+                        id = k,
+                        header = vehTitle,
+                        txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' ..  Locale('in_garage'),
+                        params = {
+                            event = 'luke_garages:VehicleMenu',
+                            args = {name = vehTitle, plate = v.plate, model = vehModel, vehicle = v.vehicle, health = v.health}
+                        }
+                    })
+                else
+                    table.insert(menu, {
+                        id = k,
+                        header = vehTitle,
+                        txt = Locale('plate') .. ': ' .. v.plate .. ' <br>' .. Locale('not_in_garage'),
+                    })
                 end
             end
-            if #menu ~= 0 then
-                TriggerEvent('nh-context:sendMenu', menu)
-            else
-                TriggerEvent('nh-context:sendMenu', {
-                    {
-                        id = 1,
-                        header = Locale('no_vehicles_garage'),
-                        txt = ''
-                    }
-                })
-            end
+        end
+        if #menu ~= 0 then
+            TriggerEvent('nh-context:sendMenu', menu)
         else
             TriggerEvent('nh-context:sendMenu', {
                 {
                     id = 1,
                     header = Locale('no_vehicles_garage'),
-                    txt = '',
+                    txt = ''
                 }
             })
         end
-    end, currentGarage.type, currentGarage.job)
+    else
+        TriggerEvent('nh-context:sendMenu', {
+            {
+                id = 1,
+                header = Locale('no_vehicles_garage'),
+                txt = '',
+            }
+        })
+    end
 end)
 
 RegisterNetEvent('luke_garages:ImpoundVehicleMenu')
@@ -482,18 +478,17 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
     end
 
     local vehProps = getVehProperties(vehicle)
+    local doesOwn = lib.callback.await('luke_garages:CheckOwnership', false, vehPlate, vehProps.model, currentGarage.job)
 
-    ESX.TriggerServerCallback('luke_garages:CheckOwnership', function(doesOwn)
-        if doesOwn then
-            if type(doesOwn) == 'table' then return ESX.ShowNotification(Locale('garage_cant_store')) end
+    if doesOwn then
+        if type(doesOwn) == 'table' then return ESX.ShowNotification(Locale('garage_cant_store')) end
 
-            TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
+        TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
 
-            TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, vehPlate, VehToNet(vehicle))
-        else
-            ESX.ShowNotification(Locale('no_ownership'))
-        end
-    end, vehPlate, vehProps.model, currentGarage.job)
+        TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, vehPlate, VehToNet(vehicle))
+    else
+        ESX.ShowNotification(Locale('no_ownership'))
+    end
 
 end)
 
