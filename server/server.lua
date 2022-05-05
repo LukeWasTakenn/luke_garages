@@ -2,6 +2,8 @@ RegisterNetEvent('luke_garages:ThrowError', function(text)
     error(text)
 end)
 
+lib.versionCheck('lukewastakenn/luke_garages')
+
 if Config.RestoreVehicles then
     MySQL.ready(function()
         MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = `last_garage` WHERE `stored` = 0", {})
