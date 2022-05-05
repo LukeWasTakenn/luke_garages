@@ -224,8 +224,7 @@ AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unus
     local entNet = bagName:gsub('entity:', '')
     while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) do Wait(0) end
     local vehicle = NetToVeh(tonumber(entNet))
-    if NetworkGetEntityOwner(vehicle) ~= PlayerId() then return end
-    SetVehProperties(vehicle, json.decode(value.vehicle), json.decode(value.health))
+    lib.setVehicleProperties(vehicle, json.decode(value.vehicle))
     TriggerServerEvent('luke_garages:ChangeStored', value.plate, false, nil)
 end)
 
@@ -247,7 +246,7 @@ RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
             local vehMake = GetLabelText(GetMakeNameFromVehicleModel(vehModel))
             local vehName = GetLabelText(GetDisplayNameFromVehicleModel(vehModel))
             local vehTitle = vehMake .. ' ' .. vehName
-            
+
             local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehModel)]
 
             table.insert(menu, {
@@ -367,8 +366,7 @@ RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
     end
 end)
 
-RegisterNetEvent('luke_garages:ImpoundVehicleMenu')
-AddEventHandler('luke_garages:ImpoundVehicleMenu', function(data)
+RegisterNetEvent('luke_garages:ImpoundVehicleMenu', function(data)
     TriggerEvent('nh-context:sendMenu', {
         {
             id = 0,
@@ -395,8 +393,7 @@ AddEventHandler('luke_garages:ImpoundVehicleMenu', function(data)
     })
 end)
 
-RegisterNetEvent('luke_garages:VehicleMenu')
-AddEventHandler('luke_garages:VehicleMenu', function(data)
+RegisterNetEvent('luke_garages:VehicleMenu', function(data)
     TriggerEvent('nh-context:sendMenu', {
         {
             id = 0,
@@ -422,8 +419,7 @@ AddEventHandler('luke_garages:VehicleMenu', function(data)
     })
 end)
 
-RegisterNetEvent('luke_garages:RequestVehicle')
-AddEventHandler('luke_garages:RequestVehicle', function(data)
+RegisterNetEvent('luke_garages:RequestVehicle', function(data)
     local spawn = nil
 
     if data.type == 'garage' then
@@ -440,44 +436,11 @@ AddEventHandler('luke_garages:RequestVehicle', function(data)
     end
 end)
 
-RegisterNetEvent('luke_garages:StoreVehicle')
-AddEventHandler('luke_garages:StoreVehicle', function(target)
-    local health = {}
-    local brokenParts = {
-        windows = {},
-        tires = {},
-        doors = {}
-    }
-
+RegisterNetEvent('luke_garages:StoreVehicle', function(target)
     local vehicle = target.entity
     local vehPlate = GetVehicleNumberPlateText(vehicle)
+    local vehProps = lib.getVehicleProperties(vehicle)
 
-    for window = 0, 7 do 
-        if not IsVehicleWindowIntact(vehicle, window) then
-            table.insert(brokenParts.windows, window)
-        end
-    end
-
-    for index = 0, 5 do
-        if IsVehicleTyreBurst(vehicle, index, false) then
-            table.insert(brokenParts.tires, index)
-        end
-        if IsVehicleDoorDamaged(vehicle, index) then
-            table.insert(brokenParts.doors, index)
-        end
-    end
-
-    health.body = ESX.Math.Round(GetVehicleBodyHealth(vehicle), 2)
-    health.engine = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 2)
-    health.parts = brokenParts
-    health.fuel = ESX.Math.Round(GetVehicleFuelLevel(vehicle), 2)
-
-    local ent = Entity(vehicle)
-    if ent.state.fuel ~= nil then
-        health.fuel = ESX.Math.Round(ent.state.fuel, 2)
-    end
-
-    local vehProps = getVehProperties(vehicle)
     local doesOwn = lib.callback.await('luke_garages:CheckOwnership', false, vehPlate, vehProps.model, currentGarage.job)
 
     if doesOwn then
@@ -485,7 +448,7 @@ AddEventHandler('luke_garages:StoreVehicle', function(target)
 
         TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
 
-        TriggerServerEvent('luke_garages:SaveVehicle', vehProps, health, vehPlate, VehToNet(vehicle))
+        TriggerServerEvent('luke_garages:SaveVehicle', vehProps, vehPlate, VehToNet(vehicle))
     else
         ESX.ShowNotification(Locale('no_ownership'))
     end

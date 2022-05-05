@@ -9,6 +9,5 @@ CREATE TABLE IF NOT EXISTS `owned_vehicles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `owned_vehicles`
-  ADD COLUMN `health` TEXT(255) DEFAULT NULL,
   ADD COLUMN `last_garage` VARCHAR(40) DEFAULT 'legion',
   ADD COLUMN `garage` VARCHAR(40) DEFAULT NULL;
