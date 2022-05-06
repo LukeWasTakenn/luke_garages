@@ -6,11 +6,11 @@ if Config.EnableVersionCheck then lib.versionCheck('lukewastakenn/luke_garages')
 
 if Config.RestoreVehicles then
     MySQL.ready(function()
-        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = `last_garage` WHERE `stored` = 0", {})
+        MySQL.Async.execute("UPDATE `owned_vehicles` SET `stored` = 1, `garage` = `last_garage` WHERE `stored` = 0")
     end)
 end
 
-lib.callback.register('luke_garages:GetVehicles', function(source, type, job)
+lib.callback.register('luke_garages:GetVehicles', function(source, garageType, job)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
     local vehicles = {}
@@ -18,7 +18,7 @@ lib.callback.register('luke_garages:GetVehicles', function(source, type, job)
     if not job then
         local results = MySQL.Sync.fetchAll("SELECT `plate`, `vehicle`, `stored`, `health`, `garage`, `job` FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
             ['@identifier'] = identifier,
-            ['@type'] = type
+            ['@type'] = garageType
         })
         if results[1] ~= nil then
             for i = 1, #results do
@@ -33,10 +33,12 @@ lib.callback.register('luke_garages:GetVehicles', function(source, type, job)
             return vehicles
         end
     else
-        local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `stored`, `health`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `job` = @job', {
+        local jobs = {}
+        if type(job) == 'table' then for k, _ in pairs(job) do jobs[#jobs+1] = k end else jobs = job end
+        local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `stored`, `health`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` IN (@jobs)) AND `type` = @type AND `job` IN (@jobs)', {
             ['@identifier'] = identifier,
-            ['@type'] = type,
-            ['@job'] = job
+            ['@type'] = garageType,
+            ['@jobs'] = jobs
         })
         if results[1] ~= nil then
             for i = 1, #results do
@@ -93,10 +95,12 @@ lib.callback.register('luke_garages:CheckOwnership', function(source, plate, mod
 
     plate = ESX.Math.Trim(plate)
 
-    local result = MySQL.Sync.fetchAll('SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` = @job) AND `plate` = @plate', {
+    local jobs = {}
+    if type(job) == 'table' then for k, _ in pairs(job) do jobs[#jobs+1] = k end else jobs = job end
+    local result = MySQL.Sync.fetchAll("SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` IN ('police')) AND `plate` = @plate", {
         ['@owner'] = identifier,
-        ['@plate'] = plate,
-        ['@job'] = xPlayer.job.name
+        ['@plate'] = ESX.Math.Trim(plate),
+        ['@jobs'] = jobs
     })
 
     if result[1] then
@@ -104,8 +108,20 @@ lib.callback.register('luke_garages:CheckOwnership', function(source, plate, mod
         local vehicleJob = result[1].job
         if ESX.Math.Trim(vehicle.plate) == plate and vehicle.model == model then
             if not job and not vehicleJob or vehicleJob == 'civ' then return true end
-            if job and job == vehicleJob then return true
-            else return {true, false} end
+            if job then
+                if type(jobs) == 'table' then
+                    for i = 1, #jobs do
+                        if jobs[i] == vehicleJob then return true end
+                        if i == #jobs then return {true, false} end
+                    end
+                else
+                    if job == vehicleJob then
+                        return true
+                    else
+                        return {true, false}
+                    end
+                end
+            else if vehicleJob ~= 'civ' then return {true,false} end end
         else
             -- Player tried to cheat
             return false
@@ -115,24 +131,22 @@ end)
 
 RegisterNetEvent('luke_garages:ChangeStored', function(plate, stored, garage)
     local plate = ESX.Math.Trim(plate)
-    if stored then 
-        stored = 1 
+    if stored then
+        stored = 1
         MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage, `last_garage` = @garage WHERE `plate` = @plate', {
             ['@garage'] = garage,
             ['@stored'] = stored,
             ['@plate'] = plate
-        }, function(rowsChanged)
-        end)
-    else 
-        stored = 0 
-        garage = 'none' 
+        })
+    else
+        stored = 0
+        garage = 'none'
         MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
             ['@garage'] = garage,
             ['@stored'] = stored,
             ['@plate'] = plate
-        }, function(rowsChanged)
-        end)
-    end 
+        })
+    end
 end)
 
 RegisterNetEvent('luke_garages:SaveVehicle', function(vehicle, plate, ent)
