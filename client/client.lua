@@ -7,8 +7,7 @@ local jobBlips = {}
 
 local ped = nil
 
-
-local function GetGarageLabel(name)
+local function getGarageLabel(name)
     for _, garage in pairs(Config.Garages) do
         if garage.zone.name == name then return garage.label end
     end
@@ -22,7 +21,7 @@ local function isVehicleInGarage(garage, stored)
             if (stored == false or stored == 0) then
                 return Locale('not_in_garage')
             else
-                return GetGarageLabel(garage)
+                return getGarageLabel(garage)
             end
         end
     else
@@ -34,12 +33,12 @@ local function isVehicleInGarage(garage, stored)
     end
 end
 
-function VehicleSpawn(data, spawn, price)
+local function spawnVehicle(data, spawn, price)
     ESX.Streaming.RequestModel(data.vehicle.model)
     TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), type(spawn) == 'vector4' and spawn.w or spawn.h, price)
 end
 
-function IsInsideZone(type, entity)
+local function isInsideZone(type, entity)
     local entityCoords = GetEntityCoords(entity)
     if type == 'impound' then
         for k, v in pairs(impounds) do
@@ -60,7 +59,7 @@ function IsInsideZone(type, entity)
     end
 end
 
-function ImpoundBlips(coords, type, label, blipOptions)
+local function ImpoundBlips(coords, type, label, blipOptions)
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, blipOptions?.sprite or 285)
     SetBlipScale(blip, blipOptions?.scale or 0.8)
@@ -71,7 +70,7 @@ function ImpoundBlips(coords, type, label, blipOptions)
     EndTextCommandSetBlipName(blip)
 end
 
-function GarageBlips(coords, type, label, job, blipOptions)
+local function GarageBlips(coords, type, label, job, blipOptions)
     if job then return end
     local blip = AddBlipForCoord(coords)
     SetBlipSprite(blip, blipOptions?.sprite or 357)
@@ -104,7 +103,7 @@ exports['qtarget']:Vehicle({
 			icon = 'fas fa-parking',
             canInteract = function(entity)
                 hasChecked = false
-                if IsInsideZone('garage', entity) and not hasChecked then
+                if isInsideZone('garage', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
@@ -141,7 +140,7 @@ for k, v in pairs(Config.Garages) do
                 job = v.job or nil,
                 canInteract = function(entity)
                     hasChecked = false
-                    if IsInsideZone('garage', entity) and not hasChecked then
+                    if isInsideZone('garage', entity) and not hasChecked then
                         hasChecked = true
                         return true
                     end
@@ -194,7 +193,7 @@ for k, v in pairs(Config.Impounds) do
 
     impounds[k].type = v.type
 
-    table.insert(impoundPeds, v.ped)
+    impoundPeds[#impoundPeds+1] = v.ped
 
     impounds[k]:onPlayerInOut(function(isPointInside, point)
         local model = v.ped or Config.DefaultImpoundPed
@@ -229,7 +228,7 @@ exports['qtarget']:AddTargetModel(impoundPeds, {
             label = Locale('access_impound'),
             canInteract = function(entity)
                 hasChecked = false
-                if IsInsideZone('impound', entity) and not hasChecked then
+                if isInsideZone('impound', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
@@ -292,8 +291,6 @@ RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
 
     lib.showContext('luke_garages:ImpoundMenu')
 end)
-
-
 
 RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
     local vehicles = lib.callback.await('luke_garages:GetVehicles', false, currentGarage.type, currentGarage.job)
@@ -390,7 +387,7 @@ RegisterNetEvent('luke_garages:RequestVehicle', function(data)
 
     for i = 1, #spawn do
         if ESX.Game.IsSpawnPointClear(vector3(spawn[i].x, spawn[i].y, spawn[i].z), 1.0) then
-            return VehicleSpawn(data, spawn[i], data.type == 'impound' and data.price or nil)
+            return spawnVehicle(data, spawn[i], data.type == 'impound' and data.price or nil)
         end
         if i == #spawn then ESX.ShowNotification(Locale('no_spawn_spots')) end
     end
