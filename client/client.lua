@@ -34,7 +34,7 @@ local function isVehicleInGarage(garage, stored)
 end
 
 local function spawnVehicle(data, spawn, price)
-    ESX.Streaming.RequestModel(data.vehicle.model)
+    lib.requestModel(data.vehicle.model)
     TriggerServerEvent('luke_garages:SpawnVehicle', data.vehicle.model, data.vehicle.plate, vector3(spawn.x, spawn.y, spawn.z-1), type(spawn) == 'vector4' and spawn.w or spawn.h, price)
 end
 
@@ -155,7 +155,7 @@ for k, v in pairs(Config.Garages) do
         local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
         if isPointInside then
 
-            ESX.Streaming.RequestModel(model)
+            lib.requestModel(model)
 
             ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
             SetEntityAlpha(ped, 0, false)
@@ -200,7 +200,7 @@ for k, v in pairs(Config.Impounds) do
         local heading = type(v.pedCoords) == 'vector4' and v.pedCoords.w or v.pedCoords.h
         if isPointInside then
 
-            ESX.Streaming.RequestModel(model)
+            lib.requestModel(model)
 
             ped = CreatePed(0, model, v.pedCoords.x, v.pedCoords.y, v.pedCoords.z, heading, false, true)
             SetEntityAlpha(ped, 0, false)
