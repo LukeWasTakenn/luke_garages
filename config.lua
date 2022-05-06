@@ -3,7 +3,6 @@ Config = {}
 Config.Locale = 'en'
 
 Config.EnableVersionCheck = true -- If set to true you'll get a print in server console when your resource is out of date
-Config.VersionCheckInterval = 60 -- in minutes
 
 -- If using split garages on first start all vehicles will default to legion garage. after that they will restore at the last garage you put it in.
 Config.RestoreVehicles = false
@@ -15,10 +14,8 @@ Config.DefaultGarage = 'legion'
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 
--- Locks vehicles doors on spawn
-Config.LockDoors = false
-
 Config.DefaultGaragePed = `s_m_y_airworker`
+
 Config.DefaultImpoundPed = `s_m_y_construct_01`
 
 Config.BlipColors = {

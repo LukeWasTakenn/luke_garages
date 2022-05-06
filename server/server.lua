@@ -2,7 +2,7 @@ RegisterNetEvent('luke_garages:ThrowError', function(text)
     error(text)
 end)
 
-lib.versionCheck('lukewastakenn/luke_garages')
+if Config.EnableVersionCheck then lib.versionCheck('lukewastakenn/luke_garages') end
 
 if Config.RestoreVehicles then
     MySQL.ready(function()
