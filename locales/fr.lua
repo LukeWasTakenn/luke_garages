@@ -21,6 +21,6 @@ Locales['fr'] = {
     ['no_ownership'] = "Tu ne possède pas ce Véhicule",
     ['no_money_cash'] = "Tu n'a pas assez d'argent sur toi",
     ['no_money_bank'] = "Tu n'a pas assez d'argent en banque",
-    ['menu_go_back'] = "< Revenir",
-    ['vehicle_already_exists'] = "Vehicle already exists"
+    ['vehicle_already_exists'] = "Vehicle already exists",
+    ["status"] = "Status"
 }

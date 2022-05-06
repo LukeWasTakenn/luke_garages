@@ -256,7 +256,7 @@ RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
             id = 'luke_garages:ImpoundMenu',
             title = currentImpound.label or Locale(currentImpound.type) .. ' ' .. Locale('impound'),
             options = {
-                ['No vehicles in the impound'] = {}
+                [Locale('no_vehicles_impound')] = {}
             }
         })
 
@@ -301,7 +301,7 @@ RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
             id = 'luke_garages:GarageMenu',
             title = Config.SplitGarages == true and currentGarage.label or Locale(currentGarage.type) .. ' ' .. Locale('garage'),
             options = {
-                ['No vehicles in the garage'] = {}
+                [Locale('no_vehicles_garage')] = {}
             }
         })
 
@@ -319,14 +319,14 @@ RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
             args = {name = vehicleTitle, plate = data.plate, model = vehicleModel, vehicle = data.vehicle},
             metadata = {
                 [Locale('plate')] = data.plate,
-                ["Status"] = isVehicleInGarage(data.garage, data.stored)
+                [Locale("status")] = isVehicleInGarage(data.garage, data.stored)
             }
         }
     end
 
     lib.registerContext({
         id = 'luke_garages:GarageMenu',
-        title = 'Vehicle Garage',
+        title = Config.SplitGarages == true and currentGarage.label or Locale(currentGarage.type) .. ' ' .. Locale('garage'),
         options = options
     })
 
