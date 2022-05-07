@@ -245,8 +245,11 @@ AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unus
     while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) and GetGameTimer() - timer < 10000 do Wait(0) end
     local vehicle = NetToVeh(tonumber(entNet))
     local timer = GetGameTimer()
-    while NetworkGetEntityOwner(vehicle) ~= PlayerId() and GetGameTimer() - timer < 10000 do
+    while NetworkGetEntityOwner(vehicle) ~= PlayerId() do
         Wait(0)
+	if GetGameTimer() - timer < 10000 then
+		return
+	end
     end
     if NetworkGetEntityOwner(vehicle) == PlayerId() then
         lib.setVehicleProperties(vehicle, json.decode(value.vehicle))
