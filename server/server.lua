@@ -129,8 +129,7 @@ lib.callback.register('luke_garages:CheckOwnership', function(source, plate, mod
     end
 end)
 
-RegisterNetEvent('luke_garages:ChangeStored')
-AddEventHandler('luke_garages:ChangeStored', function(plate)
+RegisterNetEvent('luke_garages:ChangeStored', function(plate)
     local plate = ESX.Math.Trim(plate)
     MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
         ['@garage'] = 'none',
@@ -139,8 +138,7 @@ AddEventHandler('luke_garages:ChangeStored', function(plate)
     })
 end)
 
-RegisterNetEvent('luke_garages:SaveVehicle')
-AddEventHandler('luke_garages:SaveVehicle', function(vehicle, plate, ent, garage)
+RegisterNetEvent('luke_garages:SaveVehicle', function(vehicle, plate, ent, garage)
     MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `garage` = @garage, `last_garage` = @garage, `stored` = @stored WHERE `plate` = @plate', {
         ['@vehicle'] = json.encode(vehicle),
         ['@plate'] = ESX.Math.Trim(plate),
