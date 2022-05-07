@@ -129,34 +129,28 @@ lib.callback.register('luke_garages:CheckOwnership', function(source, plate, mod
     end
 end)
 
-RegisterNetEvent('luke_garages:ChangeStored', function(plate, stored, garage)
+RegisterNetEvent('luke_garages:ChangeStored')
+AddEventHandler('luke_garages:ChangeStored', function(plate)
     local plate = ESX.Math.Trim(plate)
-    if stored then
-        stored = 1
-        MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage, `last_garage` = @garage WHERE `plate` = @plate', {
-            ['@garage'] = garage,
-            ['@stored'] = stored,
-            ['@plate'] = plate
-        })
-    else
-        stored = 0
-        garage = 'none'
-        MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
-            ['@garage'] = garage,
-            ['@stored'] = stored,
-            ['@plate'] = plate
-        })
-    end
-end)
-
-RegisterNetEvent('luke_garages:SaveVehicle', function(vehicle, plate, ent)
-    DeleteEntity(NetworkGetEntityFromNetworkId(ent))
-    MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `health` = @health WHERE `plate` = @plate', {
-        ['@health'] = json.encode(health),
-        ['@vehicle'] = json.encode(vehicle),
-        ['@plate'] = ESX.Math.Trim(plate)
+    MySQL.Async.execute('UPDATE `owned_vehicles` SET `stored` = @stored, `garage` = @garage WHERE `plate` = @plate', {
+        ['@garage'] = 'none',
+        ['@stored'] = 0,
+        ['@plate'] = plate
     })
 end)
+
+RegisterNetEvent('luke_garages:SaveVehicle')
+AddEventHandler('luke_garages:SaveVehicle', function(vehicle, plate, ent, garage)
+    MySQL.Async.execute('UPDATE `owned_vehicles` SET `vehicle` = @vehicle, `garage` = @garage, `last_garage` = @garage, `stored` = @stored WHERE `plate` = @plate', {
+        ['@vehicle'] = json.encode(vehicle),
+        ['@plate'] = ESX.Math.Trim(plate),
+        ['@stored'] = 1,
+        ['@garage'] = garage
+    })
+    local ent = NetworkGetEntityFromNetworkId(ent)
+    DeleteEntity(ent)
+end)
+
 
 local function canAfford(src, price)
     local xPlayer = ESX.GetPlayerFromId(src)
@@ -195,7 +189,7 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
     end
     MySQL.Async.fetchAll('SELECT vehicle, plate, health, garage FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
         if result[1] then
-            Citizen.CreateThread(function()
+            CreateThread(function()
                 local entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
                 local ped = GetPedInVehicleSeat(entity, -1)
                 if ped > 0 then
@@ -205,6 +199,15 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
                         if popType <= 5 or popType >= 1 then
                             DeleteEntity(ped)
                         end
+                    end
+                end
+                local playerPed = GetPlayerPed(xPlayer.source)
+                local timer = GetGameTimer()
+                while GetVehiclePedIsIn(playerPed) ~= entity do
+                    Wait(0)
+                    SetPedIntoVehicle(playerPed, entity, -1)
+                    if timer - GetGameTimer() > 15000 then
+                        break
                     end
                 end
                 local ent = Entity(entity)
