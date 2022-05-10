@@ -242,20 +242,23 @@ AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unus
     if not value then return end
     local entNet = bagName:gsub('entity:', '')
     local timer = GetGameTimer()
-    while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) and GetGameTimer() - timer < 10000 do Wait(0) end
+    while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) do
+	    Wait(0)
+	    if GetGameTimer() - timer > 10000 then
+	        return
+	    end
+    end
     local vehicle = NetToVeh(tonumber(entNet))
     local timer = GetGameTimer()
     while NetworkGetEntityOwner(vehicle) ~= PlayerId() do
         Wait(0)
-	if GetGameTimer() - timer < 10000 then
-		return
-	end
+	    if GetGameTimer() - timer > 10000 then
+	        return
+	    end
     end
-    if NetworkGetEntityOwner(vehicle) == PlayerId() then
-        lib.setVehicleProperties(vehicle, json.decode(value.vehicle))
-        TriggerServerEvent('luke_garages:ChangeStored', value.plate)
-        return
-    end 
+    lib.setVehicleProperties(vehicle, json.decode(value.vehicle))
+    TriggerServerEvent('luke_garages:ChangeStored', value.plate)
+    Entity(vehicle).state:set('vehicleData', nil, true)
 end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
