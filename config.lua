@@ -7,6 +7,8 @@ Config.EnableVersionCheck = true -- If set to true you'll get a print in server 
 -- If using split garages on first start all vehicles will default to legion garage. after that they will restore at the last garage you put it in.
 Config.RestoreVehicles = false
 
+Config.TeleportToVehicle = false -- enable this if you have issues with vehicle mods not setting properly.
+
 -- Default garage zone name the vehicles will be restored to
 -- Ignore if not using split garages
 Config.DefaultGarage = 'legion'
