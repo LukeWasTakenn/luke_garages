@@ -241,10 +241,24 @@ exports['qtarget']:AddTargetModel(impoundPeds, {
 AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unused, replicated)
     if not value then return end
     local entNet = bagName:gsub('entity:', '')
-    while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) do Wait(0) end
+    local timer = GetGameTimer()
+    while not NetworkDoesEntityExistWithNetworkId(tonumber(entNet)) do
+	    Wait(0)
+	    if GetGameTimer() - timer > 10000 then
+	        return
+	    end
+    end
     local vehicle = NetToVeh(tonumber(entNet))
+    local timer = GetGameTimer()
+    while NetworkGetEntityOwner(vehicle) ~= PlayerId() do
+        Wait(0)
+	    if GetGameTimer() - timer > 10000 then
+	        return
+	    end
+    end
     lib.setVehicleProperties(vehicle, json.decode(value.vehicle))
-    TriggerServerEvent('luke_garages:ChangeStored', value.plate, false, nil)
+    TriggerServerEvent('luke_garages:ChangeStored', value.plate)
+    Entity(vehicle).state:set('vehicleData', nil, true)
 end)
 
 RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
@@ -402,10 +416,7 @@ RegisterNetEvent('luke_garages:StoreVehicle', function(target)
 
     if doesOwn then
         if type(doesOwn) == 'table' then return ESX.ShowNotification(Locale('garage_cant_store')) end
-
-        TriggerServerEvent('luke_garages:ChangeStored', vehPlate, true, currentGarage.zone.name)
-
-        TriggerServerEvent('luke_garages:SaveVehicle', vehProps, vehPlate, VehToNet(vehicle))
+        TriggerServerEvent('luke_garages:SaveVehicle', vehProps, vehPlate, VehToNet(vehicle), currentGarage.zone.name)
     else
         ESX.ShowNotification(Locale('no_ownership'))
     end
