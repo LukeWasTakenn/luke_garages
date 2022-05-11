@@ -268,7 +268,9 @@ RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
         local vehicleMake = GetLabelText(GetMakeNameFromVehicleModel(data.vehicle.model))
         local vehicleModel = GetLabelText(GetDisplayNameFromVehicleModel(data.vehicle.model))
         local vehicleTitle = vehicleMake .. ' ' .. vehicleModel
-
+			
+	local impoundPrice = Config.ImpoundPrices['' .. GetVehicleClassFromName(vehicleModel)]
+	
         options[vehicleTitle] = {
             event = 'luke_garages:ImpoundVehicleMenu',
             arrow = true,
@@ -278,7 +280,7 @@ RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
                 plate = data.plate,
                 model = vehicleModel,
                 vehicle = data.vehicle,
-                price = Config.ImpoundPrices[GetVehicleClassFromName(vehicleModel)]
+                price = impoundPrice
             }
         }
     end
