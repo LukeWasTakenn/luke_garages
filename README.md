@@ -1,6 +1,6 @@
 # luke_garages
 
-This resource now only supports ESX Legacy, other versions of the framework **will not** work without modifying the resource.
+This resource only supports ESX Legacy, other versions of the framework **will not** work without modifying the resource.
 
 Alongside cars, aircrafts and boats are also fully supported with them having their own separate garages and impounds.
 
@@ -8,16 +8,16 @@ The impound has checks in place to prevent vehicle duping.
 
 I used esx_vehicleshop, but the resource should work with anything that follows that databse structure in `owned_vehicles` table.
 
-[Updated Video Showcase](https://www.youtube.com/watch?v=GT2u5uoz7Tc)
+[Video Showcase](https://www.youtube.com/watch?v=GT2u5uoz7Tc) (From 2.0.0 version)
 
 ### Dependencies
 
 - [PolyZone](https://github.com/mkafrin/PolyZone)
-- [qtarget](https://github.com/QuantusRP/qtarget)
-- [zf_context](https://github.com/zf-development/zf_context)
+- [qtarget](https://github.com/overextended/qtarget)
+- [ox_lib](https://github.com/overextended/ox_lib)
 - Server game build 1868 or newer\*
 
-Make sure to follow the well detailed installation instructions on qtarget.
+Make sure to download the release zip for [ox_lib](https://github.com/overextended/ox_lib/releases/latest) (ox_lib.zip).
 
 ### Installation
 
@@ -29,7 +29,7 @@ Make sure to follow the well detailed installation instructions on qtarget.
 
 If you wish to add more garages or impounds make sure to follow the provided template and examples in the config.lua file.
 
-Custom vehicles are now fully supported, for each custom vehicle you have to add a text entry of it's model and make name (if there isn't one already) into the vehicle_names.lua file which is located in the client folder. I provided an example of this that I used on the GTR in the video.
+Custom vehicles are fully supported, for each custom vehicle you have to add a text entry of it's model and make name (if there isn't one already) into the vehicle_names.lua file which is located in the client folder. I provided an example of this that I used on the GTR in the video.
 
 For any issues or bugs that may occur please open an Issue in the repository. Make sure to describe the issue in detail and how to reproduce it.
 

@@ -197,7 +197,7 @@ Config.Garages = {
     {
         label = 'MRPD Police Garage',
         type = 'car',
-        job = {['police'] = 0, ['mechanic'] = 1},
+        job = {['police'] = 0},
         ped = `s_m_y_cop_01`,
         pedCoords = vector4(450.6633, -1027.3324, 27.5732, 5.1321),
         zone = {name = 'mrpd', x = 439.36, y= -1021.04, z = 28.83, l = 20, w = 40, h = 0, minZ = 27.03, maxZ = 31.03},
@@ -231,6 +231,7 @@ Config.Garages = {
             label = '', -- name that will be displayed in menus
             type = 'car', -- can be 'car', 'boat' or 'aircraft',
             job = 'jobName', -- Set garage to be only accessed and stored into by a job (Optional)
+            -- If you want multiple jobs and grades you can do job = {['police'] = 0, ['mechanic'] = 3}
             ped = `ped_model_name`, -- Define the model model you want to use for the garage (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
