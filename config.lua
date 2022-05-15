@@ -3,10 +3,11 @@ Config = {}
 Config.Locale = 'en'
 
 Config.EnableVersionCheck = true -- If set to true you'll get a print in server console when your resource is out of date
-Config.VersionCheckInterval = 60 -- in minutes
 
 -- If using split garages on first start all vehicles will default to legion garage. after that they will restore at the last garage you put it in.
 Config.RestoreVehicles = false
+
+Config.TeleportToVehicle = false -- enable this if you have issues with vehicle mods not setting properly.
 
 -- Default garage zone name the vehicles will be restored to
 -- Ignore if not using split garages
@@ -15,10 +16,8 @@ Config.DefaultGarage = 'legion'
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 
--- Locks vehicles doors on spawn
-Config.LockDoors = false
-
 Config.DefaultGaragePed = `s_m_y_airworker`
+
 Config.DefaultImpoundPed = `s_m_y_construct_01`
 
 Config.BlipColors = {
@@ -29,28 +28,28 @@ Config.BlipColors = {
 
 Config.ImpoundPrices = {
     -- These are vehicle classes
-    ['0'] = 300, -- Compacts
-    ['1'] = 500, -- Sedans
-    ['2'] = 500, -- SUVs
-    ['3'] = 800, -- Coupes
-    ['4'] = 1200, -- Muscle
-    ['5'] = 800, -- Sports Classics
-    ['6'] = 1500, -- Sports
-    ['7'] = 2500, -- Super
-    ['8'] = 300, -- Motorcycles
-    ['9'] = 500, -- Off-road
-    ['10'] = 1000, -- Industrial
-    ['11'] = 500, -- Utility
-    ['12'] = 600, -- Vans
-    ['13'] = 100, -- Cylces
-    ['14'] = 2800, -- Boats
-    ['15'] = 3500, -- Helicopters
-    ['16'] = 3800, -- Planes
-    ['17'] = 500, -- Service
-    ['18'] = 0, -- Emergency
-    ['19'] = 100, -- Military
-    ['20'] = 1500, -- Commercial
-    ['21'] = 0 -- Trains (lol)
+    [0] = 300, -- Compacts
+    [1] = 500, -- Sedans
+    [2] = 500, -- SUVs
+    [3] = 800, -- Coupes
+    [4] = 1200, -- Muscle
+    [5] = 800, -- Sports Classics
+    [6] = 1500, -- Sports
+    [7] = 2500, -- Super
+    [8] = 300, -- Motorcycles
+    [9] = 500, -- Off-road
+    [10] = 1000, -- Industrial
+    [11] = 500, -- Utility
+    [12] = 600, -- Vans
+    [13] = 100, -- Cylces
+    [14] = 2800, -- Boats
+    [15] = 3500, -- Helicopters
+    [16] = 3800, -- Planes
+    [17] = 500, -- Service
+    [18] = 0, -- Emergency
+    [19] = 100, -- Military
+    [20] = 1500, -- Commercial
+    [21] = 0 -- Trains (lol)
 }
 
 Config.PayInCash = true -- whether you want to pay impound price in cash, otherwise uses bank
@@ -198,7 +197,7 @@ Config.Garages = {
     {
         label = 'MRPD Police Garage',
         type = 'car',
-        job = 'police',
+        job = {['police'] = 0},
         ped = `s_m_y_cop_01`,
         pedCoords = vector4(450.6633, -1027.3324, 27.5732, 5.1321),
         zone = {name = 'mrpd', x = 439.36, y= -1021.04, z = 28.83, l = 20, w = 40, h = 0, minZ = 27.03, maxZ = 31.03},
@@ -232,6 +231,7 @@ Config.Garages = {
             label = '', -- name that will be displayed in menus
             type = 'car', -- can be 'car', 'boat' or 'aircraft',
             job = 'jobName', -- Set garage to be only accessed and stored into by a job (Optional)
+            -- If you want multiple jobs and grades you can do job = {['police'] = 0, ['mechanic'] = 3}
             ped = `ped_model_name`, -- Define the model model you want to use for the garage (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate

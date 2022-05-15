@@ -21,6 +21,6 @@ Locales['cs'] = {
     ['no_ownership'] = "Toto vozidlo nevlastníte",
     ['no_money_cash'] = "Nemáte u sebe dost peněz",
     ['no_money_bank'] = "Na svém bankovním účtu nemáte dostatek peněz",
-    ['menu_go_back'] = "< Jít zpět",
-    ['vehicle_already_exists'] = "Vehicle already exists"
+    ['vehicle_already_exists'] = "Vehicle already exists",
+    ["status"] = "Status"
 }
