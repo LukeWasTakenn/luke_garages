@@ -8,7 +8,8 @@ local jobBlips = {}
 local ped = nil
 
 local function getGarageLabel(name)
-    for _, garage in pairs(Config.Garages) do
+    for i = 1, #Config.Garages do
+        local garage = Config.Garages[i]
         if garage.zone.name == name then return garage.label end
     end
 end

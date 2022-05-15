@@ -201,7 +201,6 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
                 end
                 if Config.TeleportToVehicle then
                     local playerPed = GetPlayerPed(xPlayer.source)
-                    local vehicle = GetVehiclePedIsIn(playerPed)
                     local timer = GetGameTimer()
                     while GetVehiclePedIsIn(playerPed) ~= entity do
                         Wait(0)
