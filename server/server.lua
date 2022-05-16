@@ -16,7 +16,7 @@ lib.callback.register('luke_garages:GetVehicles', function(source, garageType, j
     local vehicles = {}
 
     if not job then
-        local results = MySQL.Sync.fetchAll("SELECT `plate`, `vehicle`, `stored`, `health`, `garage`, `job` FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
+        local results = MySQL.Sync.fetchAll("SELECT `plate`, `vehicle`, `stored`, `garage`, `job` FROM `owned_vehicles` WHERE `owner` = @identifier AND `type` = @type", {
             ['@identifier'] = identifier,
             ['@type'] = garageType
         })
@@ -25,8 +25,7 @@ lib.callback.register('luke_garages:GetVehicles', function(source, garageType, j
                 local result = results[i]
                 if not result.job or result.job == 'civ' then
                     local veh = json.decode(result.vehicle)
-                    local health = json.decode(result.health)
-                    vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, stored = result.stored, health = health, garage = result.garage}
+                    vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, stored = result.stored, garage = result.garage}
                 end
             end
 
@@ -35,7 +34,7 @@ lib.callback.register('luke_garages:GetVehicles', function(source, garageType, j
     else
         local jobs = {}
         if type(job) == 'table' then for k, _ in pairs(job) do jobs[#jobs+1] = k end else jobs = job end
-        local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `stored`, `health`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` IN (@jobs)) AND `type` = @type AND `job` IN (@jobs)', {
+        local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `stored`, `garage` FROM `owned_vehicles` WHERE (`owner` = @identifier OR `owner` IN (@jobs)) AND `type` = @type AND `job` IN (@jobs)', {
             ['@identifier'] = identifier,
             ['@type'] = garageType,
             ['@jobs'] = jobs
@@ -44,8 +43,7 @@ lib.callback.register('luke_garages:GetVehicles', function(source, garageType, j
             for i = 1, #results do
                 local result = results[i]
                 local veh = json.decode(result.vehicle)
-                local health = json.decode(result.health)
-                vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, stored = result.stored, health = health, garage = result.garage}
+                vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, stored = result.stored, garage = result.garage}
             end
 
             return vehicles
@@ -60,7 +58,7 @@ lib.callback.register('luke_garages:GetImpound', function(source, type)
 
     local worldVehicles = GetAllVehicles()
 
-    local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `health`, `job` FROM owned_vehicles WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `stored` = 0', {
+    local results = MySQL.Sync.fetchAll('SELECT `plate`, `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @identifier OR `owner` = @job) AND `type` = @type AND `stored` = 0', {
         ['@identifier'] = identifier,
         ['@type'] = type,
         ['@job'] = xPlayer.job.name
@@ -69,7 +67,6 @@ lib.callback.register('luke_garages:GetImpound', function(source, type)
         for i = 1, #results do
             local result = results[i]
             local veh = json.decode(result.vehicle)
-            local health = json.decode(result.health)
             for index = 1, #worldVehicles do
                 local vehicle = worldVehicles[index]
                 if ESX.Math.Trim(result.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
@@ -79,7 +76,7 @@ lib.callback.register('luke_garages:GetImpound', function(source, type)
                 elseif index == #worldVehicles then
                     -- Allows players to only get their job vehicle from impound while having the job
                     if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
-                        vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh, health = health}
+                        vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
                     end
                 end
             end
@@ -185,7 +182,7 @@ RegisterNetEvent('luke_garages:SpawnVehicle', function(model, plate, coords, hea
             return xPlayer.showNotification(Locale('vehicle_already_exists')) end
         end
     end
-    MySQL.Async.fetchAll('SELECT vehicle, plate, health, garage FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
+    MySQL.Async.fetchAll('SELECT vehicle, plate, garage FROM `owned_vehicles` WHERE plate = @plate', {['@plate'] = ESX.Math.Trim(plate)}, function(result)
         if result[1] then
             CreateThread(function()
                 local entity = Citizen.InvokeNative(`CREATE_AUTOMOBILE`, model, coords.x, coords.y, coords.z, heading)
