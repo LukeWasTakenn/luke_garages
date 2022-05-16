@@ -284,7 +284,8 @@ RegisterNetEvent('luke_garages:GetImpoundedVehicles', function()
         local vehicleModel = GetLabelText(GetDisplayNameFromVehicleModel(data.vehicle.model))
         local vehicleTitle = vehicleMake .. ' ' .. vehicleModel
 
-        options[vehicleTitle] = {
+        options[i] = {
+            title = vehicleTitle,
             event = 'luke_garages:ImpoundVehicleMenu',
             arrow = true,
             description = Locale('plate') .. ': ' .. data.plate, -- Single item so no need to use metadata
@@ -328,7 +329,8 @@ RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
         local vehicleMake = GetLabelText(GetMakeNameFromVehicleModel(data.vehicle.model))
         local vehicleModel = GetLabelText(GetDisplayNameFromVehicleModel(data.vehicle.model))
         local vehicleTitle = vehicleMake .. ' ' .. vehicleModel
-        options[vehicleTitle] = {
+        options[i] = {
+            title = vehicleTitle,
             event = (data.stored == 1 or data.stored == true) and 'luke_garages:VehicleMenu' or nil,
             arrow = (data.stored == 1 or data.stored == true) and 'luke_garages:VehicleMenu' or false,
             args = {name = vehicleTitle, plate = data.plate, model = vehicleModel, vehicle = data.vehicle},
