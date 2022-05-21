@@ -17,19 +17,19 @@ end
 local function isVehicleInGarage(garage, stored)
     if Config.SplitGarages then
         if (stored == true or stored == 1) and currentGarage.zone.name == garage then
-            return Locale('in_garage')
+            return Locale('in_garage'), true
         else
             if (stored == false or stored == 0) then
-                return Locale('not_in_garage')
+                return Locale('not_in_garage'), false
             else
-                return getGarageLabel(garage)
+                return getGarageLabel(garage), false
             end
         end
     else
         if (stored == true or stored == 1) then
-            return Locale('in_garage')
+            return Locale('in_garage'), true
         else
-            return Locale('not_in_garage')
+            return Locale('not_in_garage'), false
         end
     end
 end
@@ -329,14 +329,15 @@ RegisterNetEvent('luke_garages:GetOwnedVehicles', function()
         local vehicleMake = GetLabelText(GetMakeNameFromVehicleModel(data.vehicle.model))
         local vehicleModel = GetLabelText(GetDisplayNameFromVehicleModel(data.vehicle.model))
         local vehicleTitle = vehicleMake .. ' ' .. vehicleModel
+        local locale, stored = isVehicleInGarage(data.garage, data.stored)
         options[i] = {
             title = vehicleTitle,
-            event = (data.stored == 1 or data.stored == true) and 'luke_garages:VehicleMenu' or nil,
-            arrow = (data.stored == 1 or data.stored == true) and 'luke_garages:VehicleMenu' or false,
+            event = stored and 'luke_garages:VehicleMenu' or nil,
+            arrow = stored and true or false,
             args = {name = vehicleTitle, plate = data.plate, model = vehicleModel, vehicle = data.vehicle},
             metadata = {
                 [Locale('plate')] = data.plate,
-                [Locale("status")] = isVehicleInGarage(data.garage, data.stored)
+                [Locale("status")] = locale
             }
         }
     end
