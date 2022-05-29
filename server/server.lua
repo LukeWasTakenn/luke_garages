@@ -86,15 +86,16 @@ lib.callback.register('luke_garages:GetImpound', function(source, type)
     end
 end)
 
-lib.callback.register('luke_garages:CheckOwnership', function(source, plate, model, job)
+lib.callback.register('luke_garages:CheckOwnership', function(source, plate, model, currentGarage)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
+    local job = currentGarage.job
 
     plate = ESX.Math.Trim(plate)
 
     local jobs = {}
     if type(job) == 'table' then for k, _ in pairs(job) do jobs[#jobs+1] = k end else jobs = job end
-    local result = MySQL.Sync.fetchAll("SELECT `vehicle`, `job` FROM owned_vehicles WHERE (`owner` = @owner OR `job` IN ('police')) AND `plate` = @plate", {
+    local result = MySQL.Sync.fetchAll("SELECT `vehicle`, `job`, `type` FROM owned_vehicles WHERE (`owner` = @owner OR `job` IN ('police')) AND `plate` = @plate", {
         ['@owner'] = identifier,
         ['@plate'] = ESX.Math.Trim(plate),
         ['@jobs'] = jobs
@@ -104,21 +105,22 @@ lib.callback.register('luke_garages:CheckOwnership', function(source, plate, mod
         local vehicle = json.decode(result[1].vehicle)
         local vehicleJob = result[1].job
         if ESX.Math.Trim(vehicle.plate) == plate and vehicle.model == model then
+            if currentGarage.type ~= result[1].type then return true, true end
             if not job and not vehicleJob or vehicleJob == 'civ' then return true end
             if job then
                 if type(jobs) == 'table' then
                     for i = 1, #jobs do
                         if jobs[i] == vehicleJob then return true end
-                        if i == #jobs then return {true, false} end
+                        if i == #jobs then return true, true end
                     end
                 else
                     if job == vehicleJob then
                         return true
                     else
-                        return {true, false}
+                        return true, true
                     end
                 end
-            else if vehicleJob ~= 'civ' then return {true,false} end end
+            else if vehicleJob ~= 'civ' then return true, true end end
         else
             -- Player tried to cheat
             return false

@@ -416,10 +416,9 @@ RegisterNetEvent('luke_garages:StoreVehicle', function(target)
     local vehPlate = GetVehicleNumberPlateText(vehicle)
     local vehProps = lib.getVehicleProperties(vehicle)
 
-    local doesOwn = lib.callback.await('luke_garages:CheckOwnership', false, vehPlate, vehProps.model, currentGarage.job)
-
+    local doesOwn, isInvalid = lib.callback.await('luke_garages:CheckOwnership', false, vehPlate, vehProps.model, currentGarage)
     if doesOwn then
-        if type(doesOwn) == 'table' then return ESX.ShowNotification(Locale('garage_cant_store')) end
+       if isInvalid then return ESX.ShowNotification(Locale('garage_cant_store')) end
         TriggerServerEvent('luke_garages:SaveVehicle', vehProps, vehPlate, VehToNet(vehicle), currentGarage.zone.name)
     else
         ESX.ShowNotification(Locale('no_ownership'))
