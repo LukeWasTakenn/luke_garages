@@ -67,17 +67,28 @@ lib.callback.register('luke_garages:GetImpound', function(source, type)
         for i = 1, #results do
             local result = results[i]
             local veh = json.decode(result.vehicle)
-            for index = 1, #worldVehicles do
-                local vehicle = worldVehicles[index]
-                if ESX.Math.Trim(result.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
-                    if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then break end
-                    if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then DeleteEntity(vehicle) end
-                    break
-                elseif index == #worldVehicles then
-                    -- Allows players to only get their job vehicle from impound while having the job
-                    if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
-                        vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
+            if #worldVehicles ~= nil and #worldVehicles > 0 then
+                for index = 1, #worldVehicles do
+                    local vehicle = worldVehicles[index]
+                    if ESX.Math.Trim(result.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                        if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then break end
+                        if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then DeleteEntity(vehicle)
+                            -- Allows players to only get their job vehicle from impound while having the job
+                            if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
+                                vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
+                            end
+                        end
+                        break
+                    elseif index == #worldVehicles then
+                        -- Allows players to only get their job vehicle from impound while having the job
+                        if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
+                            vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
+                        end
                     end
+                end
+            else
+                if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
+                    vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
                 end
             end
         end
