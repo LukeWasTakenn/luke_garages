@@ -95,7 +95,7 @@ lib.callback.register('luke_garages:CheckOwnership', function(source, plate, mod
 
     local jobs = {}
     if type(job) == 'table' then for k, _ in pairs(job) do jobs[#jobs+1] = k end else jobs = job end
-    local result = MySQL.Sync.fetchAll("SELECT `vehicle`, `job`, `type` FROM owned_vehicles WHERE (`owner` = @owner OR `job` IN ('police')) AND `plate` = @plate", {
+    local result = MySQL.Sync.fetchAll("SELECT `vehicle`, `job`, `type` FROM owned_vehicles WHERE (`owner` = @owner OR `job` IN (@jobs)) AND `plate` = @plate", {
         ['@owner'] = identifier,
         ['@plate'] = ESX.Math.Trim(plate),
         ['@jobs'] = jobs
