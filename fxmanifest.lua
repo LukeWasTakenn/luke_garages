@@ -27,8 +27,7 @@ client_scripts {
     '@PolyZone/BoxZone.lua',
     '@PolyZone/CircleZone.lua',
     'client/vehicle_names.lua',
-    'client/client.lua',
-    'client/vehicle_functions.lua'
+    'client/client.lua'
 }
 
 server_scripts {
