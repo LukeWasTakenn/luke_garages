@@ -54,6 +54,8 @@ end)
 lib.callback.register('luke_garages:GetImpound', function(source, type)
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.getIdentifier()
+
+    local onesync_population = GetConvar('onesync_population', 'false')
     local vehicles = {}
 
     local worldVehicles = GetAllVehicles()
@@ -63,26 +65,48 @@ lib.callback.register('luke_garages:GetImpound', function(source, type)
         ['@type'] = type,
         ['@job'] = xPlayer.job.name
     })
-    if results[1] ~= nil then
-        for i = 1, #results do
-            local result = results[i]
-            local veh = json.decode(result.vehicle)
-            for index = 1, #worldVehicles do
-                local vehicle = worldVehicles[index]
+
+    if onesync_population == true then -- if npc in enabled
+        if results[1] ~= nil then
+            for i = 1, #results do
+                local result = results[i]
+                local veh = json.decode(result.vehicle)
+                for index = 1, #worldVehicles do
+                    local vehicle = worldVehicles[index]
+                    if ESX.Math.Trim(result.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
+                        if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then break end
+                        if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then DeleteEntity(vehicle) end
+                        break
+                    elseif index == #worldVehicles then
+                        -- Allows players to only get their job vehicle from impound while having the job
+                        if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
+                            vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
+                        end
+                    end
+                end
+            end
+
+            return vehicles
+        end
+    else
+        if results[1] ~= nil then
+            for i = 1, #results do
+                local result = results[i]
+                local veh = json.decode(result.vehicle)
                 if ESX.Math.Trim(result.plate) == ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)) then
                     if GetVehiclePetrolTankHealth(vehicle) > 0 and GetVehicleBodyHealth(vehicle) > 0 then break end
                     if GetVehiclePetrolTankHealth(vehicle) <= 0 and GetVehicleBodyHealth(vehicle) <= 0 then DeleteEntity(vehicle) end
                     break
-                elseif index == #worldVehicles then
+                else
                     -- Allows players to only get their job vehicle from impound while having the job
                     if (result.job == 'civ' or result.job == nil) or result.job == xPlayer.job.name then
                         vehicles[#vehicles+1] = {plate = result.plate, vehicle = veh}
                     end
                 end
             end
-        end
 
-        return vehicles
+            return vehicles
+        end
     end
 end)
 
