@@ -61,7 +61,7 @@ local function isInsideZone(type, entity)
 end
 
 local function ImpoundBlips(coords, type, label, blipOptions)
-    local blip = AddBlipForCoord(coords)
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, blipOptions?.sprite or 285)
     SetBlipScale(blip, blipOptions?.scale or 0.8)
     SetBlipColour(blip, blipOptions?.colour and blipOptions.colour or type == 'car' and Config.BlipColors.Car or type == 'boat' and Config.BlipColors.Boat or Config.BlipColors.Aircraft)
@@ -73,7 +73,7 @@ end
 
 local function GarageBlips(coords, type, label, job, blipOptions)
     if job then return end
-    local blip = AddBlipForCoord(coords)
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, blipOptions?.sprite or 357)
     SetBlipScale(blip, blipOptions?.scale or 0.8)
     SetBlipColour(blip, blipOptions?.colour ~= nil and blipOptions.colour or type == 'car' and Config.BlipColors.Car or type == 'boat' and Config.BlipColors.Boat or Config.BlipColors.Aircraft)
