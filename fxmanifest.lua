@@ -6,7 +6,7 @@ lua54 'yes'
 
 author 'Luke - https://www.github.com/lukewastakenn'
 
-version '2.7.2'
+version '2.8.0'
 
 dependencies { 
     '/server:5104',
