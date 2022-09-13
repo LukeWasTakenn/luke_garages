@@ -96,23 +96,62 @@ local function JobGarageBlip(garage)
     EndTextCommandSetBlipName(jobBlips[index])
 end
 
-exports['qtarget']:Vehicle({
-	options = {
-		{
-			event = 'luke_garages:StoreVehicle',
-			label = Locale('store_vehicle'),
-			icon = 'fas fa-parking',
+
+if Config.ox_target then
+    exports['qtarget']:Vehicle({
+        options = {
+            {
+                event = 'luke_garages:StoreVehicle',
+                label = Locale('store_vehicle'),
+                icon = 'fas fa-parking',
+                canInteract = function(entity)
+                    hasChecked = false
+                    if isInsideZone('garage', entity) and not hasChecked then
+                        hasChecked = true
+                        return true
+                    end
+                end
+            }
+        },
+        distance = 2.5
+    })
+else
+    exports.ox_target:addGlobalVehicle({
+        {
+            name = 'open_parking',
+            icon = 'fa-solid fa-parking',
+            label = Locale('store_vehicle'),
+            event = 'luke_garages:StoreVehicle',
             canInteract = function(entity)
                 hasChecked = false
                 if isInsideZone('garage', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
-            end
-		}
-	},
-	distance = 2.5
-})
+            end,
+            distance = 2.5
+        }
+    })
+end
+
+if Config.ox_target then
+    exports.ox_target:addModel(Config.DefaultGaragePed, {
+        {
+            name = 'open_garage',
+            icon = 'fa-solid fa-warehouse',
+            label = Locale('take_out_vehicle'),
+            event = 'luke_garages:GetOwnedVehicles',
+            canInteract = function(entity)
+                hasChecked = false
+                if isInsideZone('garage', entity) and not hasChecked then
+                    hasChecked = true
+                    return true
+                end
+            end,
+            distance = 2.5
+        }
+    })
+end
 
 for k, v in pairs(Config.Garages) do
 
@@ -132,24 +171,26 @@ for k, v in pairs(Config.Garages) do
     garages[k].type = v.type
     garages[k].label = v.label
 
-    exports['qtarget']:AddTargetModel({v.ped or Config.DefaultGaragePed}, {
-        options = {
-            {
-                event = "luke_garages:GetOwnedVehicles",
-                icon = "fas fa-warehouse",
-                label = Locale('take_out_vehicle'),
-                job = v.job or nil,
-                canInteract = function(entity)
-                    hasChecked = false
-                    if isInsideZone('garage', entity) and not hasChecked then
-                        hasChecked = true
-                        return true
+    if Config.ox_target == false then
+        exports['qtarget']:AddTargetModel({v.ped or Config.DefaultGaragePed}, {
+            options = {
+                {
+                    event = "luke_garages:GetOwnedVehicles",
+                    icon = "fas fa-warehouse",
+                    label = Locale('take_out_vehicle'),
+                    job = v.job or nil,
+                    canInteract = function(entity)
+                        hasChecked = false
+                        if isInsideZone('garage', entity) and not hasChecked then
+                            hasChecked = true
+                            return true
+                        end
                     end
-                end
+                },
             },
-        },
-        distance = 2.5,
-    })
+            distance = 2.5,
+        })
+    end
 
     garages[k]:onPlayerInOut(function(isPointInside, point)
         local model = v.ped or Config.DefaultGaragePed
@@ -221,23 +262,42 @@ for k, v in pairs(Config.Impounds) do
     end)
 end
 
-exports['qtarget']:AddTargetModel(impoundPeds, {
-    options = {
+if Config.ox_target then
+    exports.ox_target:addModel(impoundPeds, {
         {
-            event = 'luke_garages:GetImpoundedVehicles',
-            icon = "fas fa-key",
+            name = 'open_impound',
+            icon = 'fa-solid fa-key',
             label = Locale('access_impound'),
+            event = 'luke_garages:GetImpoundedVehicles',
             canInteract = function(entity)
                 hasChecked = false
                 if isInsideZone('impound', entity) and not hasChecked then
                     hasChecked = true
                     return true
                 end
-            end
+            end,
+            distance = 2.5
+        }
+    })
+else
+    exports['qtarget']:AddTargetModel(impoundPeds, {
+        options = {
+            {
+                event = 'luke_garages:GetImpoundedVehicles',
+                icon = "fas fa-key",
+                label = Locale('access_impound'),
+                canInteract = function(entity)
+                    hasChecked = false
+                    if isInsideZone('impound', entity) and not hasChecked then
+                        hasChecked = true
+                        return true
+                    end
+                end
+            },
         },
-    },
-    distance = 2.5,
-})
+        distance = 2.5,
+    })
+end
 
 AddStateBagChangeHandler('vehicleData', nil, function(bagName, key, value, _unused, replicated)
     if not value then return end
