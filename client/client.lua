@@ -134,25 +134,7 @@ else
     })
 end
 
-if Config.ox_target then
-    exports.ox_target:addModel(Config.DefaultGaragePed, {
-        {
-            name = 'open_garage',
-            icon = 'fa-solid fa-warehouse',
-            label = Locale('take_out_vehicle'),
-            event = 'luke_garages:GetOwnedVehicles',
-            canInteract = function(entity)
-                hasChecked = false
-                if isInsideZone('garage', entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end,
-            distance = 2.5
-        }
-    })
-end
-
+local garagePeds = {Config.DefaultGaragePed}
 for k, v in pairs(Config.Garages) do
 
     GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
@@ -171,7 +153,7 @@ for k, v in pairs(Config.Garages) do
     garages[k].type = v.type
     garages[k].label = v.label
 
-    if Config.ox_target == false then
+    if not Config.ox_target then
         exports['qtarget']:AddTargetModel({v.ped or Config.DefaultGaragePed}, {
             options = {
                 {
@@ -190,6 +172,8 @@ for k, v in pairs(Config.Garages) do
             },
             distance = 2.5,
         })
+    else
+        garagePeds[#garagePeds+1] = v.ped
     end
 
     garages[k]:onPlayerInOut(function(isPointInside, point)
@@ -215,6 +199,35 @@ for k, v in pairs(Config.Garages) do
             DeletePed(ped)
         end
     end)
+end
+
+if Config.ox_target then
+    exports.ox_target:addModel(garagePeds, {
+        {
+            name = 'open_garage',
+            icon = 'fa-solid fa-warehouse',
+            label = Locale('take_out_vehicle'),
+            event = 'luke_garages:GetOwnedVehicles',
+            canInteract = function(entity)
+                hasChecked = false
+                if isInsideZone('garage', entity) and not hasChecked then
+                    hasChecked = true
+                    local requiredGroup = currentGarage.job
+                    local playerJob = ESX.PlayerData.job
+                    if not requiredGroup then return true end
+                    if type(requiredGroup) == 'string' then
+                        if not requiredGroup == playerJob.name then return false end
+                    else
+                        for job, grade in pairs(requiredGroup) do
+                            if playerJob.name == job and playerJob.grade >= grade then return true end
+                        end
+                        return false
+                    end
+                end
+            end,
+            distance = 2.5
+        }
+    })
 end
 
 local impoundPeds = {Config.DefaultImpoundPed}

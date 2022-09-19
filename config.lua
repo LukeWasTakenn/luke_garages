@@ -16,8 +16,7 @@ Config.DefaultGarage = 'legion'
 -- Setting to true will only allow you take out the vehicle from a garage you put it in
 Config.SplitGarages = false
 
--- Enable or disable ox_target, because of inserting data into options table
--- If you're using ox target there is no way how to use job garages and garage peds (only allow Config.DefaultGaragePed)
+-- Enable ox_target, otherwise uses qtarget (deprecated)
 Config.ox_target = true
 
 Config.DefaultGaragePed = `s_m_y_airworker`
