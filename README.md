@@ -13,7 +13,7 @@ I used esx_vehicleshop, but the resource should work with anything that follows 
 ### Dependencies
 
 - [PolyZone](https://github.com/mkafrin/PolyZone)
-- [qtarget](https://github.com/overextended/qtarget)
+- [ox_target](https://github.com/overextended/ox_target) (recommended) or [qtarget](https://github.com/overextended/qtarget) (deprecated)
 - [ox_lib](https://github.com/overextended/ox_lib)
 - Server game build 1868 or newer\*
 
@@ -56,6 +56,7 @@ Depending on the game build number you choose is the GTA DLC your server is goin
 2189 - Cayo Perico Heist
 2373 - Tuners update
 2545 - The Contract update
+2699 - Criminal Enterprises update
 ```
 ## License
 
