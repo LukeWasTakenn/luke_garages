@@ -98,6 +98,23 @@ end
 
 
 if Config.ox_target then
+    exports.ox_target:addGlobalVehicle({
+        {
+            name = 'open_parking',
+            icon = 'fa-solid fa-parking',
+            label = Locale('store_vehicle'),
+            event = 'luke_garages:StoreVehicle',
+            canInteract = function(entity)
+                hasChecked = false
+                if isInsideZone('garage', entity) and not hasChecked then
+                    hasChecked = true
+                    return true
+                end
+            end,
+            distance = 2.5
+        }
+    })
+else
     exports['qtarget']:Vehicle({
         options = {
             {
@@ -114,23 +131,6 @@ if Config.ox_target then
             }
         },
         distance = 2.5
-    })
-else
-    exports.ox_target:addGlobalVehicle({
-        {
-            name = 'open_parking',
-            icon = 'fa-solid fa-parking',
-            label = Locale('store_vehicle'),
-            event = 'luke_garages:StoreVehicle',
-            canInteract = function(entity)
-                hasChecked = false
-                if isInsideZone('garage', entity) and not hasChecked then
-                    hasChecked = true
-                    return true
-                end
-            end,
-            distance = 2.5
-        }
     })
 end
 
