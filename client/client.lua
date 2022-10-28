@@ -137,7 +137,9 @@ end
 local garagePeds = {Config.DefaultGaragePed}
 for k, v in pairs(Config.Garages) do
 
-    GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
+    if v.showBlip or v.showBlip == nil then
+        GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
+    end
 
     garages[k] = BoxZone:Create(
         vector3(v.zone.x, v.zone.y, v.zone.z),
@@ -233,7 +235,9 @@ end
 local impoundPeds = {Config.DefaultImpoundPed}
 for k, v in pairs(Config.Impounds) do
 
-    ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.blip)
+    if v.showBlip or v.showBlip == nil then
+        ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.blip)
+    end
 
     impounds[k] = BoxZone:Create(
         vector3(v.zone.x, v.zone.y, v.zone.z),

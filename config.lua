@@ -97,6 +97,7 @@ Config.Impounds = {
         {
             label = "", -- Display label for the impound (Optional)
             type = 'car', -- can be 'car', 'boat' or 'aircraft',
+            showBlip = false, -- Disable blip for specific impound, but leave rest visible
             ped = `ped_model_name` -- Define the model model you want to use for the impound (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone
             zone = {name = 'somename', x = X, y = X, z = X, l = X, w = X, h = X, minZ = X, maxZ = x}, -- l is length of the box zone, w is width, h is heading, take all walues from generated zone from /pzcreate
@@ -117,6 +118,7 @@ Config.Garages = {
     {
         label = 'Legion Garage',
         type = 'car', -- car, boat or aircraft
+        showBlip = false, -- You can remove this or enable to see blip
         pedCoords = vector4(215.90, -808.87, 29.74, 248.0), -- The Ped MUST be inside the PolyZone
         zone = {name = 'legion', x = 228.68, y = -789.15, z = 30.59, l = 52.4, w = 39.6, h = 340, minZ = 28.99, maxZ = 32.99},
         spawns = {
@@ -233,6 +235,7 @@ Config.Garages = {
             label = '', -- name that will be displayed in menus
             type = 'car', -- can be 'car', 'boat' or 'aircraft',
             job = 'jobName', -- Set garage to be only accessed and stored into by a job (Optional)
+            showBlip = false, -- Disable blip for specific garages, but leave rest visible
             -- If you want multiple jobs and grades you can do job = {['police'] = 0, ['mechanic'] = 3}
             ped = `ped_model_name`, -- Define the model model you want to use for the garage (Optional)
             pedCoords = vector4(x, y, z, h), -- Ped MUST be inside the create zone
