@@ -134,7 +134,9 @@ else
     })
 end
 
-local garagePeds = {Config.DefaultGaragePed}
+local garagePeds = {
+    [Config.DefaultGaragePed] = true,
+}
 for k, v in pairs(Config.Garages) do
 
     GarageBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.job, v.blip)
@@ -173,7 +175,9 @@ for k, v in pairs(Config.Garages) do
             distance = 2.5,
         })
     else
-        garagePeds[#garagePeds+1] = v.ped
+        if v.ped then
+            garagePeds[v.ped] = true
+        end
     end
 
     garages[k]:onPlayerInOut(function(isPointInside, point)
@@ -202,7 +206,9 @@ for k, v in pairs(Config.Garages) do
 end
 
 if Config.ox_target then
-    exports.ox_target:addModel(garagePeds, {
+    local pedsArr = {}
+    for ped, _ in pairs(garagePeds) do pedsArr[#pedsArr+1] = ped end
+    exports.ox_target:addModel(pedsArr, {
         {
             name = 'open_garage',
             icon = 'fa-solid fa-warehouse',
@@ -230,7 +236,9 @@ if Config.ox_target then
     })
 end
 
-local impoundPeds = {Config.DefaultImpoundPed}
+local impoundPeds = {
+    [Config.DefaultImpoundPed] = true
+}
 for k, v in pairs(Config.Impounds) do
 
     ImpoundBlips(vector3(v.pedCoords.x, v.pedCoords.y, v.pedCoords.z), v.type, v.label, v.blip)
@@ -248,7 +256,9 @@ for k, v in pairs(Config.Impounds) do
 
     impounds[k].type = v.type
 
-    impoundPeds[#impoundPeds+1] = v.ped
+    if v.ped then
+        impoundPeds[v.ped] = true
+    end
 
     impounds[k]:onPlayerInOut(function(isPointInside, point)
         local model = v.ped or Config.DefaultImpoundPed
@@ -276,7 +286,11 @@ for k, v in pairs(Config.Impounds) do
 end
 
 if Config.ox_target then
-    exports.ox_target:addModel(impoundPeds, {
+    local pedsArr = {}
+    for ped, _ in pairs(impoundPeds) do
+        pedsArr[#pedsArr+1] = ped
+    end
+    exports.ox_target:addModel(pedsArr, {
         {
             name = 'open_impound',
             icon = 'fa-solid fa-key',
