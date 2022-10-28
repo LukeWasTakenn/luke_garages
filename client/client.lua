@@ -502,6 +502,18 @@ end)
 RegisterNetEvent('esx:setJob', function(job)
     for i = 1, #jobBlips do RemoveBlip(jobBlips[i]) end
     for i = 1, #Config.Garages do
-        if Config.Garages[i].job == job.name then JobGarageBlip(Config.Garages[i]) end
+        local garage = Config.Garages[i]
+        if garage.job then
+            if type(garage.job) == 'string' then
+                if garage.job == job.name then JobGarageBlip(garage) end
+            else
+                for jobName, _ in pairs(garage.job) do
+                    if jobName == job.name then
+                        JobGarageBlip(garage)
+                        break
+                    end
+                end
+            end
+        end
     end
 end)
