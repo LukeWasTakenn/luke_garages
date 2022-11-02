@@ -61,6 +61,7 @@ local function isInsideZone(type, entity)
 end
 
 local function ImpoundBlips(coords, type, label, blipOptions)
+    if blipOptions == false then return end
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, blipOptions?.sprite or 285)
     SetBlipScale(blip, blipOptions?.scale or 0.8)
@@ -72,6 +73,7 @@ local function ImpoundBlips(coords, type, label, blipOptions)
 end
 
 local function GarageBlips(coords, type, label, job, blipOptions)
+    if blipOptions == false then return end
     if job then return end
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(blip, blipOptions?.sprite or 357)
