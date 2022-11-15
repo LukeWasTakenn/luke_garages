@@ -7,6 +7,23 @@ local jobBlips = {}
 
 local ped = nil
 
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(xPlayer)
+    ESX.PlayerData = xPlayer
+    ESX.PlayerLoaded = true
+end)
+
+RegisterNetEvent('esx:playerLogout')
+AddEventHandler('esx:playerLogout', function()
+	ESX.PlayerLoaded = false
+	ESX.PlayerData = {}
+end)
+
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', function(job)
+	ESX.PlayerData.job = job
+end)
+
 local function getGarageLabel(name)
     for i = 1, #Config.Garages do
         local garage = Config.Garages[i]
@@ -218,7 +235,7 @@ if Config.ox_target then
             event = 'luke_garages:GetOwnedVehicles',
             canInteract = function(entity)
                 hasChecked = false
-                if isInsideZone('garage', entity) and not hasChecked then
+                if ESX.PlayerLoaded and isInsideZone('garage', entity) and not hasChecked then
                     hasChecked = true
                     local requiredGroup = currentGarage.job
                     local playerJob = ESX.PlayerData.job
