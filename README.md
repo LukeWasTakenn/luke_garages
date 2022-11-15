@@ -1,5 +1,7 @@
 # luke_garages
 
+## Due to the lack of time and motivation to fix the currently ongoing issues and implement new features the work on the repository is suspended.
+
 This resource only supports ESX Legacy, other versions of the framework **will not** work without modifying the resource.
 
 Alongside cars, aircrafts and boats are also fully supported with them having their own separate garages and impounds.
